@@ -1,0 +1,71 @@
+[gd_scene format=3 uid="uid://dplw5tha46yxl"]
+
+[ext_resource type="Script" uid="uid://c18k0ktremkmf" path="res://screens/menu_principal.gd" id="1_20lp2"]
+[ext_resource type="Texture2D" uid="uid://7vm3aiy0nr2d" path="res://assets/images/menu/FUNDO MENU.png" id="1_m05j1"]
+[ext_resource type="Texture2D" uid="uid://ld2sswuwrlau" path="res://assets/images/menu/TITULO MENU.png" id="2_20lp2"]
+[ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="3_mara4"]
+
+[node name="MenuPrincipal" type="Control" unique_id=80648870]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_20lp2")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1468054335]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_m05j1")
+
+[node name="Titulo" type="TextureRect" parent="." unique_id=1690271938]
+layout_mode = 0
+offset_left = 371.0
+offset_top = 98.0
+offset_right = 926.5
+offset_bottom = 199.0
+texture = ExtResource("2_20lp2")
+
+[node name="MenuBotoes" type="VBoxContainer" parent="." unique_id=861500816]
+layout_mode = 0
+offset_left = 518.0
+offset_top = 281.0
+offset_right = 766.0
+offset_bottom = 545.0
+theme_override_constants/separation = 60
+alignment = 1
+
+[node name="BtnJogar" type="Button" parent="MenuBotoes" unique_id=1934787764]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_fonts/font = ExtResource("3_mara4")
+theme_override_font_sizes/font_size = 30
+text = "JOGAR"
+flat = true
+
+[node name="BtnSobre" type="Button" parent="MenuBotoes" unique_id=690681662]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_fonts/font = ExtResource("3_mara4")
+theme_override_font_sizes/font_size = 30
+text = "SOBRE
+
+"
+flat = true
+
+[node name="BtnSair" type="Button" parent="MenuBotoes" unique_id=502892873]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_fonts/font = ExtResource("3_mara4")
+theme_override_font_sizes/font_size = 30
+text = "SAIR"
+flat = true
+
+[connection signal="pressed" from="MenuBotoes/BtnJogar" to="." method="_on_btn_jogar_pressed"]
+[connection signal="pressed" from="MenuBotoes/BtnSobre" to="." method="_on_btn_sobre_pressed"]
+[connection signal="pressed" from="MenuBotoes/BtnSair" to="." method="_on_btn_sair_pressed"]

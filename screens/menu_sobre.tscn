@@ -1,0 +1,87 @@
+[gd_scene format=3 uid="uid://cy0x68sv3tgu5"]
+
+[ext_resource type="Script" uid="uid://b2xmqnpqyw8pq" path="res://screens/menu_sobre.gd" id="1_wouv7"]
+[ext_resource type="Texture2D" uid="uid://7vm3aiy0nr2d" path="res://assets/images/menu/FUNDO MENU.png" id="2_u1jjw"]
+[ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="3_43jpq"]
+
+[node name="MenuSobre" type="Control" unique_id=1042052746]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_wouv7")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=913167475]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_u1jjw")
+
+[node name="MenuTexto" type="VBoxContainer" parent="." unique_id=1957440165]
+layout_mode = 0
+offset_left = 242.0
+offset_top = 93.0
+offset_right = 1054.0
+offset_bottom = 625.0
+theme_override_constants/separation = 32
+
+[node name="Autores" type="Label" parent="MenuTexto" unique_id=1406304218]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_43jpq")
+theme_override_font_sizes/font_size = 30
+text = "Autores"
+horizontal_alignment = 1
+
+[node name="Nomes" type="Label" parent="MenuTexto" unique_id=672082134]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_43jpq")
+theme_override_font_sizes/font_size = 28
+text = "Yago Henrique dos Santos Lima
+Amon Lucena
+"
+horizontal_alignment = 1
+
+[node name="Controles" type="Label" parent="MenuTexto" unique_id=480467851]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_43jpq")
+theme_override_font_sizes/font_size = 30
+text = "Controles
+"
+horizontal_alignment = 1
+
+[node name="Controle1" type="Label" parent="MenuTexto" unique_id=1565591513]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_43jpq")
+theme_override_font_sizes/font_size = 28
+text = "Movimentos: A, D
+Pular: Espaço
+"
+
+[node name="Controle2" type="Label" parent="MenuTexto/Controle1" unique_id=854785608]
+layout_mode = 0
+offset_left = 554.0
+offset_top = -1.0
+offset_right = 834.0
+offset_bottom = 89.0
+theme_override_fonts/font = ExtResource("3_43jpq")
+theme_override_font_sizes/font_size = 28
+text = "Ataque: J
+Esquiva: K
+"
+
+[node name="Voltar" type="Button" parent="MenuTexto" unique_id=1689286317]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_fonts/font = ExtResource("3_43jpq")
+theme_override_font_sizes/font_size = 30
+text = "VOLTAR
+
+"
+flat = true
+
+[connection signal="pressed" from="MenuTexto/Voltar" to="." method="_on_voltar_pressed"]
