@@ -25,7 +25,7 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 	# Amortecimento de pulo
-	if Input.is_action_just_pressed("jump") and velocity.y <0:
+	if Input.is_action_just_released("jump") and velocity.y <0:
 		velocity.y *= 0.5
 
 	# Pega a entrada (direta ou esquerda) e lida com a movementacao
