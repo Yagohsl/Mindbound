@@ -41,11 +41,14 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 	
-	# Se estiver atacando ou dando dash, ignora o movimento normal
-	if is_attacking or is_dashing:
-		move_and_slide()
-		return
+
 		
+	# Ataque
+	if Input.is_action_just_pressed("attack") and not is_attacking:
+		is_attacking = true
+		anim.play("attack")
+	
+	
 	# Adiciona a gravidade.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
@@ -57,28 +60,35 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_released("jump") and velocity.y <0:
 		velocity.y *= 0.5
 
+	# Movimentacao
 	# Pega a entrada (direta ou esquerda) e lida com a movementacao
-	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction := Input.get_axis("move_left", "move_right")
 	if direction:
 		velocity.x = direction * SPEED
-		# Vira o player
-		sprite.flip_h = direction < 0
 		
-		# Toca anim de correr se estiver no chao
-		if is_on_floor():
+		# Vira o player
+		if not is_attacking:
+			sprite.flip_h = direction < 0
+			
+		# Toca anim de correr se estiver no chao e nao atacando
+		if is_on_floor() and not is_attacking:
 			anim.play("run")
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		
-		if is_on_floor():
+		if is_on_floor() and not is_attacking:
 			anim.play("idle")
 	
 	# Controle de anim aerea
-	if not is_on_floor():
+	if not is_on_floor() and not is_attacking:
 		if velocity.y < 0:
 			anim.play("jump_up")
 		else:
 			anim.play("jump_down")
 
 	move_and_slide()
+
+
+func _on_animation_player_animation_finished(anim_name: StringName) -> void:
+	if anim_name == "attack":
+		is_attacking = false

@@ -9,6 +9,7 @@ size = Vector2(1397, 90)
 [node name="Arena" type="StaticBody2D" unique_id=880845399]
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=2143365313]
+position = Vector2(-5, -11)
 scale = Vector2(2.1383333, 1.8125)
 texture = ExtResource("1_nd1db")
 centered = false
