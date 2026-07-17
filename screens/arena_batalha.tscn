@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://b4wir400nniyn" path="res://assets/images/game/maps/background1.png" id="1_nd1db"]
 [ext_resource type="PackedScene" uid="uid://yhj5oal0pkp4" path="res://heroi.tscn" id="2_toxup"]
+[ext_resource type="PackedScene" uid="uid://c1c6uwng84vl1" path="res://boss_ansiedade.tscn" id="3_1rla3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_toxup"]
 size = Vector2(1397, 90)
@@ -20,3 +21,6 @@ shape = SubResource("RectangleShape2D_toxup")
 
 [node name="Heroi" parent="." unique_id=1426187125 instance=ExtResource("2_toxup")]
 position = Vector2(195, 538)
+
+[node name="BossAnsiedade" parent="." unique_id=141011473 instance=ExtResource("3_1rla3")]
+position = Vector2(1001, 505)
