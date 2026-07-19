@@ -11,6 +11,10 @@ const DASH_DURATION = 0.2 # tempo em segundos do dash
 @onready var sprite = $Sprite2D
 @onready var anim = $AnimationPlayer
 
+signal health_changed(new_health)
+var max_health = 100
+var current_health = 100
+
 var is_attacking = false
 var is_dashing = false
 var dash_time_left = 0.0 # controla o tempo do dash
@@ -88,6 +92,28 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+func take_damage(amount):
+	current_health -= amount
+	
+	
+	if get_parent().has_method("update_hero_health"):
+		get_parent().update_hero_health(current_health)
+	
+	health_changed.emit(current_health)
+	# Hit
+	flash()
+	
+	if current_health <=0:
+		die()
+	
+func flash():
+	var mat = sprite.material
+
+	var tween = create_tween()
+	
+	tween.tween_property(mat, "shader_parameter/flash_modifier", 1.0, 0.0)
+	tween.tween_property(mat, "shader_parameter/flash_modifier", 0.0, 0.15)
+	
 
 func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	if anim_name == "attack":

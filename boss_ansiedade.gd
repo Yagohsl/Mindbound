@@ -10,29 +10,41 @@ enum State {
 	RUN,
 	THOUGHTS,
 	TELEPORT,
+	EXPLOSION_PREP,
+	EXPLOSION,
 	DASH_PREP,
 	DASH,
-	DEAD
+	DEATH
 }
 var current_state = State.IDLE
+var max_health = 150
+var current_health = 150
 
 # Variaveis de atributos
 @export var speed = 150.0
-@export var rush_speed = 300.0 #velocidade dash
-@export var jump_velocity = -400.0
-@export var player_target: Node2D #referencia ao player
+@export var dash_speed: float = 400.0 #velocidade dash
+@export var health: int = 150
+@export var player: Node2D #referencia ao player
+@export var projectile_scene: PackedScene #arrasta a cena do projetil no inspetor
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 @onready var anim = $AnimationPlayer
 @onready var sprite = $Sprite2D
+@onready var decision_timer = $DecisionTimer
+
+# var de controle de ataques
+var dash_direction: int = 0
+var dash_distance_left: float = 0.0
+var dash_max_distance: float = 500.0
+var min_teleport_distance: float = 250.0
 
 func _physics_process(delta: float) -> void:
-	if current_state == State.DEAD:
+	if current_state == State.DEATH:
 		return
 	
 	# gravidade
-	if not is_on_floor():
+	if not is_on_floor() and current_state != State.TELEPORT:
 		velocity.y += gravity * delta
 	
 	# execucao da maquina de estados
@@ -42,47 +54,129 @@ func _physics_process(delta: float) -> void:
 			velocity.x = move_toward(velocity.x, 0, speed)
 		
 		State.RUN:
+			if player:
+				var dir = sign(player.global_position.x - global_position.x)
+				velocity.x = dir * speed
+				flip_sprite(dir)
 			anim.play("run")
-			var direction = sign(player_target.global_position.x - global_position.x)
-			velocity.x = direction * rush_speed
-			flip_sprite(direction)
 		
-		State.DASH_PREP:
-			anim.play("dash_prep")
-			velocity.x = 0
 		State.DASH:
 			anim.play("dash")
-			var direction = sign(player_target.global_position.x - global_position.x)
-			velocity.x = direction * (rush_speed * 2)
+			var step = dash_speed * delta
+			velocity.x = dash_direction * dash_speed
+			dash_distance_left -= step
+				
+			if dash_distance_left <= 0:
+				velocity.x = 0
+				current_state = State.IDLE
+				decision_timer.start() # reinicia a IA
 
-	move_and_slide()
-
-# Logica da IA
-func _on_decision_timer_timmeout():
-	if current_state in [State.DEAD, State.DASH_PREP, State.DASH]:
-		return
-	decide_next_action()
-
-func decide_next_action():
-	var distance_to_player = abs(player_target.global_position.x - global_position.x)
-	
-	if distance_to_player > 300:
-		# Se o player estiver longe, joga projeteis
-		var choices = [State.THOUGHTS, State.DASH_PREP, State.RUN]
-		current_state = choices[randi() % choices.size()]
-	else:
-		# Se estiver perto
-		var choices = [State.TELEPORT, State.RUN]
-		current_state = choices[randi() % choices.size()]
-	
-	if current_state == State.THOUGHTS:
-		fire_projectiles()
+	if current_state in [State.IDLE, State.RUN, State.DASH]:
+		move_and_slide()
 		
-func fire_projectiles():
-	anim.play("projectlie")
-	pass
-func flip_sprite(direction):
-	if direction < 0:
-		sprite.flip_h = true
-	elif direction > 0:
-		sprite.flip_h = false
+# Logica da IA
+func _on_decision_timer_timeout():
+	if current_state != State.IDLE and current_state != State.RUN:
+		return
+	
+	# decide proximo ataque
+	var choices = [State.RUN, State.DASH_PREP, State.THOUGHTS, State.EXPLOSION_PREP, State.TELEPORT]
+	current_state = choices [randi() % choices.size()]
+	execute_attack_sequence()
+	
+
+func execute_attack_sequence():
+	match current_state:
+		State.THOUGHTS:
+			velocity.x = 0
+			anim.play("projectile")
+			fire_preoccupation()
+			await anim.animation_finished # espera a animacao acabar
+			current_state = State.IDLE
+		
+		State.EXPLOSION_PREP:
+			velocity.x = 0
+			anim.play("prep_explosion")
+			await get_tree().create_timer(0.5).timeout
+			
+			current_state = State.EXPLOSION
+			anim.play("explosion")
+			fire_explosion()
+			await get_tree().create_timer(0.4).timeout
+			
+			current_state = State.IDLE
+		
+		State.TELEPORT:
+			velocity = Vector2.ZERO
+			anim.play("explosion")
+			await teleport_routine()
+			
+		State.DASH_PREP:
+			velocity.x = 0
+			anim.play("prep_dash")
+			await get_tree().create_timer(0.5).timeout
+			
+			if player:
+				dash_direction = sign(player.global_position.x - global_position.x)
+				if dash_direction == 0: dash_direction = 1
+			dash_distance_left = dash_max_distance
+			current_state = State.DASH
+	
+func fire_preoccupation():
+	if not projectile_scene or not player:return
+	var proj = projectile_scene.instantiate()
+	get_parent().add_child(proj)
+	proj.global_position = global_position
+	
+	# angulo irregular
+	var angle = global_position.direction_to(player.global_position).angle() + randf_range(-0.2, 0.2)
+	proj.setup(angle, 300.0) # inicia o projetil
+
+func fire_explosion():
+	if not projectile_scene: return
+	var num_projectiles = 12
+	for i in range(num_projectiles):
+		var proj = projectile_scene.instantiate()
+		get_parent().add_child(proj)
+		proj.global_position = global_position
+		var angle = (2 * PI / num_projectiles) * 1
+		proj.setup(angle, 250.0)
+
+func teleport_routine():
+	var teleports_done = 0
+	while teleports_done < 3:
+		var rand_x = randf_range(100,1180)
+		while abs(rand_x - global_position.x) <min_teleport_distance:
+			rand_x = randf_range(100,1180)
+		var rand_y = randf_range(200, 500)
+		var target_pos = Vector2(rand_x, rand_y)
+		
+		await get_tree().create_timer(0.7).timeout
+		
+		global_position = target_pos
+		teleports_done += 1
+		
+		if teleports_done <3:
+			await get_tree().create_timer(0.3).timeout
+	current_state = State.IDLE
+
+func flip_sprite(dir):
+	sprite.flip_h = (dir < 0)
+
+func take_damage(amount):
+	current_health -= amount
+	
+	if get_parent().has_method("update_hero_health"):
+		get_parent().update_hero_health(current_health)
+	
+	# Hit
+	flash()
+	
+func flash():
+	var mat = sprite.material
+
+	var tween = create_tween()
+	
+	tween.tween_property(mat, "shader_parameter/flash_modifier", 1.0, 0.0)
+	tween.tween_property(mat, "shader_parameter/flash_modifier", 0.0, 0.15)
+	

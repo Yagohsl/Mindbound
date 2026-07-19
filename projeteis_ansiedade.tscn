@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://br7tf3apryfor"]
+
+[ext_resource type="Script" uid="uid://c8ujet4ig3vlh" path="res://projeteis_ansiedade.gd" id="1_yn7i1"]
+
+[node name="ProjeteisAnsiedade" type="Area2D" unique_id=594192946]
+script = ExtResource("1_yn7i1")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1908430827]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1280588446]
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
