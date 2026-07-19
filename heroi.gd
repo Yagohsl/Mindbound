@@ -10,10 +10,12 @@ const DASH_DURATION = 0.2 # tempo em segundos do dash
 # Referencias aos nós de sprite e animacao
 @onready var sprite = $Sprite2D
 @onready var anim = $AnimationPlayer
+@onready var attack_hitbox = $AttackHitbox
 
 signal health_changed(new_health)
 var max_health = 100
 var current_health = 100
+var attack_value = 15
 
 var is_attacking = false
 var is_dashing = false
@@ -73,6 +75,10 @@ func _physics_process(delta: float) -> void:
 		# Vira o player
 		if not is_attacking:
 			sprite.flip_h = direction < 0
+			if direction < 0:
+				attack_hitbox.scale.x = -1 # vira pra esquera
+			else:
+				attack_hitbox.scale.x = 1 # vira pra direita
 			
 		# Toca anim de correr se estiver no chao e nao atacando
 		if is_on_floor() and not is_attacking:
@@ -95,10 +101,6 @@ func _physics_process(delta: float) -> void:
 func take_damage(amount):
 	current_health -= amount
 	
-	
-	if get_parent().has_method("update_hero_health"):
-		get_parent().update_hero_health(current_health)
-	
 	health_changed.emit(current_health)
 	# Hit
 	flash()
@@ -118,3 +120,12 @@ func flash():
 func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	if anim_name == "attack":
 		is_attacking = false
+
+func _on_attack_hitbox_body_entered(body: Node2D) -> void:
+	
+	if body.has_method("take_damage") and body != self:
+		body.take_damage(attack_value) 
+
+func die():
+	set_physics_process(false) # para de se mexer
+	anim.play("death")

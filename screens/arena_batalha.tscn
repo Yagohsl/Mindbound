@@ -27,7 +27,7 @@ colors = PackedColorArray(0.70427847, 0.0112805, 2.8878452e-07, 1)
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_8eo88"]
 gradient = SubResource("Gradient_iywkd")
 
-[node name="Arena" type="StaticBody2D" unique_id=880845399]
+[node name="Arena" type="Node2D" unique_id=50696584]
 script = ExtResource("1_28jst")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=2143365313]

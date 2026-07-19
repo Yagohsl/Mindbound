@@ -3,6 +3,25 @@
 [ext_resource type="Texture2D" uid="uid://dajt7u4yecx0v" path="res://assets/images/game/fighters/hero-resized.png" id="1_k7ye4"]
 [ext_resource type="Script" uid="uid://vfljxdeqmhv0" path="res://heroi.gd" id="1_u8108"]
 
+[sub_resource type="Shader" id="Shader_u8108"]
+code = "shader_type canvas_item;
+
+uniform float flash_modifier: hint_range(0.0, 1.0, 0.1) = 0.0;
+uniform vec4 flash_color: source_color = vec4(1.0, 1.0, 1.0, 1.0);
+
+void fragment(){
+	
+	vec4 color = texture(TEXTURE, UV);
+	color.rgb = mix(color.rgb, flash_color.rgb, flash_modifier);
+
+	COLOR = color;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7ymrh"]
+shader = SubResource("Shader_u8108")
+shader_parameter/flash_modifier = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+
 [sub_resource type="Animation" id="Animation_u8108"]
 length = 0.001
 tracks/0/type = "value"
@@ -146,10 +165,12 @@ height = 166.0
 script = ExtResource("1_u8108")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=415706927]
+material = SubResource("ShaderMaterial_7ymrh")
 scale = Vector2(3, 3)
 texture = ExtResource("1_k7ye4")
 hframes = 5
 vframes = 6
+script = ExtResource("1_u8108")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1597931385]
 libraries/ = SubResource("AnimationLibrary_oewyj")

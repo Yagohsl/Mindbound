@@ -3,6 +3,12 @@
 [ext_resource type="Script" uid="uid://bky3qqtwdmw4n" path="res://boss_ansiedade.gd" id="1_3dk8s"]
 [ext_resource type="Texture2D" uid="uid://bslcadvmmif51" path="res://assets/images/game/fighters/ansiedade.png" id="1_j6dw7"]
 [ext_resource type="PackedScene" uid="uid://br7tf3apryfor" path="res://projeteis_ansiedade.tscn" id="2_eu3k4"]
+[ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss_ansiedade.gdshader" id="3_d2ree"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qn562"]
+shader = ExtResource("3_d2ree")
+shader_parameter/flash_modifier = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
 
 [sub_resource type="Animation" id="Animation_j6dw7"]
 length = 0.001
@@ -177,11 +183,18 @@ _data = {
 radius = 63.0
 height = 248.0
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2cmim"]
+size = Vector2(111, 243)
+
 [node name="BossAnsiedade" type="CharacterBody2D" unique_id=141011473]
 script = ExtResource("1_3dk8s")
+speed = null
+dash_speed = null
+health = null
 projectile_scene = ExtResource("2_eu3k4")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1486758928]
+material = SubResource("ShaderMaterial_qn562")
 scale = Vector2(4, 4)
 texture = ExtResource("1_j6dw7")
 hframes = 4
@@ -199,4 +212,11 @@ shape = SubResource("CapsuleShape2D_j6dw7")
 wait_time = 1.5
 autostart = true
 
+[node name="DamageArea" type="Area2D" parent="." unique_id=1856169471]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=1749982500]
+position = Vector2(-2.5, 7.5)
+shape = SubResource("RectangleShape2D_2cmim")
+
 [connection signal="timeout" from="DecisionTimer" to="." method="_on_decision_timer_timeout"]
+[connection signal="body_entered" from="DamageArea" to="." method="_on_damage_area_body_entered"]

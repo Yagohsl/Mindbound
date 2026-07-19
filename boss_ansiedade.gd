@@ -16,9 +16,11 @@ enum State {
 	DASH,
 	DEATH
 }
+signal health_changed(new_health)
 var current_state = State.IDLE
 var max_health = 150
 var current_health = 150
+var attack_value = 15
 
 # Variaveis de atributos
 @export var speed = 150.0
@@ -165,12 +167,12 @@ func flip_sprite(dir):
 
 func take_damage(amount):
 	current_health -= amount
-	
-	if get_parent().has_method("update_hero_health"):
-		get_parent().update_hero_health(current_health)
+	health_changed.emit(current_health)
 	
 	# Hit
 	flash()
+	if current_health<=0:
+		die()
 	
 func flash():
 	var mat = sprite.material
@@ -180,3 +182,11 @@ func flash():
 	tween.tween_property(mat, "shader_parameter/flash_modifier", 1.0, 0.0)
 	tween.tween_property(mat, "shader_parameter/flash_modifier", 0.0, 0.15)
 	
+func die():
+	current_state = State.DEATH
+	velocity = Vector2.ZERO
+	anim.play("death")
+	
+func _on_damage_area_body_entered(body: CharacterBody2D) -> void:
+	if current_state != State.DEATH and body.has_method("take_damage") and body !=self:
+		body.take_damage(attack_value)
