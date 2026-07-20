@@ -1,10 +1,10 @@
 extends Node2D
 
 
-@onready var hero = $Hero
+@onready var hero = $StaticBody2D/Heroi
 @onready var hero_health_bar = $UI/HeroHealthBar
 
-@onready var boss = $BossAnxiety
+@onready var boss = $StaticBody2D/BossAnsiedade
 @onready var boss_health_bar = $UI/BossHealthBar
 
 func _ready():

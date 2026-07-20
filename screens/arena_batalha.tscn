@@ -5,9 +5,6 @@
 [ext_resource type="PackedScene" uid="uid://yhj5oal0pkp4" path="res://heroi.tscn" id="2_toxup"]
 [ext_resource type="PackedScene" uid="uid://c1c6uwng84vl1" path="res://boss_ansiedade.tscn" id="3_1rla3"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_toxup"]
-size = Vector2(1397, 90)
-
 [sub_resource type="Gradient" id="Gradient_xojux"]
 interpolation_mode = 1
 offsets = PackedFloat32Array(0)
@@ -27,25 +24,11 @@ colors = PackedColorArray(0.70427847, 0.0112805, 2.8878452e-07, 1)
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_8eo88"]
 gradient = SubResource("Gradient_iywkd")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_toxup"]
+size = Vector2(1397, 90)
+
 [node name="Arena" type="Node2D" unique_id=50696584]
 script = ExtResource("1_28jst")
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2143365313]
-position = Vector2(-5, -11)
-scale = Vector2(2.1383333, 1.8125)
-texture = ExtResource("1_nd1db")
-centered = false
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1216604169]
-position = Vector2(660.5, 683)
-shape = SubResource("RectangleShape2D_toxup")
-
-[node name="Heroi" parent="." unique_id=1426187125 instance=ExtResource("2_toxup")]
-position = Vector2(195, 538)
-
-[node name="BossAnsiedade" parent="." unique_id=141011473 node_paths=PackedStringArray("player") instance=ExtResource("3_1rla3")]
-position = Vector2(1001, 505)
-player = NodePath("../Heroi")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1739122279]
 
@@ -67,3 +50,25 @@ max_value = 200.0
 value = 200.0
 nine_patch_stretch = true
 texture_progress = SubResource("GradientTexture2D_8eo88")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=692345901]
+
+[node name="Sprite2D" type="Sprite2D" parent="StaticBody2D" unique_id=2143365313]
+position = Vector2(-5, -11)
+scale = Vector2(2.1383333, 1.8125)
+texture = ExtResource("1_nd1db")
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1216604169]
+position = Vector2(660.5, 683)
+shape = SubResource("RectangleShape2D_toxup")
+
+[node name="Heroi" parent="StaticBody2D" unique_id=1426187125 instance=ExtResource("2_toxup")]
+position = Vector2(195, 538)
+
+[node name="BossAnsiedade" parent="StaticBody2D" unique_id=141011473 node_paths=PackedStringArray("player") instance=ExtResource("3_1rla3")]
+position = Vector2(1001, 505)
+speed = 150.0
+dash_speed = 400.0
+health = 150
+player = NodePath("../Heroi")
