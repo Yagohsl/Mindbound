@@ -38,7 +38,7 @@ func _process(delta):
 # Conecte este sinal usando a aba "Node" ao lado do "Inspector"
 func _on_body_entered(body):
 	if body.is_in_group("player"):
-		# Substitui o "hasattr(target, 'dashing')" do Python
-		if body.has_method("take_damage") and not body.dashing:
+		# Corrigido de 'dashing' para 'is_dashing'
+		if body.has_method("take_damage") and not body.is_dashing:
 			body.take_damage(damage)
 			queue_free() # Some ao acertar

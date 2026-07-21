@@ -21,6 +21,8 @@ var is_attacking = false
 var is_dashing = false
 var dash_time_left = 0.0
 var dash_cooldown = 0.0
+var is_invincible: bool = false
+@export var invincibility_time: float = 1.0
 
 func _ready() -> void:
 	# Garante que a hitbox começa desativada para não causar dano à toa
@@ -108,11 +110,22 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func take_damage(amount):
+	if is_invincible:
+		return
 	current_health -= amount
 	health_changed.emit(current_health)
-	flash()
+	
 	if current_health <= 0:
 		die()
+	else:
+		trigger_invincibility()
+
+func trigger_invincibility():
+	is_invincible = true
+	flash()
+	# espera o tempo de invencibilidade acabar
+	await get_tree().create_timer(invincibility_time).timeout
+	is_invincible = false
 	
 func flash():
 	var mat = sprite.material
@@ -121,9 +134,7 @@ func flash():
 		tween.tween_property(mat, "shader_parameter/flash_modifier", 1.0, 0.0)
 		tween.tween_property(mat, "shader_parameter/flash_modifier", 0.0, 0.15)
 
-# --- MÉTODOS DE CONTROLE DA HITBOX NA ANIMAÇÃO ---
 
-# Chame esta função via Animation Track (Call Method) no exato frame em que a espada acerta o golpe
 func enable_attack_hitbox():
 	if attack_collision:
 		attack_collision.disabled = false

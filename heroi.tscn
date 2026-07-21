@@ -176,9 +176,10 @@ radius = 35.0
 height = 166.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u8108"]
-size = Vector2(104, 156.5)
+size = Vector2(179, 156.5)
 
-[node name="Heroi" type="CharacterBody2D" unique_id=1426187125]
+[node name="Heroi" type="CharacterBody2D" unique_id=1426187125 groups=["player"]]
+collision_layer = 2
 script = ExtResource("1_u8108")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=415706927]
@@ -196,9 +197,11 @@ position = Vector2(-8, 7)
 shape = SubResource("CapsuleShape2D_k7ye4")
 
 [node name="AttackHitbox" type="Area2D" parent="." unique_id=933961876]
+collision_layer = 2
+collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackHitbox" unique_id=1800750668]
-position = Vector2(74, 8.75)
+position = Vector2(111.5, 8.75)
 shape = SubResource("RectangleShape2D_u8108")
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]

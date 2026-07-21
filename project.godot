@@ -48,6 +48,12 @@ dash={
 ]
 }
 
+[layer_names]
+
+2d_render/layer_1="Cenario"
+2d_render/layer_2="Heroi"
+2d_render/layer_3="Inimigos"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

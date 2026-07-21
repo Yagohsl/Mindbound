@@ -34,6 +34,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @onready var anim = $AnimationPlayer
 @onready var sprite = $Sprite2D
 @onready var decision_timer = $DecisionTimer
+@onready var damage_area = $DamageArea
 
 # var de controle de ataques
 var dash_direction: int = 0
@@ -49,6 +50,10 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor() and current_state != State.TELEPORT:
 		velocity.y += gravity * delta
 	
+	var bodies = damage_area.get_overlapping_bodies()
+	for body in bodies:
+		body.take_damage(attack_value)
+		
 	# execucao da maquina de estados
 	match current_state:
 		State.IDLE:
@@ -67,6 +72,9 @@ func _physics_process(delta: float) -> void:
 			var step = dash_speed * delta
 			velocity.x = dash_direction * dash_speed
 			dash_distance_left -= step
+			
+			if is_on_wall():
+				dash_distance_left = 0
 				
 			if dash_distance_left <= 0:
 				velocity.x = 0

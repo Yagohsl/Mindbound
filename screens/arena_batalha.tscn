@@ -27,6 +27,9 @@ gradient = SubResource("Gradient_iywkd")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_toxup"]
 size = Vector2(1397, 90)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xojux"]
+size = Vector2(20, 709)
+
 [node name="Arena" type="Node2D" unique_id=50696584]
 script = ExtResource("1_28jst")
 
@@ -36,7 +39,7 @@ script = ExtResource("1_28jst")
 offset_left = 45.0
 offset_top = 36.0
 offset_right = 608.0
-offset_bottom = 103.0
+offset_bottom = 70.0
 value = 100.0
 nine_patch_stretch = true
 texture_progress = SubResource("GradientTexture2D_2uib8")
@@ -45,7 +48,7 @@ texture_progress = SubResource("GradientTexture2D_2uib8")
 offset_left = 258.0
 offset_top = 653.0
 offset_right = 1108.0
-offset_bottom = 722.0
+offset_bottom = 693.0
 max_value = 200.0
 value = 200.0
 nine_patch_stretch = true
@@ -68,7 +71,15 @@ position = Vector2(195, 538)
 
 [node name="BossAnsiedade" parent="StaticBody2D" unique_id=141011473 node_paths=PackedStringArray("player") instance=ExtResource("3_1rla3")]
 position = Vector2(1001, 505)
-speed = 150.0
-dash_speed = 400.0
-health = 150
 player = NodePath("../Heroi")
+
+[node name="Paredes" type="StaticBody2D" parent="." unique_id=1112115908]
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Paredes" unique_id=2095477062]
+position = Vector2(0, 344.5)
+shape = SubResource("RectangleShape2D_xojux")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Paredes" unique_id=1669746739]
+position = Vector2(1280, 340)
+shape = SubResource("RectangleShape2D_xojux")
