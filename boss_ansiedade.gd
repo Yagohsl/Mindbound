@@ -28,6 +28,8 @@ var attack_value = 15
 @export var health: int = 150
 @export var player: Node2D #referencia ao player
 @export var projectile_scene: PackedScene #arrasta a cena do projetil no inspetor
+@export var teleport_warning_scene: PackedScene
+@export var attack_cooldown: float = 2.0
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
@@ -35,6 +37,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @onready var sprite = $Sprite2D
 @onready var decision_timer = $DecisionTimer
 @onready var damage_area = $DamageArea
+@onready var ponto_de_tiro = $PontoDeTiro
 
 # var de controle de ataques
 var dash_direction: int = 0
@@ -62,10 +65,19 @@ func _physics_process(delta: float) -> void:
 		
 		State.RUN:
 			if player:
-				var dir = sign(player.global_position.x - global_position.x)
-				velocity.x = dir * speed
-				flip_sprite(dir)
-			anim.play("run")
+				var distancia = abs(player.global_position.x - global_position.x)
+				var distancia_minima = 160.0
+				
+				if distancia > distancia_minima:
+					var dir = sign(player.global_position.x - global_position.x)
+					velocity.x = dir * speed
+					flip_sprite(dir)
+					anim.play("run")
+				else:
+					velocity.x = 0
+					decision_timer.stop()
+					current_state = State.DASH_PREP
+					execute_attack_sequence()
 		
 		State.DASH:
 			anim.play("dash")
@@ -79,7 +91,8 @@ func _physics_process(delta: float) -> void:
 			if dash_distance_left <= 0:
 				velocity.x = 0
 				current_state = State.IDLE
-				decision_timer.start() # reinicia a IA
+				decision_timer.start(attack_cooldown) # reinicia a IA
+				
 
 	if current_state in [State.IDLE, State.RUN, State.DASH]:
 		move_and_slide()
@@ -88,9 +101,10 @@ func _physics_process(delta: float) -> void:
 func _on_decision_timer_timeout():
 	if current_state != State.IDLE and current_state != State.RUN:
 		return
+	decision_timer.stop()
 	
 	# decide proximo ataque
-	var choices = [State.RUN, State.DASH_PREP, State.THOUGHTS, State.EXPLOSION_PREP, State.TELEPORT]
+	var choices = [State.RUN, State.DASH_PREP, State.THOUGHTS, State.EXPLOSION_PREP,State.TELEPORT]
 	current_state = choices [randi() % choices.size()]
 	execute_attack_sequence()
 	
@@ -99,75 +113,113 @@ func execute_attack_sequence():
 	match current_state:
 		State.THOUGHTS:
 			velocity.x = 0
+			
+			var dir = sign(player.global_position.x - global_position.x)
+			flip_sprite(dir)
+			
+			# preparacao do projetil
+			anim.play("prep_projectile")
+			await get_tree().create_timer(0.5).timeout
+
 			anim.play("projectile")
 			fire_preoccupation()
 			await anim.animation_finished # espera a animacao acabar
 			current_state = State.IDLE
-		
+			decision_timer.start(attack_cooldown)
+			
+		State.RUN:
+			anim.play("run")
+			decision_timer.start(attack_cooldown)
+
 		State.EXPLOSION_PREP:
 			velocity.x = 0
 			anim.play("prep_explosion")
 			await get_tree().create_timer(0.5).timeout
+			
+			if current_state == State.DEATH: return
 			
 			current_state = State.EXPLOSION
 			anim.play("explosion")
 			fire_explosion()
 			await get_tree().create_timer(0.4).timeout
 			
+			if current_state == State.DEATH: return
+			
 			current_state = State.IDLE
+			decision_timer.start(attack_cooldown)
 		
 		State.TELEPORT:
 			velocity = Vector2.ZERO
 			anim.play("explosion")
 			await teleport_routine()
+			decision_timer.start(attack_cooldown)
 			
 		State.DASH_PREP:
 			velocity.x = 0
 			anim.play("prep_dash")
 			await get_tree().create_timer(0.5).timeout
+			if current_state == State.DEATH: return
 			
 			if player:
 				dash_direction = sign(player.global_position.x - global_position.x)
 				if dash_direction == 0: dash_direction = 1
+				flip_sprite(dash_direction)
+			
+			await get_tree().create_timer(0.5).timeout
 			dash_distance_left = dash_max_distance
 			current_state = State.DASH
 	
 func fire_preoccupation():
-	if not projectile_scene or not player:return
+	if not projectile_scene or not player: return
 	var proj = projectile_scene.instantiate()
 	get_parent().add_child(proj)
-	proj.global_position = global_position
-	
-	# angulo irregular
-	var angle = global_position.direction_to(player.global_position).angle() + randf_range(-0.2, 0.2)
-	proj.setup(angle, 300.0) # inicia o projetil
+	proj.global_position = ponto_de_tiro.global_position
+
+	var angle = ponto_de_tiro.global_position.direction_to(player.global_position).angle() + randf_range(-0.2, 0.2)
+	proj.setup(angle, 300.0)
 
 func fire_explosion():
 	if not projectile_scene: return
+	
 	var num_projectiles = 12
 	for i in range(num_projectiles):
 		var proj = projectile_scene.instantiate()
 		get_parent().add_child(proj)
+		
 		proj.global_position = global_position
-		var angle = (2 * PI / num_projectiles) * 1
+		var angle = (2 * PI / num_projectiles) * i
 		proj.setup(angle, 250.0)
 
 func teleport_routine():
 	var teleports_done = 0
 	while teleports_done < 3:
 		var rand_x = randf_range(100,1180)
-		while abs(rand_x - global_position.x) <min_teleport_distance:
+		while abs(rand_x - global_position.x) < min_teleport_distance:
 			rand_x = randf_range(100,1180)
-		var rand_y = randf_range(200, 500)
+		var rand_y = randf_range(300, 550)
 		var target_pos = Vector2(rand_x, rand_y)
 		
-		await get_tree().create_timer(0.7).timeout
+		# aviso teleporte
+		var warning = null
+		if teleport_warning_scene:
+			warning = teleport_warning_scene.instantiate()
+			warning.global_position = target_pos
+			get_parent().add_child(warning)
+		
+		# Adicionado o 'true' no final para respeitar o pause do jogo
+		await get_tree().create_timer(1.0, false, false, true).timeout
+		
+		if current_state == State.DEATH: return
 		
 		global_position = target_pos
 		teleports_done += 1
 		
-		if teleports_done <3:
-			await get_tree().create_timer(0.3).timeout
+		if teleports_done < 3:
+			if current_state == State.DEATH: return
+			
+			# Também atualizado aqui para pausar junto
+			await get_tree().create_timer(0.3, false, false, true).timeout
+			
 	current_state = State.IDLE
 
 func flip_sprite(dir):

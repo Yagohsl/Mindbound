@@ -12,13 +12,12 @@ func setup(angle: float, speed: float):
 	# Calcula a velocidade inicial com base no ângulo
 	velocity = Vector2(cos(angle), sin(angle)) * speed
 	wave_speed = randf_range(10.0, 18.0)
-	
+
 	# Na Godot, como a tela costuma ser maior ou a física funciona diferente,
 	# pode ser necessário aumentar a amplitude.
 	wave_amplitude = randf_range(20.0, 50.0) 
 
-func _ready():
-	# Salva o Y original para a onda senoidal não distorcer a rota
+	# SALVA O EIXO Y AQUI! (Depois que o Boss já posicionou o tiro)
 	base_y = global_position.y
 
 func _process(delta):

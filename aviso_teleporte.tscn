@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cqwaii2nxdwkr"]
+
+[ext_resource type="Texture2D" uid="uid://ciwyyj4qv0qq8" path="res://assets/images/game/fighters/projectile.png" id="1_gtc4g"]
+[ext_resource type="Script" uid="uid://ci5aa110k7l11" path="res://aviso_teleporte.gd" id="2_w8hap"]
+
+[node name="CPUParticles2D" type="CPUParticles2D" unique_id=1977332173]
+emitting = false
+amount = 30
+texture = ExtResource("1_gtc4g")
+one_shot = true
+emission_shape = 3
+emission_rect_extents = Vector2(30, 60)
+gravity = Vector2(0, -98)
+initial_velocity_max = 23.24
+scale_amount_min = 0.5
+scale_amount_max = 2.0
+color = Color(1, 0.48964685, 0.3873941, 1)
+script = ExtResource("2_w8hap")

@@ -4,10 +4,12 @@
 [ext_resource type="Texture2D" uid="uid://ciwyyj4qv0qq8" path="res://assets/images/game/fighters/projectile.png" id="2_sf0kb"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ecnqf"]
-radius = 16.0
-height = 34.0
+radius = 15.0
+height = 36.0
 
 [node name="ProjeteisAnsiedade" type="Area2D" unique_id=594192946]
+collision_layer = 4
+collision_mask = 2
 script = ExtResource("1_yn7i1")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1908430827]
@@ -15,7 +17,6 @@ scale = Vector2(3, 3)
 texture = ExtResource("2_sf0kb")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1280588446]
-position = Vector2(0, 1)
 shape = SubResource("CapsuleShape2D_ecnqf")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

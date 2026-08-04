@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://bvgualol7nu5v"]
+
+[ext_resource type="Script" uid="uid://w2e7mvd1aioj" path="res://menu_pausa.gd" id="1_noo57"]
+
+[node name="MenuPausa" type="CanvasLayer" unique_id=1291649425]
+process_mode = 3
+script = ExtResource("1_noo57")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=699957939]
+offset_right = 1308.0
+offset_bottom = 737.0
+color = Color(0, 0, 0, 0.34117648)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=701531619]
+offset_left = 406.0
+offset_top = 110.0
+offset_right = 923.0
+offset_bottom = 586.0
+alignment = 1
+
+[node name="Pausa" type="Label" parent="VBoxContainer" unique_id=634856652]
+layout_mode = 2
+text = "Jogo Pausado"
+horizontal_alignment = 1
+
+[node name="BotaoContinuar" type="Button" parent="VBoxContainer" unique_id=1753112947]
+layout_mode = 2
+text = "Continuar"
+
+[node name="BotaoReiniciar" type="Button" parent="VBoxContainer" unique_id=646390613]
+layout_mode = 2
+text = "Reiniciar"
+
+[node name="BotaoMenu" type="Button" parent="VBoxContainer" unique_id=130434132]
+layout_mode = 2
+text = "Sair"
+
+[connection signal="pressed" from="VBoxContainer/BotaoContinuar" to="." method="_on_botao_continuar_pressed"]
+[connection signal="pressed" from="VBoxContainer/BotaoReiniciar" to="." method="_on_botao_reiniciar_pressed"]
+[connection signal="pressed" from="VBoxContainer/BotaoMenu" to="." method="_on_botao_menu_pressed"]

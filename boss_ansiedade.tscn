@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bslcadvmmif51" path="res://assets/images/game/fighters/ansiedade.png" id="1_j6dw7"]
 [ext_resource type="PackedScene" uid="uid://br7tf3apryfor" path="res://projeteis_ansiedade.tscn" id="2_eu3k4"]
 [ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss_ansiedade.gdshader" id="3_d2ree"]
+[ext_resource type="PackedScene" uid="uid://cqwaii2nxdwkr" path="res://aviso_teleporte.tscn" id="3_qn562"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qn562"]
 shader = ExtResource("3_d2ree")
@@ -180,15 +181,17 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d2ree"]
-size = Vector2(76, 196)
+size = Vector2(110, 212.3125)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2cmim"]
-size = Vector2(111, 243)
+size = Vector2(119, 222.5)
 
 [node name="BossAnsiedade" type="CharacterBody2D" unique_id=141011473]
 collision_layer = 4
 script = ExtResource("1_3dk8s")
+dash_speed = 800.0
 projectile_scene = ExtResource("2_eu3k4")
+teleport_warning_scene = ExtResource("3_qn562")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1486758928]
 material = SubResource("ShaderMaterial_qn562")
@@ -202,7 +205,7 @@ frame = 1
 libraries/ = SubResource("AnimationLibrary_k8tpd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1983617317]
-position = Vector2(-7, 23)
+position = Vector2(0, 13)
 shape = SubResource("RectangleShape2D_d2ree")
 
 [node name="DecisionTimer" type="Timer" parent="." unique_id=721603857]
@@ -214,8 +217,11 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=1749982500]
-position = Vector2(-5, 15)
+position = Vector2(-1.5, 16)
 shape = SubResource("RectangleShape2D_2cmim")
+
+[node name="PontoDeTiro" type="Marker2D" parent="." unique_id=880776632]
+position = Vector2(68, 16)
 
 [connection signal="timeout" from="DecisionTimer" to="." method="_on_decision_timer_timeout"]
 [connection signal="body_entered" from="DamageArea" to="." method="_on_damage_area_body_entered"]
