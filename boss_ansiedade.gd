@@ -38,12 +38,39 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @onready var decision_timer = $DecisionTimer
 @onready var damage_area = $DamageArea
 @onready var ponto_de_tiro = $PontoDeTiro
+@onready var dialog_box = $DialogBox
 
 # var de controle de ataques
 var dash_direction: int = 0
 var dash_distance_left: float = 0.0
 var dash_max_distance: float = 500.0
 var min_teleport_distance: float = 250.0
+
+
+# -------- FALAS ---------
+
+@export var player_icon: Texture2D
+@export var boss_icon: Texture2D
+
+@export var dialogos_inicio: Array[Dictionary] = [
+	{"icone": player_icon, "texto": "Eu consigo fazer isso... Só preciso manter o foco e respirar fundo."},
+	{"icone": boss_icon, "texto": "E se tudo der errado? Você não se preparou o suficiente. Desista!"},
+	{"icone": player_icon, "texto": "Não vou me render aos pensamentos intrusivos. Vamos resolver isso agora!"}
+]
+
+@export var dialogos_vitoria: Array[Dictionary] = [
+	{"icone": player_icon, "texto": "Consegui silenciar a crise... O bombardeio de preocupações diminuiu."},
+	{"icone": boss_icon, "texto": "Você venceu desta vez... mas eu sempre posso voltar se você se sobrecarregar."},
+	{"icone": player_icon, "texto": "Eu sei. A ansiedade faz parte da vida, mas agora eu tenho ferramentas para não deixar você me paralisar."}
+]
+
+@export var dialogos_derrota: Array[Dictionary] = [
+	{"icone": boss_icon, "texto": "Eu avisei. O medo e a exaustão assumiram o controle total."},
+	{"icone": player_icon, "texto": "Está tudo tão confuso... Eu não consigo pensar direito."},
+	{"icone": player_icon, "texto": "Dar um passo para trás não é o fim. Reconhecer que precisa de ajuda ou de um descanso também é parte do processo de cura. Respire e tente novamente."}
+]
+
+
 
 func _physics_process(delta: float) -> void:
 	if current_state == State.DEATH:

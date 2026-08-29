@@ -7,7 +7,25 @@ extends Node2D
 @onready var boss = $StaticBody2D/BossAnsiedade
 @onready var boss_health_bar = $UI/BossHealthBar
 
+@onready var dialog_box = $DialogBox
+
+@export var player_node: CharacterBody2D
+@export var boss_node: CharacterBody2D
+
 func _ready():
+	
+	dialog_box.iniciar_dialogo(boss.dialogos_inicio)
+	if boss:
+		boss.health_changed.connect(_on_boss_health_changed)
+	if hero:
+		hero.health_changed.connect(_on_hero_health_changed)
+		
+	dialog_box.dialogo_finalizado.connect(_on_dialogo_finalizado)
+	
+	# 3. Disparar o diálogo de Início de Batalha!
+	if boss and boss.dialogos_inicio.size() > 0:
+		dialog_box.iniciar_dialogo(boss.dialogos_inicio)
+		
 	# inicializa barras com a vida máxima
 	hero_health_bar.max_value = hero.max_health
 	hero_health_bar.value = hero.current_health
@@ -17,6 +35,36 @@ func _ready():
 	
 	hero.health_changed.connect(update_hero_health)
 	boss.health_changed.connect(update_boss_health)
+
+# Quando o Boss tomar dano, checamos se ele morreu
+func _on_boss_health_changed(new_health: int) -> void:
+	if new_health <= 0:
+		# Inicia diálogo de Vitória e pausa o jogo para o Player não continuar batendo
+		dialog_box.iniciar_dialogo(boss.dialogos_vitoria)
+
+# Quando o Herói tomar dano, checamos se ele morreu
+func _on_hero_health_changed(new_health: int) -> void:
+	if new_health <= 0:
+		# Inicia diálogo psicoeducativo de Derrota
+		dialog_box.iniciar_dialogo(boss.dialogos_derrota)
+
+# Função chamada automaticamente quando a caixa de texto se fecha
+func _on_dialogo_finalizado() -> void:
+	# Se a caixa fechou e o Boss estava com 0 de vida, encerra a fase
+	if boss.current_health <= 0:
+		print("Ir para a Tela de Vitória ou carregar o próximo nível!")
+		# get_tree().change_scene_to_file("res://telas/tela_vitoria.tscn")
+		
+	# Se a caixa fechou e o Player estava com 0 de vida, Game Over
+	elif hero.current_health <= 0:
+		print("Ir para o Game Over!")
+		# get_tree().change_scene_to_file("res://telas/tela_game_over.tscn")
+		
+	else:
+		# Se ninguém morreu, significa que foi o diálogo inicial. 
+		# O jogo despausa sozinho pelo script da DialogoBox e a luta começa!
+		print("FIGHT!")
+
 
 # Função que será chamada quando o Herói tomar dano
 func update_hero_health(new_health):

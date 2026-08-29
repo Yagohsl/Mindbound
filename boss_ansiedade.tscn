@@ -5,6 +5,9 @@
 [ext_resource type="PackedScene" uid="uid://br7tf3apryfor" path="res://projeteis_ansiedade.tscn" id="2_eu3k4"]
 [ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss_ansiedade.gdshader" id="3_d2ree"]
 [ext_resource type="PackedScene" uid="uid://cqwaii2nxdwkr" path="res://aviso_teleporte.tscn" id="3_qn562"]
+[ext_resource type="Texture2D" uid="uid://dktb474q60r88" path="res://assets/images/game/fighters/icons/hero_icon.png" id="4_s2rrd"]
+[ext_resource type="Texture2D" uid="uid://c2jux8ygbo3p8" path="res://assets/images/game/fighters/icons/ansiedade_icon.png" id="5_8q71c"]
+[ext_resource type="PackedScene" uid="uid://37iph1yy02pm" path="res://dialog_box.tscn" id="8_8q71c"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qn562"]
 shader = ExtResource("3_d2ree")
@@ -192,6 +195,8 @@ script = ExtResource("1_3dk8s")
 dash_speed = 800.0
 projectile_scene = ExtResource("2_eu3k4")
 teleport_warning_scene = ExtResource("3_qn562")
+player_icon = ExtResource("4_s2rrd")
+boss_icon = ExtResource("5_8q71c")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1486758928]
 material = SubResource("ShaderMaterial_qn562")
@@ -222,6 +227,8 @@ shape = SubResource("RectangleShape2D_2cmim")
 
 [node name="PontoDeTiro" type="Marker2D" parent="." unique_id=880776632]
 position = Vector2(68, 16)
+
+[node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("8_8q71c")]
 
 [connection signal="timeout" from="DecisionTimer" to="." method="_on_decision_timer_timeout"]
 [connection signal="body_entered" from="DamageArea" to="." method="_on_damage_area_body_entered"]
