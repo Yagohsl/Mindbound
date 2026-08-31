@@ -50,7 +50,7 @@ func _on_boss_health_changed(new_health: int) -> void:
 		if boss.anim.current_animation == "death" or boss.anim.is_playing():
 			await get_tree().create_timer(3.0).timeout
 		else:
-			await get_tree().create_timer(1.0).timeout # Atraso extra de segurança
+			await get_tree().create_timer(3.0).timeout # Atraso extra de segurança
 		# Só após a morte estar concluída na tela, a conversa começa e pausa o jogo
 		dialog_box.iniciar_dialogo(boss.dialogos_vitoria)
 		
@@ -65,7 +65,10 @@ func _on_dialogo_finalizado() -> void:
 	# Se a caixa fechou e o Boss estava com 0 de vida, encerra a fase
 	if boss.is_dead:
 		get_tree().change_scene_to_file("res://screens/menu_principal.tscn")
-		
+	# Se a caixa fechou e o Player estava com 0 de vida, REINICIA O JOGO
+	elif hero.current_health <= 0:
+		get_tree().paused = false 
+		get_tree().reload_current_scene() # Recarrega a cena da arena atual
 	
 
 

@@ -19,7 +19,7 @@ enum State {
 signal health_changed(new_health)
 var current_state = State.IDLE
 var max_health = 150
-var current_health = 1
+var current_health = 150
 var attack_value = 15
 var is_dead = false
 
