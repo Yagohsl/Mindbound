@@ -38,32 +38,23 @@ func _ready():
 
 # Quando o Boss tomar dano, checamos se ele morreu
 func _on_boss_health_changed(new_health: int) -> void:
-	if new_health <= 0:
+	if boss.is_dead:
 		# Inicia diálogo de Vitória e pausa o jogo para o Player não continuar batendo
 		dialog_box.iniciar_dialogo(boss.dialogos_vitoria)
 
 # Quando o Herói tomar dano, checamos se ele morreu
 func _on_hero_health_changed(new_health: int) -> void:
-	if new_health <= 0:
+	if hero.is_dead:
 		# Inicia diálogo psicoeducativo de Derrota
 		dialog_box.iniciar_dialogo(boss.dialogos_derrota)
 
 # Função chamada automaticamente quando a caixa de texto se fecha
 func _on_dialogo_finalizado() -> void:
 	# Se a caixa fechou e o Boss estava com 0 de vida, encerra a fase
-	if boss.current_health <= 0:
-		print("Ir para a Tela de Vitória ou carregar o próximo nível!")
-		# get_tree().change_scene_to_file("res://telas/tela_vitoria.tscn")
+	if boss.is_dead:
+		get_tree().change_scene_to_file("res://screens/menu_principal.tscn")
 		
-	# Se a caixa fechou e o Player estava com 0 de vida, Game Over
-	elif hero.current_health <= 0:
-		print("Ir para o Game Over!")
-		# get_tree().change_scene_to_file("res://telas/tela_game_over.tscn")
-		
-	else:
-		# Se ninguém morreu, significa que foi o diálogo inicial. 
-		# O jogo despausa sozinho pelo script da DialogoBox e a luta começa!
-		print("FIGHT!")
+	
 
 
 # Função que será chamada quando o Herói tomar dano

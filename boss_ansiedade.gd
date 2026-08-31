@@ -19,8 +19,9 @@ enum State {
 signal health_changed(new_health)
 var current_state = State.IDLE
 var max_health = 150
-var current_health = 150
+var current_health = 1
 var attack_value = 15
+var is_dead = false
 
 # Variaveis de atributos
 @export var speed = 150.0
@@ -52,25 +53,28 @@ var min_teleport_distance: float = 250.0
 @export var player_icon: Texture2D
 @export var boss_icon: Texture2D
 
-@export var dialogos_inicio: Array[Dictionary] = [
-	{"icone": player_icon, "texto": "Eu consigo fazer isso... Só preciso manter o foco e respirar fundo."},
-	{"icone": boss_icon, "texto": "E se tudo der errado? Você não se preparou o suficiente. Desista!"},
-	{"icone": player_icon, "texto": "Não vou me render aos pensamentos intrusivos. Vamos resolver isso agora!"}
-]
+var dialogos_inicio: Array[Dictionary] = []
+var dialogos_vitoria: Array[Dictionary] = []
+var dialogos_derrota: Array[Dictionary] = []
 
-@export var dialogos_vitoria: Array[Dictionary] = [
-	{"icone": player_icon, "texto": "Consegui silenciar a crise... O bombardeio de preocupações diminuiu."},
-	{"icone": boss_icon, "texto": "Você venceu desta vez... mas eu sempre posso voltar se você se sobrecarregar."},
-	{"icone": player_icon, "texto": "Eu sei. A ansiedade faz parte da vida, mas agora eu tenho ferramentas para não deixar você me paralisar."}
-]
-
-@export var dialogos_derrota: Array[Dictionary] = [
-	{"icone": boss_icon, "texto": "Eu avisei. O medo e a exaustão assumiram o controle total."},
-	{"icone": player_icon, "texto": "Está tudo tão confuso... Eu não consigo pensar direito."},
-	{"icone": player_icon, "texto": "Dar um passo para trás não é o fim. Reconhecer que precisa de ajuda ou de um descanso também é parte do processo de cura. Respire e tente novamente."}
-]
-
-
+func _ready() -> void:
+	dialogos_inicio = [
+		{"icone": player_icon, "texto": "Eu consigo fazer isso... Só preciso manter o foco e respirar fundo."},
+		{"icone": boss_icon, "texto": "E se tudo der errado? Você não se preparou o suficiente. Desista!"},
+		{"icone": player_icon, "texto": "Não vou me render aos pensamentos intrusivos. Vamos resolver isso agora!"}
+	]
+	
+	dialogos_vitoria = [
+		{"icone": player_icon, "texto": "Consegui silenciar a crise... O bombardeio de preocupações diminuiu."},
+		{"icone": boss_icon, "texto": "Você venceu desta vez... mas eu sempre posso voltar se você se sobrecarregar."},
+		{"icone": player_icon, "texto": "Eu sei. A ansiedade faz parte da vida, mas agora eu tenho ferramentas para não deixar você me paralisar."}
+	]
+	
+	dialogos_derrota = [
+		{"icone": boss_icon, "texto": "Eu avisei. O medo e a exaustão assumiram o controle total."},
+		{"icone": player_icon, "texto": "Está tudo tão confuso... Eu não consigo pensar direito."},
+		{"icone": player_icon, "texto": "Dar um passo para trás não é o fim. Reconhecer que precisa de ajuda ou de um descanso também é parte do processo de cura. Respire e tente novamente."}
+	]
 
 func _physics_process(delta: float) -> void:
 	if current_state == State.DEATH:
@@ -270,9 +274,11 @@ func flash():
 	tween.tween_property(mat, "shader_parameter/flash_modifier", 0.0, 0.15)
 	
 func die():
+	is_dead = true
 	current_state = State.DEATH
 	velocity = Vector2.ZERO
 	anim.play("death")
+	
 	
 func _on_damage_area_body_entered(body: CharacterBody2D) -> void:
 	if current_state != State.DEATH and body.has_method("take_damage") and body !=self:
