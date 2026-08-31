@@ -5,6 +5,14 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"): # A tecla ESC por padrão
+		# Procura a caixa de diálogo na mesma cena (Arena)
+		var dialog_box = get_parent().get_node_or_null("DialogBox")
+		var dialogo_box = get_parent().get_node_or_null("DialogoBox")
+
+		# Se a caixa de texto estiver aberta na tela, aborta o pause
+		if (dialog_box and dialog_box.visible) or (dialogo_box and dialogo_box.visible):
+			return 
+
 		alternar_pausa()
 
 func alternar_pausa() -> void:

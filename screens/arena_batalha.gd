@@ -12,6 +12,8 @@ extends Node2D
 @export var player_node: CharacterBody2D
 @export var boss_node: CharacterBody2D
 
+var chefe_derrotado: bool = false
+
 func _ready():
 	
 	dialog_box.iniciar_dialogo(boss.dialogos_inicio)
@@ -24,8 +26,7 @@ func _ready():
 	
 	# 3. Disparar o diálogo de Início de Batalha!
 	if boss and boss.dialogos_inicio.size() > 0:
-		dialog_box.iniciar_dialogo(boss.dialogos_inicio)
-		
+		dialog_box.call_deferred("iniciar_dialogo", boss.dialogos_inicio)		
 	# inicializa barras com a vida máxima
 	hero_health_bar.max_value = hero.max_health
 	hero_health_bar.value = hero.current_health
@@ -38,11 +39,22 @@ func _ready():
 
 # Quando o Boss tomar dano, checamos se ele morreu
 func _on_boss_health_changed(new_health: int) -> void:
-	if boss.is_dead:
-		# Inicia diálogo de Vitória e pausa o jogo para o Player não continuar batendo
-		dialog_box.iniciar_dialogo(boss.dialogos_vitoria)
+	if new_health <= 0 and not chefe_derrotado:
+		chefe_derrotado = true
 
-# Quando o Herói tomar dano, checamos se ele morreu
+		# Desativa a física do boss imediatamente
+		if boss:
+			boss.set_physics_process(false) 
+			
+		# Faz a Arena esperar a animação de morte do Boss acabar
+		if boss.anim.current_animation == "death" or boss.anim.is_playing():
+			await get_tree().create_timer(3.0).timeout
+		else:
+			await get_tree().create_timer(1.0).timeout # Atraso extra de segurança
+		# Só após a morte estar concluída na tela, a conversa começa e pausa o jogo
+		dialog_box.iniciar_dialogo(boss.dialogos_vitoria)
+		
+		# Quando o Herói tomar dano, checamos se ele morreu
 func _on_hero_health_changed(new_health: int) -> void:
 	if hero.is_dead:
 		# Inicia diálogo psicoeducativo de Derrota

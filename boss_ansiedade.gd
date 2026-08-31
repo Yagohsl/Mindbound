@@ -257,6 +257,8 @@ func flip_sprite(dir):
 	sprite.flip_h = (dir < 0)
 
 func take_damage(amount):
+	if current_state == State.DEATH:
+		return
 	current_health -= amount
 	health_changed.emit(current_health)
 	
