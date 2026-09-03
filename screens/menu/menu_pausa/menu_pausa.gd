@@ -30,4 +30,4 @@ func _on_botao_reiniciar_pressed() -> void:
 func _on_botao_menu_pressed() -> void:
 	get_tree().paused = false
 	# Mude o caminho abaixo para a cena correta do seu menu principal, se houver
-	get_tree().change_scene_to_file("res://screens/menu_principal.tscn")
+	get_tree().change_scene_to_file("res://screens/menu/menu_principal/menu_principal.tscn")

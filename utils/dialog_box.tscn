@@ -1,6 +1,7 @@
-[gd_scene format=3 uid="uid://37iph1yy02pm"]
+[gd_scene format=3 uid="uid://0udsb2kb4a5k"]
 
-[ext_resource type="Script" uid="uid://bx8p87lx1teu3" path="res://dialog_box.gd" id="1_hwgul"]
+[ext_resource type="Script" uid="uid://bx8p87lx1teu3" path="res://utils/dialog_box.gd" id="1_hwgul"]
+[ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_1ki1k"]
 
 [node name="DialogBox" type="CanvasLayer" unique_id=186077402]
 process_mode = 3
@@ -14,12 +15,16 @@ offset_bottom = 681.0
 
 [node name="IconeRetrato" type="TextureRect" parent="Panel" unique_id=1221083209]
 layout_mode = 0
-offset_right = 112.0
-offset_bottom = 124.0
+offset_left = 20.0
+offset_top = 10.0
+offset_right = 111.0
+offset_bottom = 106.38709
 expand_mode = 1
 
 [node name="TextoLabel" type="RichTextLabel" parent="Panel" unique_id=1353476045]
 layout_mode = 0
 offset_left = 165.0
+offset_top = 16.0
 offset_right = 856.0
-offset_bottom = 126.0
+offset_bottom = 110.0
+theme_override_fonts/normal_font = ExtResource("2_1ki1k")

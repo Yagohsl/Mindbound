@@ -1,13 +1,13 @@
-[gd_scene format=3 uid="uid://c1c6uwng84vl1"]
+[gd_scene format=3 uid="uid://bt86wjxl7rugs"]
 
-[ext_resource type="Script" uid="uid://bky3qqtwdmw4n" path="res://boss_ansiedade.gd" id="1_3dk8s"]
+[ext_resource type="Script" uid="uid://bky3qqtwdmw4n" path="res://boss/ansiedade/boss_ansiedade.gd" id="1_3dk8s"]
 [ext_resource type="Texture2D" uid="uid://bslcadvmmif51" path="res://assets/images/game/fighters/ansiedade.png" id="1_j6dw7"]
-[ext_resource type="PackedScene" uid="uid://br7tf3apryfor" path="res://projeteis_ansiedade.tscn" id="2_eu3k4"]
-[ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss_ansiedade.gdshader" id="3_d2ree"]
-[ext_resource type="PackedScene" uid="uid://cqwaii2nxdwkr" path="res://aviso_teleporte.tscn" id="3_qn562"]
+[ext_resource type="PackedScene" uid="uid://br7tf3apryfor" path="res://boss/ansiedade/projeteis_ansiedade.tscn" id="2_eu3k4"]
+[ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss/ansiedade/boss_ansiedade.gdshader" id="3_d2ree"]
+[ext_resource type="PackedScene" uid="uid://cqwaii2nxdwkr" path="res://boss/ansiedade/aviso_teleporte.tscn" id="3_qn562"]
 [ext_resource type="Texture2D" uid="uid://dktb474q60r88" path="res://assets/images/game/fighters/icons/hero_icon.png" id="4_s2rrd"]
 [ext_resource type="Texture2D" uid="uid://c2jux8ygbo3p8" path="res://assets/images/game/fighters/icons/ansiedade_icon.png" id="5_8q71c"]
-[ext_resource type="PackedScene" uid="uid://37iph1yy02pm" path="res://dialog_box.tscn" id="8_8q71c"]
+[ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="8_8q71c"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qn562"]
 shader = ExtResource("3_d2ree")

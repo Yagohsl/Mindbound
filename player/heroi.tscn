@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://yhj5oal0pkp4"]
+[gd_scene format=3 uid="uid://dduii0awr17r4"]
 
 [ext_resource type="Texture2D" uid="uid://dajt7u4yecx0v" path="res://assets/images/game/fighters/hero-resized.png" id="1_k7ye4"]
-[ext_resource type="Script" uid="uid://vfljxdeqmhv0" path="res://heroi.gd" id="1_u8108"]
+[ext_resource type="Script" uid="uid://vfljxdeqmhv0" path="res://player/heroi.gd" id="1_u8108"]
 
 [sub_resource type="Shader" id="Shader_u8108"]
 code = "shader_type canvas_item;
