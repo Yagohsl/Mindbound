@@ -100,8 +100,9 @@ shape = SubResource("RectangleShape2D_toxup")
 [node name="Heroi" parent="StaticBody2D" unique_id=1426187125 instance=ExtResource("2_toxup")]
 position = Vector2(140, 548)
 
-[node name="BossAnsiedade" parent="StaticBody2D" unique_id=141011473 instance=ExtResource("3_1rla3")]
+[node name="BossAnsiedade" parent="StaticBody2D" unique_id=141011473 node_paths=PackedStringArray("player") instance=ExtResource("3_1rla3")]
 position = Vector2(1177, 508)
+player = NodePath("../Heroi")
 
 [node name="Paredes" type="StaticBody2D" parent="." unique_id=1112115908]
 collision_mask = 6
