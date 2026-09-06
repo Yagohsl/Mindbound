@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bs8tndy00clqw" path="res://screens/cutscene1/cutscene_caderno.gd" id="1_h2ty7"]
 [ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_buthi"]
+[ext_resource type="Texture2D" uid="uid://dni004dc47lnm" path="res://assets/images/game/cutscenes/diario/diario_inicio_ansiedade.png" id="2_lb6vb"]
 
 [sub_resource type="Animation" id="Animation_lb6vb"]
 length = 0.001
@@ -60,16 +61,22 @@ color = Color(0.051970966, 0.05197096, 0.05197095, 1)
 
 [node name="Caderno" type="TextureRect" parent="." unique_id=100738181]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 431.0
+offset_top = 80.0
+offset_right = 896.0
+offset_bottom = 591.5
+texture = ExtResource("2_lb6vb")
 
 [node name="Texto" type="RichTextLabel" parent="." unique_id=1978515232]
 layout_mode = 0
-offset_left = 401.0
-offset_top = 108.0
-offset_right = 948.0
-offset_bottom = 528.0
+offset_left = 481.0
+offset_top = 132.0
+offset_right = 743.0
+offset_bottom = 531.0
+theme_override_colors/default_color = Color(0.12591085, 0.12591085, 0.12591082, 1)
+theme_override_constants/line_separation = 4
 theme_override_fonts/normal_font = ExtResource("2_buthi")
+theme_override_font_sizes/normal_font_size = 10
 text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. "
 visible_characters = 0
 visible_ratio = 0.0
