@@ -1,9 +1,9 @@
-[gd_scene format=3 uid="uid://cicsv7dbbsfrp"]
+[gd_scene format=3 uid="uid://csg0giov1wa1v"]
 
-[ext_resource type="Script" uid="uid://bs8tndy00clqw" path="res://screens/cutscene1/cutscene_caderno.gd" id="1_h2ty7"]
-[ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_buthi"]
-[ext_resource type="Texture2D" uid="uid://dni004dc47lnm" path="res://assets/images/game/cutscenes/diario/diario_inicio_ansiedade.png" id="2_lb6vb"]
-[ext_resource type="FontFile" uid="uid://cpqcjcygbhvhv" path="res://assets/fonts/Milky Cream.otf" id="3_lb6vb"]
+[ext_resource type="Script" uid="uid://qcx8evoyrbtc" path="res://screens/cutscene1/cutscene_vitoria_caderno.gd" id="1_e72at"]
+[ext_resource type="Texture2D" uid="uid://h15b55nxhirg" path="res://assets/images/game/cutscenes/diario/diario_final_ansiedade.png" id="2_e72at"]
+[ext_resource type="FontFile" uid="uid://cpqcjcygbhvhv" path="res://assets/fonts/Milky Cream.otf" id="3_dgdvn"]
+[ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="4_xnm1u"]
 
 [sub_resource type="Animation" id="Animation_lb6vb"]
 length = 0.001
@@ -49,7 +49,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_h2ty7")
+script = ExtResource("1_e72at")
 
 [node name="Fundo" type="ColorRect" parent="." unique_id=1124478188]
 layout_mode = 1
@@ -66,20 +66,20 @@ offset_left = 384.0
 offset_top = 28.299988
 offset_right = 924.0
 offset_bottom = 622.3
-texture = ExtResource("2_lb6vb")
+texture = ExtResource("2_e72at")
 
 [node name="Texto" type="RichTextLabel" parent="." unique_id=1978515232]
 layout_mode = 0
-offset_left = 453.0
-offset_top = 82.0
-offset_right = 743.0
-offset_bottom = 531.0
+offset_left = 578.0
+offset_top = 89.0
+offset_right = 868.0
+offset_bottom = 538.0
 theme_override_colors/default_color = Color(0.16862746, 0.16862746, 0.16862746, 1)
 theme_override_constants/line_separation = 4
-theme_override_fonts/normal_font = ExtResource("3_lb6vb")
+theme_override_fonts/normal_font = ExtResource("3_dgdvn")
 theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
-text = "[shake rate=10.0 level=2 connected=1]Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. [/shake]"
+text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus."
 visible_characters = 0
 visible_ratio = 0.0
 
@@ -92,7 +92,7 @@ offset_left = 795.0
 offset_top = 674.0
 offset_right = 688.12
 offset_bottom = 453.63998
-theme_override_fonts/font = ExtResource("2_buthi")
+theme_override_fonts/font = ExtResource("4_xnm1u")
 text = "Pressione [Espaço] para pular"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=531536387]

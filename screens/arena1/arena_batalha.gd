@@ -64,7 +64,7 @@ func _on_hero_health_changed(new_health: int) -> void:
 func _on_dialogo_finalizado() -> void:
 	# Se a caixa fechou e o Boss estava com 0 de vida, encerra a fase
 	if boss.is_dead:
-		get_tree().change_scene_to_file("res://screens/menu/menu_principal/menu_principal.tscn")
+		get_tree().change_scene_to_file("res://screens/cutscene1/cutscene_vitoria_caderno.tscn")
 	# Se a caixa fechou e o Player estava com 0 de vida, REINICIA O JOGO
 	elif hero.current_health <= 0:
 		get_tree().paused = false 
