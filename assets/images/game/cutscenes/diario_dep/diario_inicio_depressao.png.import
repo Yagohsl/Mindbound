@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://h15b55nxhirg"
-path="res://.godot/imported/diario_final_ansiedade.png-f3f738b92b9f28850d33b6c2ed3f406e.ctex"
+uid="uid://c0t0vv20kf601"
+path="res://.godot/imported/diario_inicio_depressao.png-056b381944dc02881845b3fc3962d765.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/game/cutscenes/diario/diario_final_ansiedade.png"
-dest_files=["res://.godot/imported/diario_final_ansiedade.png-f3f738b92b9f28850d33b6c2ed3f406e.ctex"]
+source_file="res://assets/images/game/cutscenes/diario_dep/diario_inicio_depressao.png"
+dest_files=["res://.godot/imported/diario_inicio_depressao.png-056b381944dc02881845b3fc3962d765.ctex"]
 
 [params]
 

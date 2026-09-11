@@ -1,12 +1,12 @@
-[gd_scene format=3 uid="uid://xm4a3707es5q"]
+[gd_scene format=3 uid="uid://dsnsntnxknv1u"]
 
-[ext_resource type="Script" path="res://screens/arena_batalha.gd" id="1_28jst"]
-[ext_resource type="Texture2D" uid="uid://b4wir400nniyn" path="res://assets/images/game/maps/background1.png" id="1_nd1db"]
-[ext_resource type="PackedScene" uid="uid://dduii0awr17r4" path="res://player/heroi.tscn" id="2_toxup"]
-[ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_xojux"]
-[ext_resource type="PackedScene" uid="uid://bt86wjxl7rugs" path="res://boss/ansiedade/boss_ansiedade.tscn" id="3_1rla3"]
-[ext_resource type="PackedScene" uid="uid://dd22qvsqca32b" path="res://screens/menu_pausa.tscn" id="6_2uib8"]
-[ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="7_iywkd"]
+[ext_resource type="Script" uid="uid://c2nqukigni2m3" path="res://screens/arenas/arena_ansiedade/arena_ans.gd" id="1_i60wr"]
+[ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_e2ddg"]
+[ext_resource type="Texture2D" uid="uid://b4wir400nniyn" path="res://assets/images/game/maps/background1.png" id="3_vtstx"]
+[ext_resource type="PackedScene" uid="uid://dduii0awr17r4" path="res://player/heroi.tscn" id="4_umchu"]
+[ext_resource type="PackedScene" uid="uid://bt86wjxl7rugs" path="res://boss/ansiedade/boss_ansiedade.tscn" id="5_feft1"]
+[ext_resource type="PackedScene" uid="uid://bvgualol7nu5v" path="res://screens/menu/menu_pausa/menu_pausa.tscn" id="6_1fsru"]
+[ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="7_m01rc"]
 
 [sub_resource type="Gradient" id="Gradient_xojux"]
 interpolation_mode = 1
@@ -39,10 +39,8 @@ size = Vector2(1397, 90)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xojux"]
 size = Vector2(20, 709)
 
-[node name="Arena" type="Node2D" unique_id=50696584 node_paths=PackedStringArray("player_node", "boss_node")]
-script = ExtResource("1_28jst")
-player_node = NodePath("StaticBody2D/Heroi")
-boss_node = NodePath("StaticBody2D/BossAnsiedade")
+[node name="Arena" type="Node2D" unique_id=50696584]
+script = ExtResource("1_i60wr")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1739122279]
 
@@ -74,7 +72,7 @@ offset_bottom = 905.0
 
 [node name="NomeBoss" type="Label" parent="UI/VBoxContainer" unique_id=340627429]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_xojux")
+theme_override_fonts/font = ExtResource("2_e2ddg")
 theme_override_font_sizes/font_size = 33
 text = "Ansiedade
 "
@@ -85,7 +83,7 @@ horizontal_alignment = 1
 [node name="Sprite2D" type="Sprite2D" parent="StaticBody2D" unique_id=2143365313]
 position = Vector2(-5, -11)
 scale = Vector2(2.1766667, 1.8575002)
-texture = ExtResource("1_nd1db")
+texture = ExtResource("3_vtstx")
 centered = false
 
 [node name="ShadeFilter" type="Sprite2D" parent="StaticBody2D" unique_id=332507022]
@@ -99,11 +97,11 @@ texture = SubResource("CanvasTexture_xojux")
 position = Vector2(660.5, 683)
 shape = SubResource("RectangleShape2D_toxup")
 
-[node name="Heroi" parent="StaticBody2D" unique_id=1426187125 instance=ExtResource("2_toxup")]
-position = Vector2(195, 538)
+[node name="Heroi" parent="StaticBody2D" unique_id=1426187125 instance=ExtResource("4_umchu")]
+position = Vector2(140, 548)
 
-[node name="BossAnsiedade" parent="StaticBody2D" unique_id=141011473 node_paths=PackedStringArray("player") instance=ExtResource("3_1rla3")]
-position = Vector2(1001, 505)
+[node name="BossAnsiedade" parent="StaticBody2D" unique_id=141011473 node_paths=PackedStringArray("player") instance=ExtResource("5_feft1")]
+position = Vector2(1177, 508)
 player = NodePath("../Heroi")
 
 [node name="Paredes" type="StaticBody2D" parent="." unique_id=1112115908]
@@ -117,6 +115,6 @@ shape = SubResource("RectangleShape2D_xojux")
 position = Vector2(1280, 340)
 shape = SubResource("RectangleShape2D_xojux")
 
-[node name="MenuPausa" parent="." unique_id=1291649425 instance=ExtResource("6_2uib8")]
+[node name="MenuPausa" parent="." unique_id=1291649425 instance=ExtResource("6_1fsru")]
 
-[node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("7_iywkd")]
+[node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("7_m01rc")]

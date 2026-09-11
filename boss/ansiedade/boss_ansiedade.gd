@@ -19,7 +19,7 @@ enum State {
 signal health_changed(new_health)
 var current_state = State.IDLE
 var max_health = 150
-var current_health = 1
+var current_health = 150
 var attack_value = 15
 var is_dead = false
 
@@ -30,7 +30,7 @@ var is_dead = false
 @export var player: Node2D #referencia ao player
 @export var projectile_scene: PackedScene #arrasta a cena do projetil no inspetor
 @export var teleport_warning_scene: PackedScene
-@export var attack_cooldown: float = 2.0
+@export var attack_cooldown: float = 0.5
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
@@ -188,7 +188,7 @@ func execute_attack_sequence():
 		State.DASH_PREP:
 			velocity.x = 0
 			anim.play("prep_dash")
-			await get_tree().create_timer(0.5).timeout
+			await get_tree().create_timer(1.0).timeout
 			if current_state == State.DEATH: return
 			
 			if player:
@@ -196,7 +196,7 @@ func execute_attack_sequence():
 				if dash_direction == 0: dash_direction = 1
 				flip_sprite(dash_direction)
 			
-			await get_tree().create_timer(0.5).timeout
+			await get_tree().create_timer(0.05).timeout
 			dash_distance_left = dash_max_distance
 			current_state = State.DASH
 	

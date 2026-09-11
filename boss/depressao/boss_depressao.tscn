@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://bcpg4xfmyi2ps"]
+
+[ext_resource type="Script" uid="uid://bqu7jdyp0537d" path="res://boss/depressao/boss_depressao.gd" id="1_wkc8n"]
+[ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="1_x5avh"]
+[ext_resource type="Texture2D" uid="uid://dktb474q60r88" path="res://assets/images/game/fighters/icons/hero_icon.png" id="2_it3oq"]
+[ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="3_02aa7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wkc8n"]
+size = Vector2(128, 126.5)
+
+[node name="BossDepressao" type="CharacterBody2D" unique_id=1277950948]
+script = ExtResource("1_wkc8n")
+player_icon = ExtResource("2_it3oq")
+boss_icon = ExtResource("1_x5avh")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1532918408]
+texture = ExtResource("1_x5avh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=847276946]
+position = Vector2(-1, 0.25)
+shape = SubResource("RectangleShape2D_wkc8n")
+
+[node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("3_02aa7")]

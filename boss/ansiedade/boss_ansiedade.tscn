@@ -95,6 +95,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_2cmim"]
 resource_name = "prep_dash"
+length = 0.53333336
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -214,7 +215,7 @@ position = Vector2(0, 13)
 shape = SubResource("RectangleShape2D_d2ree")
 
 [node name="DecisionTimer" type="Timer" parent="." unique_id=721603857]
-wait_time = 1.5
+wait_time = 0.5
 autostart = true
 
 [node name="DamageArea" type="Area2D" parent="." unique_id=1856169471]

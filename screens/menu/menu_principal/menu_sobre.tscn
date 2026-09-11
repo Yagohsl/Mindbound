@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cy0x68sv3tgu5"]
 
-[ext_resource type="Script" uid="uid://b2xmqnpqyw8pq" path="res://screens/menu_sobre.gd" id="1_wouv7"]
+[ext_resource type="Script" uid="uid://b2xmqnpqyw8pq" path="res://screens/menu/menu_principal/menu_sobre.gd" id="1_wouv7"]
 [ext_resource type="Texture2D" uid="uid://7vm3aiy0nr2d" path="res://assets/images/menu/FUNDO MENU.png" id="2_u1jjw"]
 [ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="3_43jpq"]
 
@@ -58,8 +58,8 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_43jpq")
 theme_override_font_sizes/font_size = 28
-text = "Movimentos: A, D
-Pular: Espaço
+text = "Movimentos: ←  →
+Pular: Espaço ou ↑
 "
 
 [node name="Controle2" type="Label" parent="MenuTexto/Controle1" unique_id=854785608]
@@ -70,8 +70,8 @@ offset_right = 834.0
 offset_bottom = 89.0
 theme_override_fonts/font = ExtResource("3_43jpq")
 theme_override_font_sizes/font_size = 28
-text = "Ataque: J
-Esquiva: K
+text = "Ataque: X
+Esquiva: C
 "
 
 [node name="Voltar" type="Button" parent="MenuTexto" unique_id=1689286317]

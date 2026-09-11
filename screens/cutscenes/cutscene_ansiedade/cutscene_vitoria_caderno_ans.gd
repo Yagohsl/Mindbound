@@ -1,10 +1,8 @@
 extends Control
 
 @onready var anim_player = $AnimationPlayer
-@onready var texto = $RichTextLabel # Ajuste o nome se o seu nó chamar diferente
 
-# Caminho correto para a arena de batalha do projeto
-const ARENA_CENA = "res://screens/arena1/arena_batalha.tscn"
+const PROXIMA_CENA = "res://screens/cutscenes/cutscene_depressao/cutscene_caderno_dep.tscn"
 
 var pode_avancar: bool = false
 var pulou_animacao: bool = false
@@ -34,4 +32,4 @@ func _on_animation_finished(anim_name: StringName) -> void:
 
 func iniciar_batalha() -> void:
 	# Muda a cena para a Arena de Batalha para iniciar o combate contra a Ansiedade
-	get_tree().change_scene_to_file(ARENA_CENA)
+	get_tree().change_scene_to_file(PROXIMA_CENA)
