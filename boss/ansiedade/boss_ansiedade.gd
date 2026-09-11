@@ -23,6 +23,8 @@ var current_health = 150
 var attack_value = 15
 var is_dead = false
 
+
+
 # Variaveis de atributos
 @export var speed = 150.0
 @export var dash_speed: float = 400.0 #velocidade dash
@@ -30,7 +32,19 @@ var is_dead = false
 @export var player: Node2D #referencia ao player
 @export var projectile_scene: PackedScene #arrasta a cena do projetil no inspetor
 @export var teleport_warning_scene: PackedScene
-@export var attack_cooldown: float = 0.5
+@export var max_attack_cooldown: float = 1.5 # Tempo de espera com 100% de vida
+@export var min_attack_cooldown: float = 0.3 # Tempo de espera com a vida quase zerada
+@export var attack_cooldown: float = 1.5
+
+# --- Tempos do Dash Prep ---
+@export var max_dash_prep: float = 0.7
+@export var min_dash_prep: float = 0.1
+var current_dash_prep: float = 01.0
+
+# --- Tempos do Teleporte ---
+@export var max_teleport_wait: float = 1.0
+@export var min_teleport_wait: float = 0.2
+var current_teleport_wait: float = 1.0
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
@@ -188,7 +202,7 @@ func execute_attack_sequence():
 		State.DASH_PREP:
 			velocity.x = 0
 			anim.play("prep_dash")
-			await get_tree().create_timer(1.0).timeout
+			await get_tree().create_timer(current_dash_prep).timeout
 			if current_state == State.DEATH: return
 			
 			if player:
@@ -196,7 +210,7 @@ func execute_attack_sequence():
 				if dash_direction == 0: dash_direction = 1
 				flip_sprite(dash_direction)
 			
-			await get_tree().create_timer(0.05).timeout
+			await get_tree().create_timer(0.5).timeout
 			dash_distance_left = dash_max_distance
 			current_state = State.DASH
 	
@@ -238,7 +252,7 @@ func teleport_routine():
 			get_parent().add_child(warning)
 		
 		# Adicionado o 'true' no final para respeitar o pause do jogo
-		await get_tree().create_timer(1.0, false, false, true).timeout
+		await get_tree().create_timer(current_teleport_wait, false, false, true).timeout
 		
 		if current_state == State.DEATH: return
 		
@@ -261,6 +275,15 @@ func take_damage(amount):
 		return
 	current_health -= amount
 	health_changed.emit(current_health)
+	
+	# --- DIFICULDADE PROGRESSIVA ---
+	# calcula a porcentagem atual de vida (de 0.0 a 1.0)
+	var porcentagem_vida = float(current_health) / float(max_health)
+	
+	# se a vida estiver 100% (1.0), será o max_cooldown. Se estiver 0% (0.0), será o min_cooldown.
+	attack_cooldown = lerp(min_attack_cooldown, max_attack_cooldown, porcentagem_vida)
+	current_dash_prep = lerp(min_dash_prep, max_dash_prep, porcentagem_vida)
+	current_teleport_wait = lerp(min_teleport_wait, max_teleport_wait, porcentagem_vida)
 	
 	# Hit
 	flash()
