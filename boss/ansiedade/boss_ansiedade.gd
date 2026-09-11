@@ -18,8 +18,8 @@ enum State {
 }
 signal health_changed(new_health)
 var current_state = State.IDLE
-var max_health = 150
-var current_health = 150
+var max_health = 300
+var current_health = 300
 var attack_value = 15
 var is_dead = false
 
@@ -27,7 +27,7 @@ var is_dead = false
 
 # Variaveis de atributos
 @export var speed = 150.0
-@export var dash_speed: float = 400.0 #velocidade dash
+@export var dash_speed: float = 500.0 #velocidade dash
 @export var health: int = 150
 @export var player: Node2D #referencia ao player
 @export var projectile_scene: PackedScene #arrasta a cena do projetil no inspetor
@@ -221,7 +221,7 @@ func fire_preoccupation():
 	proj.global_position = ponto_de_tiro.global_position
 
 	var angle = ponto_de_tiro.global_position.direction_to(player.global_position).angle() + randf_range(-0.2, 0.2)
-	proj.setup(angle, 300.0)
+	proj.setup(angle, 500.0)
 
 func fire_explosion():
 	if not projectile_scene: return
@@ -233,7 +233,7 @@ func fire_explosion():
 		
 		proj.global_position = global_position
 		var angle = (2 * PI / num_projectiles) * i
-		proj.setup(angle, 250.0)
+		proj.setup(angle, 300.0)
 
 func teleport_routine():
 	var teleports_done = 0

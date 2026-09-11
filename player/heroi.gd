@@ -5,7 +5,7 @@ const JUMP_VELOCITY = -900.0
 const GRAVITY_MULTIPLIER = 1.8
 
 const DASH_SPEED = 800.0
-const DASH_DURATION = 0.2 # tempo em segundos do dash
+const DASH_DURATION = 0.3 # tempo em segundos do dash
 
 # Referencias aos nós de sprite e animacao
 @onready var sprite = $Sprite2D
@@ -24,6 +24,9 @@ var dash_time_left = 0.0
 var dash_cooldown = 0.0
 var is_invincible: bool = false
 @export var invincibility_time: float = 1.0
+
+var is_dash_invincible: bool = false
+@export var dash_recovery_time: float = 0.2 # 200 milissegundos extras de invencibilidade
 
 func _ready() -> void:
 	# Garante que a hitbox começa desativada para não causar dano à toa
@@ -60,6 +63,7 @@ func _physics_process(delta: float) -> void:
 		if dash_time_left <= 0:
 			velocity.x = 0
 			is_dashing = false
+			trigger_dash_recovery() # <--- Adicione esta linha aqui!
 		move_and_slide()
 		return
 
@@ -112,14 +116,16 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func take_damage(amount):
-	if is_invincible:
+	if is_invincible or is_dashing or is_dash_invincible:
 		return
 	current_health -= amount
 	health_changed.emit(current_health)
 	
-	trigger_invincibility()
+	flash()
 	if current_health <= 0:
 		die()
+	else:
+		trigger_invincibility()
 
 func trigger_invincibility():
 	is_invincible = true
@@ -149,7 +155,13 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 func _on_attack_hitbox_body_entered(body: Node2D) -> void:
 	if body.has_method("take_damage") and body != self:
 		body.take_damage(attack_value)
-
+		
+func trigger_dash_recovery():
+	is_dash_invincible = true
+	await get_tree().create_timer(dash_recovery_time).timeout
+	is_dash_invincible = false
+	
+	
 var is_dead: bool = false
 func die():
 	if is_dead: return
