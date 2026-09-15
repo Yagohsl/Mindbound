@@ -8,18 +8,18 @@ const JUMP_VELOCITY = -400.0
 enum State {
 	IDLE,
 	RUN,
-	THOUGHTS,
-	TELEPORT,
-	EXPLOSION_PREP,
-	EXPLOSION,
-	DASH_PREP,
-	DASH,
+	PROJETCILE,
+	GEISER_PREP,
+	GEISER,
+	BAD_THOUGHTS_PREP,
+	BAD_THOUGHTS,
+	RAIN,
 	DEATH
 }
 signal health_changed(new_health)
 var current_state = State.IDLE
-var max_health = 150
-var current_health = 150
+var max_health = 450
+var current_health = 450
 var attack_value = 15
 var is_dead = false
 
