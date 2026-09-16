@@ -38,7 +38,7 @@ func _physics_process(delta: float) -> void:
 	
 	if is_dead:
 		if not is_on_floor():
-			velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta
+			velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta 
 		else:
 			velocity.x = 0 # Para de deslizar para os lados quando bater no chão
 		move_and_slide()
@@ -90,7 +90,7 @@ func _physics_process(delta: float) -> void:
 	# Movimentacao
 	var direction := Input.get_axis("move_left", "move_right")
 	if direction:
-		velocity.x = direction * SPEED
+		velocity.x = direction * SPEED * slow_multiplier
 		
 		# Vira o player e a hitbox de ataque junto
 		if not is_attacking:
@@ -103,7 +103,7 @@ func _physics_process(delta: float) -> void:
 		if is_on_floor() and not is_attacking:
 			anim.play("run")
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.x = move_toward(velocity.x, 0, SPEED * slow_multiplier)
 		if is_on_floor() and not is_attacking:
 			anim.play("idle")
 	
@@ -178,3 +178,30 @@ func die():
 	# Verificação de segurança: checa se a árvore ainda existe antes de recarregar
 	if get_tree():
 		get_tree().reload_current_scene()
+# LENTIDAO
+var slow_multiplier: float = 1.0
+var is_slowed: bool = false
+
+func apply_slow(factor: float, duration: float) -> void:
+	
+	slow_multiplier = factor
+	is_slowed = true
+	if anim:
+		anim.speed_scale = factor
+		
+	# Feedback visual: escurece ou tinge o sprite de roxo/cinza
+	if sprite and sprite.material:
+		var tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 1.0, 0.1)
+	await get_tree().create_timer(duration).timeout
+	
+	# Retorna aos valores normais
+	slow_multiplier = 1.0
+	is_slowed = false
+	modulate = Color(1.0, 1.0, 1.0, 1.0)
+	if anim:
+		anim.speed_scale = 1.0
+		
+	if sprite and sprite.material:
+		var tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)

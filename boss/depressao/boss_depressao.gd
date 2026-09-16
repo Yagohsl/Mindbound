@@ -7,7 +7,7 @@ const JUMP_VELOCITY = -400.0
 # Mapeamento de Estados
 enum State {
 	IDLE,
-	PROJETCILE,
+	PROJECTILE,
 	GEISER_PREP,
 	GEISER,
 	BAD_THOUGHTS_PREP,
@@ -38,6 +38,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @onready var sprite = $Sprite2D
 @onready var decision_timer = $DecisionTimer
 @onready var damage_area = $DamageArea
+@onready var ponto_de_tiro = $PontoDeTiro 
 
 
 # var de controle de ataques
@@ -75,8 +76,15 @@ func _ready() -> void:
 	##	{"icone": player_icon, "texto": "Dar um passo para trás não é o fim. Reconhecer que precisa de ajuda ou de um descanso também é parte do processo de cura. Respire e tente novamente."}
 	##]
 func _physics_process(delta: float) -> void:
-	##if current_state == State.DEATH:
-	##	return
+	# execucao da maquina de estados
+	match current_state:
+		State.IDLE:
+			anim.play("idle")
+			velocity.x = move_toward(velocity.x, 0, speed)
+
+	if current_state in [State.IDLE]:
+		move_and_slide()
+		
 	
 	# gravidade
 	if not is_on_floor():
@@ -87,7 +95,47 @@ func _physics_process(delta: float) -> void:
 		body.take_damage(attack_value)
 	
 	move_and_slide()
+
+# Estrutura de ataque na Máquina de Estados
+func execute_attack_sequence() -> void:
+	match current_state:
+		State.PROJECTILE:
+			velocity.x = 0
+			anim.play("attack") # Altere para o nome da sua animação de disparo
+			fire_lodo()
+			
+			await anim.animation_finished
+			current_state = State.IDLE
+			decision_timer.start(attack_cooldown)
+
+func _on_decision_timer_timeout() -> void:
+	if current_state != State.IDLE:
+		return
+	decision_timer.stop()
 	
+	# Inclua o State.PROJETCILE na lista de escolhas da IA
+	var choices = [State.PROJECTILE] 
+	current_state = choices.pick_random()
+	execute_attack_sequence()
+	
+# Função que instancia e direciona o projétil
+func fire_lodo() -> void:
+	if not projectile_scene or not player: return
+		
+	var proj = projectile_scene.instantiate()
+	var spawn_pos = ponto_de_tiro.global_position if has_node("PontoDeTiro") else global_position
+	
+	proj.global_position = spawn_pos
+	get_parent().add_child(proj)
+	
+	# Calcula a direção exata até o centro do player
+	var dir = spawn_pos.direction_to(player.global_position)
+	proj.setup(dir)
+	
+	# Espelha o boss na direção do disparo
+	flip_sprite(dir.x)
+
+
 func take_damage(amount):
 	if current_state == State.DEATH:
 		return
@@ -98,6 +146,8 @@ func take_damage(amount):
 	if current_health<=0:
 		die()
 	
+func flip_sprite(dir):
+	sprite.flip_h = (dir < 0)
 
 func die():
 	is_dead = true

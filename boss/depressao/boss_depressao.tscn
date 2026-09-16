@@ -2,11 +2,24 @@
 
 [ext_resource type="Script" uid="uid://bqu7jdyp0537d" path="res://boss/depressao/boss_depressao.gd" id="1_wkc8n"]
 [ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="1_x5avh"]
+[ext_resource type="PackedScene" uid="uid://chg0j21ifirlk" path="res://boss/depressao/projeteis_depressao.tscn" id="2_08gmf"]
 [ext_resource type="Texture2D" uid="uid://dktb474q60r88" path="res://assets/images/game/fighters/icons/hero_icon.png" id="2_it3oq"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="3_02aa7"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wkc8n"]
 size = Vector2(128, 126.5)
+
+[sub_resource type="Animation" id="Animation_08gmf"]
+resource_name = "attack"
+
+[sub_resource type="Animation" id="Animation_it3oq"]
+resource_name = "idle"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_08gmf"]
+_data = {
+&"attack": SubResource("Animation_08gmf"),
+&"idle": SubResource("Animation_it3oq")
+}
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_it3oq"]
 size = Vector2(118, 118)
@@ -14,6 +27,7 @@ size = Vector2(118, 118)
 [node name="BossDepressao" type="CharacterBody2D" unique_id=1277950948]
 collision_layer = 4
 script = ExtResource("1_wkc8n")
+projectile_scene = ExtResource("2_08gmf")
 player_icon = ExtResource("2_it3oq")
 boss_icon = ExtResource("1_x5avh")
 
@@ -25,8 +39,11 @@ position = Vector2(-1, 0.25)
 shape = SubResource("RectangleShape2D_wkc8n")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=768761343]
+libraries/ = SubResource("AnimationLibrary_08gmf")
 
 [node name="DecisionTimer" type="Timer" parent="." unique_id=182174880]
+wait_time = 0.5
+autostart = true
 
 [node name="DamageArea" type="Area2D" parent="." unique_id=1031149629]
 collision_layer = 0
@@ -38,4 +55,8 @@ shape = SubResource("RectangleShape2D_it3oq")
 
 [node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("3_02aa7")]
 
+[node name="PontoDeTiro" type="Marker2D" parent="." unique_id=1048686518]
+position = Vector2(-2, -78)
+
+[connection signal="timeout" from="DecisionTimer" to="." method="_on_decision_timer_timeout"]
 [connection signal="body_entered" from="DamageArea" to="." method="_on_damage_area_body_entered"]
