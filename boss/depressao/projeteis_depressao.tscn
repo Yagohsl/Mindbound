@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://chg0j21ifirlk"]
 
-[ext_resource type="Script" uid="uid://d1n604o1vn8il" path="res://projeteis_depressao.gd" id="1_6p6qy"]
+[ext_resource type="Script" uid="uid://d1n604o1vn8il" path="res://boss/depressao/projeteis_depressao.gd" id="1_6p6qy"]
 [ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="2_s1y55"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4yhj4"]

@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://bn7dugk5jaj85"]
+
+[ext_resource type="Script" uid="uid://ql72o8vcrctr" path="res://utils/minigame_mash.gd" id="1_2exhl"]
+[ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_6uyom"]
+
+[node name="MinigameMash" type="CanvasLayer" unique_id=1948112288]
+process_mode = 3
+script = ExtResource("1_2exhl")
+
+[node name="ProgressBar" type="ProgressBar" parent="." unique_id=1570277318]
+offset_left = 357.0
+offset_top = 371.0
+offset_right = 915.0
+offset_bottom = 398.0
+
+[node name="Label" type="Label" parent="." unique_id=45119198]
+offset_left = 275.0
+offset_top = 327.0
+offset_right = 1019.0
+offset_bottom = 361.0
+theme_override_fonts/font = ExtResource("2_6uyom")
+theme_override_font_sizes/font_size = 24
+text = "ESMAGUE [ESPAÇO] PARA RESISTIR!"

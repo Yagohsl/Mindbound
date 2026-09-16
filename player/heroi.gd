@@ -35,7 +35,24 @@ func _ready() -> void:
 		attack_collision.disabled = true
 
 func _physics_process(delta: float) -> void:
-	
+	if is_trapped:
+		# Mantém apenas a gravidade se estiver caindo
+		if not is_on_floor():
+			velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta
+		else:
+			velocity.x = 0
+			
+		move_and_slide()
+		return
+	if is_paralyzed:
+		# Mantém apenas a gravidade se estiver no ar
+		if not is_on_floor():
+			velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta
+		else:
+			velocity.x = 0
+		move_and_slide()
+		return
+		
 	if is_dead:
 		if not is_on_floor():
 			velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta 
@@ -169,8 +186,12 @@ func die():
 	is_invincible = true
 	set_physics_process(false)
 	
-	if sprite.material:
+	if anim:
+		anim.speed_scale = 1.0
+	
+	if sprite.material and sprite:
 		sprite.material.set_shader_parameter("flash_modifier", 0.0)
+		sprite.material.set_shader_parameter("slow_modifier", 0.0)
 	
 	anim.play("death")
 	await get_tree().create_timer(3.0, false, false, true).timeout
@@ -205,3 +226,42 @@ func apply_slow(factor: float, duration: float) -> void:
 	if sprite and sprite.material:
 		var tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 		tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)
+
+
+var is_paralyzed: bool = false
+
+func apply_paralysis(duration: float) -> void:
+	if is_dead:
+		return
+		
+	is_paralyzed = true
+	velocity.x = 0
+	
+	# Feedback visual: congela a animação e aplica tom escuro/preso
+	if anim:
+		anim.pause()
+	if sprite:
+		modulate = Color(0.3, 0.2, 0.4, 1.0)
+	
+	await get_tree().create_timer(duration).timeout
+	
+	# Restaura o estado normal
+	is_paralyzed = false
+	if anim:
+		anim.play()
+	if sprite:
+		modulate = Color(1.0, 1.0, 1.0, 1.0)
+
+var is_trapped: bool = false
+
+func trap_player() -> void:
+	is_trapped = true
+	velocity = Vector2.ZERO
+	if anim:
+		anim.play("idle")
+	# Tinge o herói com uma cor escura/pesada
+	modulate = Color(0.4, 0.2, 0.5, 1.0)
+
+func release_player() -> void:
+	is_trapped = false
+	modulate = Color(1.0, 1.0, 1.0, 1.0)

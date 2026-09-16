@@ -5,6 +5,9 @@
 [ext_resource type="PackedScene" uid="uid://chg0j21ifirlk" path="res://boss/depressao/projeteis_depressao.tscn" id="2_08gmf"]
 [ext_resource type="Texture2D" uid="uid://dktb474q60r88" path="res://assets/images/game/fighters/icons/hero_icon.png" id="2_it3oq"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="3_02aa7"]
+[ext_resource type="PackedScene" uid="uid://cd6itqed0i1i5" path="res://boss/depressao/geiser_lodo.tscn" id="3_ghbpk"]
+[ext_resource type="PackedScene" uid="uid://d28vx5mpaphe8" path="res://boss/depressao/lagrima_projetil.tscn" id="4_jdwoi"]
+[ext_resource type="PackedScene" uid="uid://bn7dugk5jaj85" path="res://utils/minigame_mash.tscn" id="5_b8cq5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wkc8n"]
 size = Vector2(128, 126.5)
@@ -12,13 +15,37 @@ size = Vector2(128, 126.5)
 [sub_resource type="Animation" id="Animation_08gmf"]
 resource_name = "attack"
 
+[sub_resource type="Animation" id="Animation_jdwoi"]
+resource_name = "attack_geiser"
+
+[sub_resource type="Animation" id="Animation_vu1y5"]
+resource_name = "cast_rain"
+
 [sub_resource type="Animation" id="Animation_it3oq"]
 resource_name = "idle"
+
+[sub_resource type="Animation" id="Animation_b8cq5"]
+resource_name = "prep_geiser"
+
+[sub_resource type="Animation" id="Animation_lgje5"]
+resource_name = "prep_rush"
+
+[sub_resource type="Animation" id="Animation_micyh"]
+resource_name = "rush"
+
+[sub_resource type="Animation" id="Animation_ghbpk"]
+resource_name = "walk"
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_08gmf"]
 _data = {
 &"attack": SubResource("Animation_08gmf"),
-&"idle": SubResource("Animation_it3oq")
+&"attack_geiser": SubResource("Animation_jdwoi"),
+&"cast_rain": SubResource("Animation_vu1y5"),
+&"idle": SubResource("Animation_it3oq"),
+&"prep_geiser": SubResource("Animation_b8cq5"),
+&"prep_rush": SubResource("Animation_lgje5"),
+&"rush": SubResource("Animation_micyh"),
+&"walk": SubResource("Animation_ghbpk")
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_it3oq"]
@@ -28,6 +55,9 @@ size = Vector2(118, 118)
 collision_layer = 4
 script = ExtResource("1_wkc8n")
 projectile_scene = ExtResource("2_08gmf")
+geiser_scene = ExtResource("3_ghbpk")
+tear_scene = ExtResource("4_jdwoi")
+minigame_scene = ExtResource("5_b8cq5")
 player_icon = ExtResource("2_it3oq")
 boss_icon = ExtResource("1_x5avh")
 

@@ -4,7 +4,6 @@ extends Area2D
 @export var damage: int = 10
 @export var slow_factor: float = 0.5   # Reduz a velocidade pela metade (50%)
 @export var slow_duration: float = 2.5 # Duração da lentidão em segundos
-
 var direction: Vector2 = Vector2.ZERO
 
 func setup(target_direction: Vector2) -> void:
