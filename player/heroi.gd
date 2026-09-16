@@ -17,6 +17,7 @@ signal health_changed(new_health)
 var max_health = 100
 var current_health = 100
 var attack_value = 8
+var is_dead: bool = false
 
 var is_attacking = false
 var is_dashing = false
@@ -116,7 +117,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func take_damage(amount):
-	if is_invincible or is_dashing or is_dash_invincible:
+	if is_invincible or is_dashing or is_dash_invincible or is_dead:
 		return
 	current_health -= amount
 	health_changed.emit(current_health)
@@ -137,7 +138,7 @@ func trigger_invincibility():
 func flash():
 	var mat = sprite.material
 	if mat:
-		var tween = create_tween()
+		var tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 		tween.tween_property(mat, "shader_parameter/flash_modifier", 1.0, 0.0)
 		tween.tween_property(mat, "shader_parameter/flash_modifier", 0.0, 0.15)
 
@@ -162,10 +163,14 @@ func trigger_dash_recovery():
 	is_dash_invincible = false
 	
 	
-var is_dead: bool = false
+
 func die():
-	if is_dead: return
 	is_dead = true
+	is_invincible = true
+	set_physics_process(false)
+	
+	if sprite.material:
+		sprite.material.set_shader_parameter("flash_modifier", 0.0)
 	
 	anim.play("death")
 	await get_tree().create_timer(3.0, false, false, true).timeout

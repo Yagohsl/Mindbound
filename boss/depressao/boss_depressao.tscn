@@ -12,6 +12,7 @@ size = Vector2(128, 126.5)
 size = Vector2(118, 118)
 
 [node name="BossDepressao" type="CharacterBody2D" unique_id=1277950948]
+collision_layer = 4
 script = ExtResource("1_wkc8n")
 player_icon = ExtResource("2_it3oq")
 boss_icon = ExtResource("1_x5avh")
@@ -28,9 +29,13 @@ shape = SubResource("RectangleShape2D_wkc8n")
 [node name="DecisionTimer" type="Timer" parent="." unique_id=182174880]
 
 [node name="DamageArea" type="Area2D" parent="." unique_id=1031149629]
+collision_layer = 0
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=499128787]
 position = Vector2(0, -2)
 shape = SubResource("RectangleShape2D_it3oq")
 
 [node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("3_02aa7")]
+
+[connection signal="body_entered" from="DamageArea" to="." method="_on_damage_area_body_entered"]

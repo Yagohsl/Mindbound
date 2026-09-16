@@ -58,7 +58,8 @@ func _on_boss_health_changed(new_health: int) -> void:
 func _on_hero_health_changed(new_health: int) -> void:
 	if hero.is_dead:
 		# Inicia diálogo psicoeducativo de Derrota
-		dialog_box.iniciar_dialogo(boss.dialogos_derrota)
+		pass
+		#dialog_box.iniciar_dialogo(boss.dialogos_derrota)
 
 # Função chamada automaticamente quando a caixa de texto se fecha
 func _on_dialogo_finalizado() -> void:

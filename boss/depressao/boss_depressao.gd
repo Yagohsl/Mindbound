@@ -7,13 +7,13 @@ const JUMP_VELOCITY = -400.0
 # Mapeamento de Estados
 enum State {
 	IDLE,
-	RUN,
 	PROJETCILE,
 	GEISER_PREP,
 	GEISER,
 	BAD_THOUGHTS_PREP,
 	BAD_THOUGHTS,
 	RAIN,
+	ATTACK,
 	DEATH
 }
 signal health_changed(new_health)
@@ -54,7 +54,7 @@ var min_teleport_distance: float = 250.0
 
 var dialogos_inicio: Array[Dictionary] = []
 var dialogos_vitoria: Array[Dictionary] = []
-var dialogos_derrota: Array[Dictionary] = []
+##var dialogos_derrota: Array[Dictionary] = []
 
 func _ready() -> void:
 	dialogos_inicio = [
@@ -69,15 +69,42 @@ func _ready() -> void:
 		{"icone": player_icon, "texto": "Eu sei. A ansiedade faz parte da vida, mas agora eu tenho ferramentas para não deixar você me paralisar."}
 	]
 	
-	dialogos_derrota = [
-		{"icone": boss_icon, "texto": "Eu avisei. O medo e a exaustão assumiram o controle total."},
-		{"icone": player_icon, "texto": "Está tudo tão confuso... Eu não consigo pensar direito."},
-		{"icone": player_icon, "texto": "Dar um passo para trás não é o fim. Reconhecer que precisa de ajuda ou de um descanso também é parte do processo de cura. Respire e tente novamente."}
-	]
+	##dialogos_derrota = [
+	##	{"icone": boss_icon, "texto": "Eu avisei. O medo e a exaustão assumiram o controle total."},
+	##	{"icone": player_icon, "texto": "Está tudo tão confuso... Eu não consigo pensar direito."},
+	##	{"icone": player_icon, "texto": "Dar um passo para trás não é o fim. Reconhecer que precisa de ajuda ou de um descanso também é parte do processo de cura. Respire e tente novamente."}
+	##]
 func _physics_process(delta: float) -> void:
-	# Add the gravity.
+	##if current_state == State.DEATH:
+	##	return
+	
+	# gravidade
 	if not is_on_floor():
-		velocity += get_gravity() * delta
-
+		velocity.y += gravity * delta
+	
+	var bodies = damage_area.get_overlapping_bodies()
+	for body in bodies:
+		body.take_damage(attack_value)
 	
 	move_and_slide()
+	
+func take_damage(amount):
+	if current_state == State.DEATH:
+		return
+	current_health -= amount
+	health_changed.emit(current_health)
+	
+	# Hit
+	if current_health<=0:
+		die()
+	
+
+func die():
+	is_dead = true
+	current_state = State.DEATH
+	velocity = Vector2.ZERO
+	anim.play("death")
+	
+func _on_damage_area_body_entered(body: CharacterBody2D) -> void:
+	if not is_dead and body.has_method("take_damage") and body !=self:
+		body.take_damage(attack_value)
