@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://bvgualol7nu5v" path="res://screens/menu/menu_pausa/menu_pausa.tscn" id="6_1fsru"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="7_m01rc"]
 
+[sub_resource type="CanvasTexture" id="CanvasTexture_i60wr"]
+
 [sub_resource type="Gradient" id="Gradient_xojux"]
 interpolation_mode = 1
 offsets = PackedFloat32Array(0)
@@ -51,6 +53,7 @@ offset_right = 608.0
 offset_bottom = 70.0
 value = 100.0
 nine_patch_stretch = true
+texture_under = SubResource("CanvasTexture_i60wr")
 texture_progress = SubResource("GradientTexture2D_2uib8")
 
 [node name="BossHealthBar" type="TextureProgressBar" parent="UI" unique_id=1009476480]

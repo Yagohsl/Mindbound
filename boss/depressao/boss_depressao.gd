@@ -1,9 +1,6 @@
 extends CharacterBody2D
 
 
-const SPEED = 300.0
-const JUMP_VELOCITY = -400.0
-
 # Mapeamento de Estados
 enum State {
 	IDLE,
@@ -13,11 +10,20 @@ enum State {
 	GEISER,
 	BAD_THOUGHTS_PREP,
 	BAD_THOUGHTS,
+	DIRECT_ATTACK_PREP,
+	DIRECT_ATTACK,
 	MINIGAME,
 	RAIN,
 	ATTACK,
 	DEATH
 }
+#var ataque direto
+@export var direct_attack_damage: int = 20
+@export var slam_damage: int = 35
+@export var punch_forward_impulse: float = 2000.0 # Velocidade do impulso para frente no soco
+
+var direct_attack_stage: int = 1 # 1: 1 golpe | 2: 2 golpes | 3: 2 golpes + slam
+
 var damage_cooldown: float = 0.0
 signal health_changed(new_health)
 var current_state = State.IDLE
@@ -28,12 +34,12 @@ var is_dead = false
 
 # Variaveis de atributos
 @export var speed = 50.0
-@export var dash_speed: float = 400.0 #velocidade dash
 @export var player: Node2D #referencia ao player
 @export var projectile_scene: PackedScene 
 @export var geiser_scene: PackedScene 
 @export var tear_scene: PackedScene     
 @export var minigame_scene: PackedScene 
+@export var slam_shockwave_scene: PackedScene # Cena da cortina/onda de lodo (Area2D)
 @export var attack_cooldown: float = 2.0
 
 # --- ATAQUE GEISER ---
@@ -66,7 +72,7 @@ var player_caught: bool = false
 @onready var decision_timer = $DecisionTimer
 @onready var damage_area = $DamageArea
 @onready var ponto_de_tiro = $PontoDeTiro 
-
+@onready var punch_hitbox = $PunchHitbox
 
 # var de controle de ataques
 var dash_direction: int = 0
@@ -125,8 +131,10 @@ func _physics_process(delta: float) -> void:
 				flip_sprite(walk_direction)
 			velocity.x = walk_direction * speed
 			anim.play("idle")
-		State.GEISER_PREP, State.GEISER, State.PROJECTILE, State.RAIN, State.MINIGAME:
+		State.GEISER_PREP, State.GEISER, State.PROJECTILE, State.RAIN, State.MINIGAME, State.DIRECT_ATTACK_PREP:
 			velocity.x = 0
+		State.DIRECT_ATTACK:
+			move_and_slide()
 	# Detecção de acerto do avanço rápido (Pensamentos Ruins)
 	if current_state == State.BAD_THOUGHTS and not player_caught:
 		var bodies = damage_area.get_overlapping_bodies()
@@ -211,12 +219,12 @@ func execute_attack_sequence() -> void:
 			velocity.x = 0
 			anim.play("prep_rush")
 			
-			# Vira em direção ao jogador antes de avançar
+			# vira em direção ao jogador antes de avançar
 			if player:
 				rush_direction = sign(player.global_position.x - global_position.x)
 				flip_sprite(rush_direction)
 			
-			# Telegraph do golpe rápido
+			# preparacao do golpe rápido
 			await get_tree().create_timer(0.4).timeout
 			if current_state == State.DEATH: return
 			
@@ -226,7 +234,7 @@ func execute_attack_sequence() -> void:
 
 		State.BAD_THOUGHTS:
 			anim.play("rush")
-			# Avança rapidamente em linha reta
+			#avança rapidamente em linha reta
 			velocity.x = rush_direction * rush_speed
 			
 			var elapsed = 0.0
@@ -238,37 +246,57 @@ func execute_attack_sequence() -> void:
 			
 			velocity.x = 0
 			
-			# Se o player não foi pego, ele desvia e o boss apenas se recupera
+			#se o player não foi pego, ele desvia e o boss apenas se recupera
 			if not player_caught and current_state != State.MINIGAME:
 				await get_tree().create_timer(0.3).timeout
 				if current_state == State.DEATH: return
 				await walk_then_idle()
+				
+		State.DIRECT_ATTACK_PREP:
+			velocity.x = 0
+			if player:
+				flip_sprite(player.global_position.x - global_position.x)
+				
+			anim.play("prep_direct")
+				
+			# Tempo de telegraph para o player reagir
+			await get_tree().create_timer(0.8).timeout
+			if current_state == State.DEATH: return
+			
+			current_state = State.DIRECT_ATTACK
+			execute_attack_sequence()
+
+		State.DIRECT_ATTACK:
+			velocity.x = 0
+			await run_direct_attack_combo()
 				
 func _on_decision_timer_timeout() -> void:
 	if current_state != State.IDLE:
 		return
 	decision_timer.stop()
 	
-	# Inclua o State.PROJETCILE na lista de escolhas da IA
-	var choices = [ State.BAD_THOUGHTS_PREP] 
+	var choices = [State.GEISER_PREP, State.PROJECTILE, State.RAIN, State.DIRECT_ATTACK_PREP] 
+	
+	var porcentagem_vida = float(current_health) / float(max_health)
+	if porcentagem_vida < 0.5:
+		choices.append(State.BAD_THOUGHTS_PREP)
+	
 	current_state = choices.pick_random()
 	execute_attack_sequence()
 	
-# Função que instancia e direciona o projétil
 func fire_lodo() -> void:
 	if not projectile_scene or not player: return
-		
+	
 	var proj = projectile_scene.instantiate()
 	var spawn_pos = ponto_de_tiro.global_position if has_node("PontoDeTiro") else global_position
 	
 	proj.global_position = spawn_pos
 	get_parent().add_child(proj)
 	
-	# Calcula a direção exata até o centro do player
+	# calcula a direção exata até o centro do player
 	var dir = spawn_pos.direction_to(player.global_position)
 	proj.setup(dir)
 	
-	# Espelha o boss na direção do disparo
 	flip_sprite(dir.x)
 
 func spawn_geiser() -> void:
@@ -348,6 +376,91 @@ func trigger_thoughts_minigame(target_player: CharacterBody2D) -> void:
 	if current_state == State.DEATH: return
 	await walk_then_idle()
 
+# Invoca a cortina de lodo no chão (onda expansiva)
+func spawn_cortina_lodo() -> void:
+	if not slam_shockwave_scene:
+		return
+	
+	# Cria uma onda para a esquerda e outra para a direita
+	for dir in [-1, 1]:
+		var wave = slam_shockwave_scene.instantiate()
+		wave.global_position = Vector2(global_position.x + (dir * 40), global_position.y)
+		if wave.has_method("setup"):
+			wave.setup(dir)
+		get_parent().add_child(wave)
+
+# Executa o combo de acordo com o estágio da vida
+func run_direct_attack_combo() -> void:
+	# --- GOLPE 1 ---
+
+	anim.play("attack_direct")
+	
+	step_forward(punch_forward_impulse, 0.25)
+	apply_direct_hit(direct_attack_damage, 0.25)
+	
+	if anim.is_playing() and anim.current_animation == "attack_direct":
+		await anim.animation_finished
+	else:
+		await get_tree().create_timer(0.35).timeout
+	if current_state == State.DEATH: return
+
+	# --- GOLPE 2 (Se estiver com metade da vida ou menos) ---
+	if direct_attack_stage >= 2:
+		await get_tree().create_timer(0.2).timeout # Pequena pausa entre golpes
+		if current_state == State.DEATH: return
+		
+		anim.play("attack_direct_2")
+		
+		step_forward(punch_forward_impulse, 0.25)
+		apply_direct_hit(direct_attack_damage, 0.25)
+		
+		if anim.is_playing():
+			await anim.animation_finished
+		else:
+			await get_tree().create_timer(0.35).timeout
+		if current_state == State.DEATH: return
+
+	# --- GOLPE 3 FINAL: SLAM NO CHÃO + CORTINA (Pouca vida) ---
+	if direct_attack_stage == 3:
+		if current_state == State.DEATH: return
+		if player:
+			flip_sprite(player.global_position.x - global_position.x)
+		await get_tree().create_timer(0.25).timeout
+			
+		anim.play("slam")
+		
+		step_forward(punch_forward_impulse * 1.3, 0.3)
+		apply_direct_hit(slam_damage, 0.3)
+		
+		await get_tree().create_timer(0.25).timeout
+		spawn_cortina_lodo()
+		
+		if anim.is_playing():
+			await anim.animation_finished
+		else:
+			await get_tree().create_timer(0.4).timeout
+		if current_state == State.DEATH: return
+
+	# Finaliza o combo e entra na caminhada pós-ataque
+	await walk_then_idle()
+
+# Aplica dano direto caso o player esteja no alcance da colisão
+# Mantém a janela de dano ativa por uma fração de segundo durante o avanço do soco
+func apply_direct_hit(dano: int, hit_window: float = 0.2) -> void:
+	var area_de_impacto = punch_hitbox if punch_hitbox else damage_area
+	var timer = 0.0
+	var acertou = false
+	
+	while timer < hit_window and not acertou and current_state != State.DEATH:
+		var bodies = area_de_impacto.get_overlapping_bodies()
+		for b in bodies:
+			if b.is_in_group("player") and b != self and b.has_method("take_damage"):
+				b.take_damage(dano)
+				acertou = true
+				break
+		timer += get_physics_process_delta_time()
+		await get_tree().process_frame
+
 func walk_then_idle(duration: float = walk_duration) -> void:
 	if current_state == State.DEATH:
 		return
@@ -384,12 +497,22 @@ func take_damage(amount):
 	current_geiser_count = roundi(lerp(float(max_geiser_count), float(min_geiser_count), porcentagem_vida))
 	current_geiser_count = clampi(current_geiser_count, min_geiser_count, max_geiser_count)
 	
-	# Hit
+	# --- DIFICULDADE DO ATAQUE DIRETO ---
+	if porcentagem_vida > 0.60:
+		direct_attack_stage = 1 # Vida cheia: 1 golpe direto
+	elif porcentagem_vida > 0.30:
+		direct_attack_stage = 2 # Meia vida: 2 golpes diretos
+	else:
+		direct_attack_stage = 3 # Pouca vida: 2 golpes + slam com cortina de lodo
+
+
 	if current_health<=0:
 		die()
 	
 func flip_sprite(dir):
 	sprite.flip_h = (dir < 0)
+	if has_node("PunchHitbox"):
+		$PunchHitbox.scale.x = -1 if dir < 0 else 1
 
 func die():
 	is_dead = true
@@ -403,3 +526,18 @@ func _on_damage_area_body_entered(body: CharacterBody2D) -> void:
 	if damage_cooldown <= 0.0 and body.has_method("take_damage") and body != self and body.is_in_group("player"):
 		body.take_damage(attack_value)
 		damage_cooldown = 1.0
+		
+# Aplica um impulso curto para frente e o desacelera suavemente
+func step_forward(speed_impulse: float, duration: float = 0.35) -> void:
+	var forward_dir = -1 if sprite.flip_h else 1
+	velocity.x = forward_dir * speed_impulse
+	
+	# Desacelera gradualmente durante a duração do avanço
+	var timer = 0.0
+	while timer < duration and current_state != State.DEATH:
+		var dt = get_physics_process_delta_time()
+		velocity.x = move_toward(velocity.x, 0, (speed_impulse / duration) * dt)
+		timer += dt
+		await get_tree().process_frame
+	
+	velocity.x = 0

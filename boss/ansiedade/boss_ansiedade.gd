@@ -44,6 +44,7 @@ var current_dash_prep: float = 01.0
 # --- Tempos do Teleporte ---
 @export var max_teleport_wait: float = 1.0
 @export var min_teleport_wait: float = 0.2
+@export var min_player_teleport_distance: float = 110.0
 var current_teleport_wait: float = 1.0
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -126,8 +127,20 @@ func _physics_process(delta: float) -> void:
 		
 		State.DASH:
 			anim.play("dash")
-			var step = dash_speed * delta
-			velocity.x = dash_direction * dash_speed
+			# Calcula o quanto falta do dash (de 1.0 no início até 0.0 no fim)
+			var progress_ratio = clamp(dash_distance_left / dash_max_distance, 0.0, 1.0)
+			
+			# Velocidade base mínima para garantir que o boss não pare antes de bater/completar o percurso
+			var min_dash_speed = speed * 0.8
+			var current_speed = dash_speed
+			
+			# Quando faltar menos de 45% do trajeto, inicia a desaceleração suave
+			if progress_ratio < 0.25:
+				var ease_t = progress_ratio / 0.25 # Mapeia de 1.0 a 0.0
+				current_speed = lerp(min_dash_speed, dash_speed, ease_t)
+			
+			var step = current_speed * delta
+			velocity.x = dash_direction * current_speed
 			dash_distance_left -= step
 			
 			if is_on_wall():
@@ -201,14 +214,14 @@ func execute_attack_sequence():
 			
 		State.DASH_PREP:
 			velocity.x = 0
-			anim.play("prep_dash")
-			await get_tree().create_timer(current_dash_prep).timeout
-			if current_state == State.DEATH: return
-			
 			if player:
 				dash_direction = sign(player.global_position.x - global_position.x)
 				if dash_direction == 0: dash_direction = 1
 				flip_sprite(dash_direction)
+			anim.play("prep_dash")
+			await get_tree().create_timer(current_dash_prep).timeout
+			if current_state == State.DEATH: return
+			
 			
 			await get_tree().create_timer(0.5).timeout
 			dash_distance_left = dash_max_distance
@@ -238,33 +251,46 @@ func fire_explosion():
 func teleport_routine():
 	var teleports_done = 0
 	while teleports_done < 3:
-		var rand_x = randf_range(100,1180)
-		while abs(rand_x - global_position.x) < min_teleport_distance:
-			rand_x = randf_range(100,1180)
-		var rand_y = randf_range(300, 550)
-		var target_pos = Vector2(rand_x, rand_y)
-		
-		# aviso teleporte
+		var target_pos = Vector2.ZERO
+		var valid_position = false
+		var attempts = 0
+
+		# Sorteia uma posição válida que fique longe da posição atual do boss E do player
+		while not valid_position and attempts < 30:
+			attempts += 1
+			var rand_x = randf_range(100, 1180)
+			var rand_y = randf_range(300, 550)
+			target_pos = Vector2(rand_x, rand_y)
+
+			var far_from_boss = abs(target_pos.x - global_position.x) >= min_teleport_distance
+			var far_from_player = true
+			
+			if player:
+				far_from_player = target_pos.distance_to(player.global_position) >= min_player_teleport_distance
+
+			if far_from_boss and far_from_player:
+				valid_position = true
+
+		# Aviso teleporte
 		var warning = null
 		if teleport_warning_scene:
 			warning = teleport_warning_scene.instantiate()
 			warning.global_position = target_pos
 			get_parent().add_child(warning)
-		
-		# Adicionado o 'true' no final para respeitar o pause do jogo
+
 		await get_tree().create_timer(current_teleport_wait, false, false, true).timeout
-		
-		if current_state == State.DEATH: return
-		
+
+		if current_state == State.DEATH: 
+			return
+
 		global_position = target_pos
 		teleports_done += 1
-		
+
 		if teleports_done < 3:
-			if current_state == State.DEATH: return
-			
-			# Também atualizado aqui para pausar junto
+			if current_state == State.DEATH: 
+				return
 			await get_tree().create_timer(0.3, false, false, true).timeout
-			
+
 	current_state = State.IDLE
 
 func flip_sprite(dir):

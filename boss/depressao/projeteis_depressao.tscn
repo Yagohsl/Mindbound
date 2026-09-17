@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="2_s1y55"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4yhj4"]
-radius = 15.0
+radius = 23.021729
 
 [node name="ProjeteisDepressao" type="Area2D" unique_id=418479034]
 collision_layer = 4
@@ -12,12 +12,12 @@ collision_mask = 2
 script = ExtResource("1_6p6qy")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1557360139]
-position = Vector2(-5.000004, -6.500002)
-scale = Vector2(0.203125, 0.21093747)
+position = Vector2(5.499999, 4.403846)
+scale = Vector2(0.36718756, 0.38131008)
 texture = ExtResource("2_s1y55")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=633914699]
-position = Vector2(-4, -8)
+position = Vector2(6, 4)
 shape = SubResource("CircleShape2D_4yhj4")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

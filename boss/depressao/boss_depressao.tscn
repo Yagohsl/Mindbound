@@ -8,12 +8,19 @@
 [ext_resource type="PackedScene" uid="uid://cd6itqed0i1i5" path="res://boss/depressao/geiser_lodo.tscn" id="3_ghbpk"]
 [ext_resource type="PackedScene" uid="uid://d28vx5mpaphe8" path="res://boss/depressao/lagrima_projetil.tscn" id="4_jdwoi"]
 [ext_resource type="PackedScene" uid="uid://bn7dugk5jaj85" path="res://utils/minigame_mash.tscn" id="5_b8cq5"]
+[ext_resource type="PackedScene" uid="uid://dkdyy71acm0be" path="res://boss/depressao/cortina_lodo.tscn" id="6_vu1y5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wkc8n"]
 size = Vector2(128, 126.5)
 
 [sub_resource type="Animation" id="Animation_08gmf"]
 resource_name = "attack"
+
+[sub_resource type="Animation" id="Animation_cbvxd"]
+resource_name = "attack_direct"
+
+[sub_resource type="Animation" id="Animation_2xqk7"]
+resource_name = "attack_direct_2"
 
 [sub_resource type="Animation" id="Animation_jdwoi"]
 resource_name = "attack_geiser"
@@ -24,6 +31,9 @@ resource_name = "cast_rain"
 [sub_resource type="Animation" id="Animation_it3oq"]
 resource_name = "idle"
 
+[sub_resource type="Animation" id="Animation_k2xwf"]
+resource_name = "prep_direct"
+
 [sub_resource type="Animation" id="Animation_b8cq5"]
 resource_name = "prep_geiser"
 
@@ -33,23 +43,33 @@ resource_name = "prep_rush"
 [sub_resource type="Animation" id="Animation_micyh"]
 resource_name = "rush"
 
+[sub_resource type="Animation" id="Animation_5gi5q"]
+resource_name = "slam"
+
 [sub_resource type="Animation" id="Animation_ghbpk"]
 resource_name = "walk"
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_08gmf"]
 _data = {
 &"attack": SubResource("Animation_08gmf"),
+&"attack_direct": SubResource("Animation_cbvxd"),
+&"attack_direct_2": SubResource("Animation_2xqk7"),
 &"attack_geiser": SubResource("Animation_jdwoi"),
 &"cast_rain": SubResource("Animation_vu1y5"),
 &"idle": SubResource("Animation_it3oq"),
+&"prep_direct": SubResource("Animation_k2xwf"),
 &"prep_geiser": SubResource("Animation_b8cq5"),
 &"prep_rush": SubResource("Animation_lgje5"),
 &"rush": SubResource("Animation_micyh"),
+&"slam": SubResource("Animation_5gi5q"),
 &"walk": SubResource("Animation_ghbpk")
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_it3oq"]
 size = Vector2(118, 118)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_b8cq5"]
+size = Vector2(183.25, 122)
 
 [node name="BossDepressao" type="CharacterBody2D" unique_id=1277950948]
 collision_layer = 4
@@ -58,6 +78,7 @@ projectile_scene = ExtResource("2_08gmf")
 geiser_scene = ExtResource("3_ghbpk")
 tear_scene = ExtResource("4_jdwoi")
 minigame_scene = ExtResource("5_b8cq5")
+slam_shockwave_scene = ExtResource("6_vu1y5")
 player_icon = ExtResource("2_it3oq")
 boss_icon = ExtResource("1_x5avh")
 
@@ -87,6 +108,14 @@ shape = SubResource("RectangleShape2D_it3oq")
 
 [node name="PontoDeTiro" type="Marker2D" parent="." unique_id=1048686518]
 position = Vector2(-2, -78)
+
+[node name="PunchHitbox" type="Area2D" parent="." unique_id=1147663944]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PunchHitbox" unique_id=1670798826]
+position = Vector2(157.375, 0)
+shape = SubResource("RectangleShape2D_b8cq5")
 
 [connection signal="timeout" from="DecisionTimer" to="." method="_on_decision_timer_timeout"]
 [connection signal="body_entered" from="DamageArea" to="." method="_on_damage_area_body_entered"]
