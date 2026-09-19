@@ -17,6 +17,9 @@ enum State {
 	ATTACK,
 	DEATH
 }
+
+@export var max_health = 100
+@export var current_health = 100
 #var ataque direto
 @export var direct_attack_damage: int = 20
 @export var slam_damage: int = 35
@@ -27,8 +30,7 @@ var direct_attack_stage: int = 1 # 1: 1 golpe | 2: 2 golpes | 3: 2 golpes + slam
 var damage_cooldown: float = 0.0
 signal health_changed(new_health)
 var current_state = State.IDLE
-var max_health = 100
-var current_health = 100
+
 var attack_value = 15
 var is_dead = false
 

@@ -74,6 +74,8 @@ size = Vector2(183.25, 122)
 [node name="BossDepressao" type="CharacterBody2D" unique_id=1277950948]
 collision_layer = 4
 script = ExtResource("1_wkc8n")
+max_health = 300
+current_health = 300
 projectile_scene = ExtResource("2_08gmf")
 geiser_scene = ExtResource("3_ghbpk")
 tear_scene = ExtResource("4_jdwoi")

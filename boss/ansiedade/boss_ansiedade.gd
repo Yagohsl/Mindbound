@@ -16,10 +16,11 @@ enum State {
 	DASH,
 	DEATH
 }
+@export var max_health = 300
+@export var current_health = 300
 signal health_changed(new_health)
 var current_state = State.IDLE
-var max_health = 300
-var current_health = 300
+
 var attack_value = 15
 var is_dead = false
 

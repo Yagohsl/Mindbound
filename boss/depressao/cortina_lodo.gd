@@ -19,7 +19,7 @@ func _on_body_entered(body: Node2D) -> void:
 	# 1. Causa dano no jogador sem sumir (a cortina segue viagem)
 	if body.is_in_group("player"):
 		if body.has_method("take_damage"):
-			body.take_damage(damage)
+			body.take_damage(damage, global_position)
 	
 	# 2. Se colidir com paredes, cenário ou chão, a onda é destruída
 	elif body is StaticBody2D or body is TileMap or body is TileMapLayer:

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b4wir400nniyn"
-path="res://.godot/imported/background1.png-24992aeb0bb496a7a9a3f2c64da97596.ctex"
+uid="uid://bgsc7pb82mw74"
+path="res://.godot/imported/arena_ansiedade.png-ae78841a8ff7f885d7e92db759a4f6ee.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/game/maps/background1.png"
-dest_files=["res://.godot/imported/background1.png-24992aeb0bb496a7a9a3f2c64da97596.ctex"]
+source_file="res://assets/images/game/maps/arena_ansiedade.png"
+dest_files=["res://.godot/imported/arena_ansiedade.png-ae78841a8ff7f885d7e92db759a4f6ee.ctex"]
 
 [params]
 

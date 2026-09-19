@@ -17,7 +17,7 @@ func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		# Aplica dano padrão
 		if body.has_method("take_damage"):
-			body.take_damage(damage)
+			body.take_damage(damage, global_position)
 		
 		# Aplica o efeito de lentidão
 		if body.has_method("apply_slow"):
