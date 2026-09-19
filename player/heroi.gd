@@ -25,6 +25,8 @@ var dash_time_left = 0.0
 var dash_cooldown = 0.0
 var is_invincible: bool = false
 @export var invincibility_time: float = 1.0
+var is_in_knockback: bool = false
+@export var knockback_duration: float = 0.18 # Duração do recuo em segundos
 
 var is_dash_invincible: bool = false
 @export var dash_recovery_time: float = 0.2 # 200 milissegundos extras de invencibilidade
@@ -36,35 +38,53 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if is_trapped:
-		# Mantém apenas a gravidade se estiver caindo
 		if not is_on_floor():
 			velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta
 		else:
 			velocity.x = 0
-			
 		move_and_slide()
 		return
+
 	if is_paralyzed:
-		# Mantém apenas a gravidade se estiver no ar
 		if not is_on_floor():
 			velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta
 		else:
 			velocity.x = 0
 		move_and_slide()
 		return
-		
+
 	if is_dead:
 		if not is_on_floor():
 			velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta 
 		else:
-			velocity.x = 0 # Para de deslizar para os lados quando bater no chão
+			velocity.x = 0
 		move_and_slide()
 		return
-		
+
+	# Gravidade (sempre aplicada fora dos estados especiais)
+	if not is_on_floor():
+		velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta
+
+	# Cooldown do dash
 	if dash_cooldown > 0:
 		dash_cooldown -= delta
-		
-	# ativa o dash
+
+	# Execução do dash
+	if is_dashing:
+		dash_time_left -= delta
+		if dash_time_left <= 0:
+			velocity.x = 0
+			is_dashing = false
+			trigger_dash_recovery()
+		move_and_slide()
+		return
+
+	# Se estiver em knockback, pula o controle de inputs para manter a inércia do impacto
+	if is_in_knockback:
+		move_and_slide()
+		return
+
+	# Ativa o dash
 	if Input.is_action_just_pressed("dash") and not is_dashing and not is_attacking and dash_cooldown <= 0:
 		is_dashing = true
 		dash_time_left = DASH_DURATION
@@ -74,14 +94,6 @@ func _physics_process(delta: float) -> void:
 		velocity.x = dash_dir * DASH_SPEED
 		velocity.y = 0
 		anim.play("dash")
-	
-	# executa o dash
-	if is_dashing:
-		dash_time_left -= delta
-		if dash_time_left <= 0:
-			velocity.x = 0
-			is_dashing = false
-			trigger_dash_recovery() # <--- Adicione esta linha aqui!
 		move_and_slide()
 		return
 
@@ -90,41 +102,34 @@ func _physics_process(delta: float) -> void:
 		is_attacking = true
 		anim.play("attack")
 
-	
-
-	# Adiciona a gravidade.
-	if not is_on_floor():
-		velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta
-
-	# Pulo.
+	# Pulo
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
-		
+
 	# Amortecimento de pulo
 	if Input.is_action_just_released("jump") and velocity.y < 0:
 		velocity.y *= 0.5
 
-	# Movimentacao
+	# Movimentação Horizontal
 	var direction := Input.get_axis("move_left", "move_right")
 	if direction:
-		velocity.x = direction * SPEED * slow_multiplier
-		
-		# Vira o player e a hitbox de ataque junto
+		velocity.x = direction * (SPEED * slow_multiplier)
+
 		if not is_attacking:
 			sprite.flip_h = direction < 0
 			if direction < 0:
-				attack_hitbox.scale.x = -1 # vira pra esquerda
+				attack_hitbox.scale.x = -1
 			else:
-				attack_hitbox.scale.x = 1 # vira pra direita
-			
+				attack_hitbox.scale.x = 1
+
 		if is_on_floor() and not is_attacking:
 			anim.play("run")
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED * slow_multiplier)
 		if is_on_floor() and not is_attacking:
 			anim.play("idle")
-	
-	# Controle de anim aerea
+
+	# Controle de animação aérea
 	if not is_on_floor() and not is_attacking:
 		if velocity.y < 0:
 			anim.play("jump_up")
@@ -133,11 +138,17 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-func take_damage(amount):
+func take_damage(amount, attacker_pos: Vector2 = Vector2.ZERO):
 	if is_invincible or is_dashing or is_dash_invincible or is_dead:
 		return
 	current_health -= amount
 	health_changed.emit(current_health)
+	
+	hitstop(0.08, 0.3)
+	
+	# Aplica o Knockback
+	if attacker_pos != Vector2.ZERO:
+		apply_knockback(attacker_pos)
 	
 	flash()
 	if current_health <= 0:
@@ -145,6 +156,20 @@ func take_damage(amount):
 	else:
 		trigger_invincibility()
 
+func apply_knockback(attacker_pos: Vector2) -> void:
+	is_in_knockback = true
+	
+	var dir_x = sign(global_position.x - attacker_pos.x)
+	if dir_x == 0:
+		dir_x = -1 if sprite.flip_h else 1
+		
+	velocity.x = dir_x * 620.0  # Força horizontal
+	velocity.y = -320.0        # Leve elevação vertical
+	
+	await get_tree().create_timer(knockback_duration).timeout
+	is_in_knockback = false
+	
+	
 func trigger_invincibility():
 	is_invincible = true
 	flash()
@@ -173,6 +198,7 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 func _on_attack_hitbox_body_entered(body: Node2D) -> void:
 	if body.has_method("take_damage") and body != self:
 		body.take_damage(attack_value)
+		hitstop(0.05, 0.09) # Desacelera drasticamente o tempo por ~90 milissegundos
 		
 func trigger_dash_recovery():
 	is_dash_invincible = true
@@ -182,6 +208,7 @@ func trigger_dash_recovery():
 	
 
 func die():
+	Engine.time_scale = 1.0
 	is_dead = true
 	is_invincible = true
 	set_physics_process(false)
@@ -265,3 +292,11 @@ func trap_player() -> void:
 func release_player() -> void:
 	is_trapped = false
 	modulate = Color(1.0, 1.0, 1.0, 1.0)
+	
+# time_factor: velocidade do tempo (0.05 a 0.1 cria a desaceleração quase total)
+# duration: duração do efeito em segundos reais (0.06 a 0.12 segundos é a média do gênero)
+func hitstop(time_factor: float = 0.05, duration: float = 0.08) -> void:
+	Engine.time_scale = time_factor
+	# O 4º parâmetro (true) ignora o time_scale para o temporizador correr no tempo real da vida real
+	await get_tree().create_timer(duration, true, false, true).timeout
+	Engine.time_scale = 1.0

@@ -149,7 +149,7 @@ func _physics_process(delta: float) -> void:
 			var bodies = damage_area.get_overlapping_bodies()
 			for body in bodies:
 				if body.is_in_group("player") and body != self and body.has_method("take_damage"):
-					body.take_damage(attack_value)
+					body.take_damage(attack_value, global_position)
 					damage_cooldown = 1.0 # Garante 1 segundo de intervalo entre hits de contato
 
 	if current_state in [State.IDLE, State.RUN, State.BAD_THOUGHTS]:
@@ -524,7 +524,7 @@ func _on_damage_area_body_entered(body: CharacterBody2D) -> void:
 	if is_dead or player_caught or current_state in [State.BAD_THOUGHTS, State.MINIGAME]:
 		return
 	if damage_cooldown <= 0.0 and body.has_method("take_damage") and body != self and body.is_in_group("player"):
-		body.take_damage(attack_value)
+		body.take_damage(attack_value, global_position)
 		damage_cooldown = 1.0
 		
 # Aplica um impulso curto para frente e o desacelera suavemente

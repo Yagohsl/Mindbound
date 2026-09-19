@@ -39,5 +39,5 @@ func _on_body_entered(body):
 	if body.is_in_group("player"):
 		# Corrigido de 'dashing' para 'is_dashing'
 		if body.has_method("take_damage") and not body.is_dashing:
-			body.take_damage(damage)
+			body.take_damage(damage, global_position)
 			queue_free() # Some ao acertar

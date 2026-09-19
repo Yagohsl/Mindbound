@@ -101,7 +101,7 @@ func _physics_process(delta: float) -> void:
 	
 	var bodies = damage_area.get_overlapping_bodies()
 	for body in bodies:
-		body.take_damage(attack_value)
+		body.take_damage(attack_value, global_position)
 		
 	# execucao da maquina de estados
 	match current_state:
@@ -333,4 +333,4 @@ func die():
 	
 func _on_damage_area_body_entered(body: CharacterBody2D) -> void:
 	if current_state != State.DEATH and body.has_method("take_damage") and body !=self:
-		body.take_damage(attack_value)
+		body.take_damage(attack_value, global_position)
