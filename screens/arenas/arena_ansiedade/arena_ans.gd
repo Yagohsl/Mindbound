@@ -43,8 +43,7 @@ func _on_boss_health_changed(new_health: int) -> void:
 		chefe_derrotado = true
 
 		# Desativa a física do boss imediatamente
-		if boss:
-			boss.set_physics_process(false) 
+		
 			
 		# Faz a Arena esperar a animação de morte do Boss acabar
 		if boss.anim.current_animation == "death" or boss.anim.is_playing():

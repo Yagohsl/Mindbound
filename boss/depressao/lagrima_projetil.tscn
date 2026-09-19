@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://d28vx5mpaphe8"]
 
 [ext_resource type="Script" uid="uid://cr2qxs52jwlap" path="res://boss/depressao/lagrima_projetil.gd" id="1_npy3b"]
-[ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="2_utpxi"]
+[ext_resource type="Texture2D" uid="uid://c06ew3thttcrj" path="res://assets/images/game/fighters/lagrima.png" id="2_npy3b"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_gmd67"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_utpxi"]
 
 [node name="LagrimaProjetil" type="Area2D" unique_id=1236730776]
 collision_layer = 4
@@ -11,12 +11,12 @@ collision_mask = 2
 script = ExtResource("1_npy3b")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1096792473]
-position = Vector2(0.9999995, -1.0000005)
-scale = Vector2(0.15625, 0.15625)
-texture = ExtResource("2_utpxi")
+position = Vector2(1.1920929e-07, -1)
+scale = Vector2(3, 3)
+texture = ExtResource("2_npy3b")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1113239252]
-position = Vector2(1, -1)
-shape = SubResource("CircleShape2D_gmd67")
+position = Vector2(-1, 1)
+shape = SubResource("CapsuleShape2D_utpxi")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

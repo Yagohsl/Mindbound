@@ -1,302 +1,344 @@
 extends CharacterBody2D
 
-const SPEED = 300.0
-const JUMP_VELOCITY = -900.0
-const GRAVITY_MULTIPLIER = 1.8
+# --- SINAIS ---
+signal health_changed(new_health: int)
 
-const DASH_SPEED = 800.0
-const DASH_DURATION = 0.3 # tempo em segundos do dash
+# --- CONFIGURAÇÕES DE MOVIMENTAÇÃO ---
+@export_group("Movimento")
+@export var speed: float = 300.0
+@export var jump_velocity: float = -900.0
+@export var gravity_multiplier: float = 1.8
 
-# Referencias aos nós de sprite e animacao
-@onready var sprite = $Sprite2D
-@onready var anim = $AnimationPlayer
-@onready var attack_hitbox = $AttackHitbox
-@onready var attack_collision = $AttackHitbox/CollisionShape2D # Certifique-se de que o CollisionShape2D seja filho direto da AttackHitbox
+@export_group("Dash")
+@export var dash_speed: float = 800.0
+@export var dash_duration: float = 0.3
+@export var dash_cooldown_time: float = 1.0
+@export var dash_recovery_time: float = 0.2
 
-signal health_changed(new_health)
-var max_health = 100
-var current_health = 100
-var attack_value = 8
-var is_dead: bool = false
-
-var is_attacking = false
-var is_dashing = false
-var dash_time_left = 0.0
-var dash_cooldown = 0.0
-var is_invincible: bool = false
+@export_group("Combate & Vida")
+@export var max_health: int = 100
+@export var attack_value: int = 8
 @export var invincibility_time: float = 1.0
-var is_in_knockback: bool = false
-@export var knockback_duration: float = 0.18 # Duração do recuo em segundos
+@export var knockback_duration: float = 0.18
+@export var knockback_force: Vector2 = Vector2(620.0, -320.0)
 
+# --- NÓS ---
+@onready var sprite: Sprite2D = $Sprite2D
+@onready var anim: AnimationPlayer = $AnimationPlayer
+@onready var attack_hitbox: Area2D = $AttackHitbox
+@onready var attack_collision: CollisionShape2D = $AttackHitbox/CollisionShape2D
+
+# --- ESTADOS & VARIÁVEIS INTERNAS ---
+var current_health: int = 100
+var is_dead: bool = false
+var is_attacking: bool = false
+var is_dashing: bool = false
+var is_invincible: bool = false
 var is_dash_invincible: bool = false
-@export var dash_recovery_time: float = 0.2 # 200 milissegundos extras de invencibilidade
+var is_in_knockback: bool = false
+
+# Efeitos de status
+var is_slowed: bool = false
+var is_paralyzed: bool = false
+var is_trapped: bool = false
+var slow_multiplier: float = 1.0
+
+# Controles de tempo
+var dash_time_left: float = 0.0
+var dash_cooldown: float = 0.0
+
+# Referências de Tweens para evitar conflitos visuais
+var _flash_tween: Tween
+var _status_tween: Tween
+
 
 func _ready() -> void:
-	# Garante que a hitbox começa desativada para não causar dano à toa
+	current_health = max_health
 	if attack_collision:
 		attack_collision.disabled = true
 
+
 func _physics_process(delta: float) -> void:
-	if is_trapped:
-		if not is_on_floor():
-			velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta
-		else:
-			velocity.x = 0
+	# 1. Estados restritivos (Morte, Paralisia, Aprisionado)
+	if is_dead or is_trapped or is_paralyzed:
+		_apply_gravity(delta)
+		if is_on_floor():
+			velocity.x = 0.0
 		move_and_slide()
 		return
 
-	if is_paralyzed:
-		if not is_on_floor():
-			velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta
-		else:
-			velocity.x = 0
+	# 2. Knockback ativo (preserva vetor de impacto)
+	if is_in_knockback:
+		_apply_gravity(delta)
 		move_and_slide()
 		return
 
-	if is_dead:
-		if not is_on_floor():
-			velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta 
-		else:
-			velocity.x = 0
-		move_and_slide()
-		return
-
-	# Gravidade (sempre aplicada fora dos estados especiais)
-	if not is_on_floor():
-		velocity += (get_gravity() * GRAVITY_MULTIPLIER) * delta
-
-	# Cooldown do dash
-	if dash_cooldown > 0:
+	# 3. Temporizadores
+	if dash_cooldown > 0.0:
 		dash_cooldown -= delta
 
-	# Execução do dash
+	# 4. Execução do Dash
 	if is_dashing:
 		dash_time_left -= delta
-		if dash_time_left <= 0:
-			velocity.x = 0
+		if dash_time_left <= 0.0:
+			velocity.x = 0.0
 			is_dashing = false
 			trigger_dash_recovery()
 		move_and_slide()
 		return
 
-	# Se estiver em knockback, pula o controle de inputs para manter a inércia do impacto
-	if is_in_knockback:
+	# 5. Entrada do Dash
+	if Input.is_action_just_pressed("dash") and not is_attacking and dash_cooldown <= 0.0:
+		_start_dash()
 		move_and_slide()
 		return
 
-	# Ativa o dash
-	if Input.is_action_just_pressed("dash") and not is_dashing and not is_attacking and dash_cooldown <= 0:
-		is_dashing = true
-		dash_time_left = DASH_DURATION
-		dash_cooldown = 1.0
-		
-		var dash_dir = -1 if sprite.flip_h else 1
-		velocity.x = dash_dir * DASH_SPEED
-		velocity.y = 0
-		anim.play("dash")
-		move_and_slide()
-		return
+	# 6. Gravidade padrão
+	_apply_gravity(delta)
 
-	# Ataque
+	# 7. Ações de Combate e Pulo
 	if Input.is_action_just_pressed("attack") and not is_attacking:
-		is_attacking = true
-		anim.play("attack")
+		_start_attack()
 
-	# Pulo
 	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
+		velocity.y = jump_velocity
 
-	# Amortecimento de pulo
-	if Input.is_action_just_released("jump") and velocity.y < 0:
+	if Input.is_action_just_released("jump") and velocity.y < 0.0:
 		velocity.y *= 0.5
 
-	# Movimentação Horizontal
-	var direction := Input.get_axis("move_left", "move_right")
-	if direction:
-		velocity.x = direction * (SPEED * slow_multiplier)
+	# 8. Movimentação Horizontal e Animações
+	_handle_movement()
+	_update_air_animations()
 
+	move_and_slide()
+
+
+# --- FÍSICA & CONTROLE AUXILIAR ---
+
+func _apply_gravity(delta: float) -> void:
+	if not is_on_floor():
+		velocity += (get_gravity() * gravity_multiplier) * delta
+
+
+func _handle_movement() -> void:
+	var direction: float = Input.get_axis("move_left", "move_right")
+	var target_speed: float = speed * slow_multiplier
+
+	if direction != 0.0:
+		velocity.x = direction * target_speed
 		if not is_attacking:
-			sprite.flip_h = direction < 0
-			if direction < 0:
-				attack_hitbox.scale.x = -1
-			else:
-				attack_hitbox.scale.x = 1
-
-		if is_on_floor() and not is_attacking:
-			anim.play("run")
+			_set_facing_direction(direction < 0.0)
+			if is_on_floor():
+				anim.play("run")
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED * slow_multiplier)
+		velocity.x = move_toward(velocity.x, 0.0, target_speed)
 		if is_on_floor() and not is_attacking:
 			anim.play("idle")
 
-	# Controle de animação aérea
+
+func _update_air_animations() -> void:
 	if not is_on_floor() and not is_attacking:
-		if velocity.y < 0:
+		if velocity.y < 0.0:
 			anim.play("jump_up")
 		else:
 			anim.play("jump_down")
 
-	move_and_slide()
 
-func take_damage(amount, attacker_pos: Vector2 = Vector2.ZERO):
+func _set_facing_direction(facing_left: bool) -> void:
+	sprite.flip_h = facing_left
+	if attack_hitbox:
+		attack_hitbox.scale.x = -1.0 if facing_left else 1.0
+
+
+func _start_dash() -> void:
+	is_dashing = true
+	dash_time_left = dash_duration
+	dash_cooldown = dash_cooldown_time
+
+	var dash_dir: float = -1.0 if sprite.flip_h else 1.0
+	velocity.x = dash_dir * dash_speed
+	velocity.y = 0.0
+	anim.play("dash")
+
+
+func _start_attack() -> void:
+	is_attacking = true
+	anim.play("attack")
+
+
+# --- COMBATE & DANO ---
+
+func take_damage(amount: int, attacker_pos: Vector2 = Vector2.ZERO) -> void:
 	if is_invincible or is_dashing or is_dash_invincible or is_dead:
 		return
-	current_health -= amount
+
+	current_health = maxi(0, current_health - amount)
 	health_changed.emit(current_health)
-	
+
 	hitstop(0.08, 0.3)
-	
-	# Aplica o Knockback
+
 	if attacker_pos != Vector2.ZERO:
 		apply_knockback(attacker_pos)
-	
+
 	flash()
+
 	if current_health <= 0:
 		die()
 	else:
 		trigger_invincibility()
 
+
 func apply_knockback(attacker_pos: Vector2) -> void:
 	is_in_knockback = true
-	
-	var dir_x = sign(global_position.x - attacker_pos.x)
-	if dir_x == 0:
-		dir_x = -1 if sprite.flip_h else 1
-		
-	velocity.x = dir_x * 620.0  # Força horizontal
-	velocity.y = -320.0        # Leve elevação vertical
-	
-	await get_tree().create_timer(knockback_duration).timeout
+	var dir_x: float = signf(global_position.x - attacker_pos.x)
+	if dir_x == 0.0:
+		dir_x = -1.0 if sprite.flip_h else 1.0
+
+	velocity.x = dir_x * knockback_force.x
+	velocity.y = knockback_force.y
+
+	await get_tree().create_timer(knockback_duration, false).timeout
 	is_in_knockback = false
-	
-	
-func trigger_invincibility():
+
+
+func trigger_invincibility() -> void:
 	is_invincible = true
 	flash()
-	# espera o tempo de invencibilidade acabar
-	await get_tree().create_timer(invincibility_time).timeout
+	await get_tree().create_timer(invincibility_time, false).timeout
 	is_invincible = false
-	
-func flash():
-	var mat = sprite.material
-	if mat:
-		var tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-		tween.tween_property(mat, "shader_parameter/flash_modifier", 1.0, 0.0)
-		tween.tween_property(mat, "shader_parameter/flash_modifier", 0.0, 0.15)
 
 
-func enable_attack_hitbox():
+func trigger_dash_recovery() -> void:
+	is_dash_invincible = true
+	await get_tree().create_timer(dash_recovery_time, false).timeout
+	is_dash_invincible = false
+
+
+func flash() -> void:
+	if not sprite or not sprite.material:
+		return
+
+	# Mata tween ativo para não travar o shader no branco
+	if _flash_tween and _flash_tween.is_valid():
+		_flash_tween.kill()
+
+	_flash_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_flash_tween.tween_property(sprite.material, "shader_parameter/flash_modifier", 1.0, 0.0)
+	_flash_tween.tween_property(sprite.material, "shader_parameter/flash_modifier", 0.0, 0.15)
+
+
+func enable_attack_hitbox() -> void:
 	if attack_collision:
 		attack_collision.disabled = false
+
 
 func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	if anim_name == "attack":
 		is_attacking = false
 		if attack_collision:
-			attack_collision.disabled = true # Desativa a hitbox ao fim do ataque
+			attack_collision.disabled = true
+
 
 func _on_attack_hitbox_body_entered(body: Node2D) -> void:
-	if body.has_method("take_damage") and body != self:
+	if body != self and body.has_method("take_damage"):
 		body.take_damage(attack_value)
-		hitstop(0.05, 0.09) # Desacelera drasticamente o tempo por ~90 milissegundos
-		
-func trigger_dash_recovery():
-	is_dash_invincible = true
-	await get_tree().create_timer(dash_recovery_time).timeout
-	is_dash_invincible = false
-	
-	
+		hitstop(0.05, 0.09)
 
-func die():
+
+func hitstop(time_factor: float = 0.05, duration: float = 0.08) -> void:
+	Engine.time_scale = time_factor
+	await get_tree().create_timer(duration, true, false, true).timeout
+	Engine.time_scale = 1.0
+
+
+func die() -> void:
 	Engine.time_scale = 1.0
 	is_dead = true
 	is_invincible = true
-	set_physics_process(false)
+
+	if attack_collision:
+		attack_collision.disabled = true
 	
+	# Interrompe qualquer animação de transição visual ativa
+	if _flash_tween and _flash_tween.is_valid():
+		_flash_tween.kill()
+	if _status_tween and _status_tween.is_valid():
+		_status_tween.kill()
+
 	if anim:
 		anim.speed_scale = 1.0
-	
-	if sprite.material and sprite:
+
+	if sprite and sprite.material:
 		sprite.material.set_shader_parameter("flash_modifier", 0.0)
 		sprite.material.set_shader_parameter("slow_modifier", 0.0)
-	
+
+	modulate = Color.WHITE
 	anim.play("death")
+
 	await get_tree().create_timer(3.0, false, false, true).timeout
-	
-	# Verificação de segurança: checa se a árvore ainda existe antes de recarregar
 	if get_tree():
 		get_tree().reload_current_scene()
-# LENTIDAO
-var slow_multiplier: float = 1.0
-var is_slowed: bool = false
+
+
+# --- EFEITOS DE STATUS (SLOW, PARALYSIS, TRAP) ---
 
 func apply_slow(factor: float, duration: float) -> void:
-	
+	if is_dead:
+		return
+
 	slow_multiplier = factor
 	is_slowed = true
+
 	if anim:
 		anim.speed_scale = factor
-		
-	# Feedback visual: escurece ou tinge o sprite de roxo/cinza
+
 	if sprite and sprite.material:
-		var tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-		tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 1.0, 0.1)
-	await get_tree().create_timer(duration).timeout
-	
-	# Retorna aos valores normais
+		if _status_tween and _status_tween.is_valid():
+			_status_tween.kill()
+		_status_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		_status_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 1.0, 0.1)
+
+	await get_tree().create_timer(duration, false).timeout
+
 	slow_multiplier = 1.0
 	is_slowed = false
-	modulate = Color(1.0, 1.0, 1.0, 1.0)
+	modulate = Color.WHITE
+
 	if anim:
 		anim.speed_scale = 1.0
-		
+
 	if sprite and sprite.material:
-		var tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-		tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)
+		var reset_tween: Tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		reset_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)
 
-
-var is_paralyzed: bool = false
 
 func apply_paralysis(duration: float) -> void:
 	if is_dead:
 		return
-		
+
 	is_paralyzed = true
-	velocity.x = 0
-	
-	# Feedback visual: congela a animação e aplica tom escuro/preso
+	velocity.x = 0.0
+
 	if anim:
 		anim.pause()
-	if sprite:
-		modulate = Color(0.3, 0.2, 0.4, 1.0)
-	
-	await get_tree().create_timer(duration).timeout
-	
-	# Restaura o estado normal
-	is_paralyzed = false
-	if anim:
-		anim.play()
-	if sprite:
-		modulate = Color(1.0, 1.0, 1.0, 1.0)
+	modulate = Color(0.3, 0.2, 0.4, 1.0)
 
-var is_trapped: bool = false
+	await get_tree().create_timer(duration, false).timeout
+
+	is_paralyzed = false
+	if anim and not is_dead:
+		anim.play()
+	modulate = Color.WHITE
+
 
 func trap_player() -> void:
 	is_trapped = true
 	velocity = Vector2.ZERO
 	if anim:
 		anim.play("idle")
-	# Tinge o herói com uma cor escura/pesada
 	modulate = Color(0.4, 0.2, 0.5, 1.0)
+
 
 func release_player() -> void:
 	is_trapped = false
-	modulate = Color(1.0, 1.0, 1.0, 1.0)
-	
-# time_factor: velocidade do tempo (0.05 a 0.1 cria a desaceleração quase total)
-# duration: duração do efeito em segundos reais (0.06 a 0.12 segundos é a média do gênero)
-func hitstop(time_factor: float = 0.05, duration: float = 0.08) -> void:
-	Engine.time_scale = time_factor
-	# O 4º parâmetro (true) ignora o time_scale para o temporizador correr no tempo real da vida real
-	await get_tree().create_timer(duration, true, false, true).timeout
-	Engine.time_scale = 1.0
+	modulate = Color.WHITE

@@ -9,9 +9,17 @@
 [ext_resource type="PackedScene" uid="uid://d28vx5mpaphe8" path="res://boss/depressao/lagrima_projetil.tscn" id="4_jdwoi"]
 [ext_resource type="PackedScene" uid="uid://bn7dugk5jaj85" path="res://utils/minigame_mash.tscn" id="5_b8cq5"]
 [ext_resource type="PackedScene" uid="uid://dkdyy71acm0be" path="res://boss/depressao/cortina_lodo.tscn" id="6_vu1y5"]
+[ext_resource type="Shader" uid="uid://bcf5ncgdk2chi" path="res://boss/depressao/boss_depressao.gdshader" id="9_lgje5"]
+[ext_resource type="Texture2D" uid="uid://bwasw4lcqwcu6" path="res://assets/images/game/fighters/depressao.png" id="10_micyh"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wkc8n"]
-size = Vector2(128, 126.5)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_micyh"]
+shader = ExtResource("9_lgje5")
+shader_parameter/flash_modifier = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lgje5"]
+radius = 69.0
+height = 203.5
 
 [sub_resource type="Animation" id="Animation_08gmf"]
 resource_name = "attack"
@@ -65,8 +73,9 @@ _data = {
 &"walk": SubResource("Animation_ghbpk")
 }
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_it3oq"]
-size = Vector2(118, 118)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_micyh"]
+radius = 66.0
+height = 202.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_b8cq5"]
 size = Vector2(183.25, 122)
@@ -85,11 +94,14 @@ player_icon = ExtResource("2_it3oq")
 boss_icon = ExtResource("1_x5avh")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1532918408]
-texture = ExtResource("1_x5avh")
+material = SubResource("ShaderMaterial_micyh")
+position = Vector2(-3, -19)
+scale = Vector2(4, 4)
+texture = ExtResource("10_micyh")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=847276946]
-position = Vector2(-1, 0.25)
-shape = SubResource("RectangleShape2D_wkc8n")
+position = Vector2(2, 3)
+shape = SubResource("CapsuleShape2D_lgje5")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=768761343]
 libraries/ = SubResource("AnimationLibrary_08gmf")
@@ -103,8 +115,8 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=499128787]
-position = Vector2(0, -2)
-shape = SubResource("RectangleShape2D_it3oq")
+position = Vector2(0, 1)
+shape = SubResource("CapsuleShape2D_micyh")
 
 [node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("3_02aa7")]
 
