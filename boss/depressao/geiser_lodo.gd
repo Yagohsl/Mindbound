@@ -2,7 +2,7 @@ extends Area2D
 
 @export var damage: int = 20
 @export var paralyze_duration: float = 1.8
-@export var telegraph_time: float = 0.8
+@export var telegraph_time: float = 1.2
 
 @onready var collision = $CollisionShape2D
 @onready var sprite = $Sprite2D
@@ -10,23 +10,17 @@ extends Area2D
 func _ready() -> void:
 	# Começa desativado para o jogador poder ver o aviso no chão e desviar
 	collision.disabled = true
-	modulate = Color(0.4, 0.2, 0.6, 0.5) # Cor translúcida de aviso
-	
+	$AnimationPlayer.play("preparacao")
+
 	# Tempo de aviso antes da erupção
 	await get_tree().create_timer(telegraph_time).timeout
 	
+
 	erupt()
 
 func erupt() -> void:
-	modulate = Color(0.2, 0.05, 0.3, 1.0) # Cor sólida do lodo
-	collision.disabled = false
-	
-	# Se tiver animação de subida do gêiser, execute-a aqui:
-	# $AnimationPlayer.play("erupcao")
-	
-	# Tempo que o gêiser fica ativo causando dano/paralisia
-	await get_tree().create_timer(0.4).timeout
-	collision.disabled = true
+	$AnimationPlayer.play("erupcao")
+	await $AnimationPlayer.animation_finished
 	
 	# Pequeno fade out antes de sumir
 	var tween = create_tween()

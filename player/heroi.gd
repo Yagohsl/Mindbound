@@ -321,14 +321,14 @@ func apply_paralysis(duration: float) -> void:
 
 	if anim:
 		anim.pause()
-	modulate = Color(0.3, 0.2, 0.4, 1.0)
-
+		
+	turn_purple()
 	await get_tree().create_timer(duration, false).timeout
 
 	is_paralyzed = false
 	if anim and not is_dead:
 		anim.play()
-	modulate = Color.WHITE
+	turn_white()
 
 
 func trap_player() -> void:
@@ -336,9 +336,29 @@ func trap_player() -> void:
 	velocity = Vector2.ZERO
 	if anim:
 		anim.play("idle")
-	modulate = Color(0.4, 0.2, 0.5, 1.0)
+		
+	if sprite and sprite.material:
+		if _status_tween and _status_tween.is_valid():
+			_status_tween.kill()
+		_status_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		_status_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 1.0, 0.1)
+
 
 
 func release_player() -> void:
 	is_trapped = false
-	modulate = Color.WHITE
+	if sprite and sprite.material:
+		var reset_tween: Tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		reset_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)
+
+func turn_purple():
+	if sprite and sprite.material:
+		if _status_tween and _status_tween.is_valid():
+			_status_tween.kill()
+		_status_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		_status_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 1.0, 0.1)
+
+func turn_white():
+	if sprite and sprite.material:
+		var reset_tween: Tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		reset_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)

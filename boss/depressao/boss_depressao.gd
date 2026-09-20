@@ -173,9 +173,9 @@ func _on_decision_timer_timeout() -> void:
 	
 	var choices: Array[State] = [
 		State.GEISER_PREP, 
-		State.PROJECTILE, 
-		State.RAIN, 
-		State.DIRECT_ATTACK_PREP
+		#State.PROJECTILE, 
+		#State.RAIN, 
+		#State.DIRECT_ATTACK_PREP
 	]
 	
 	var life_percent: float = float(current_health) / float(max_health)
