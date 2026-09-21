@@ -21,8 +21,20 @@ shader_parameter/flash_color = Color(1, 1, 1, 1)
 radius = 69.0
 height = 203.5
 
-[sub_resource type="Animation" id="Animation_08gmf"]
-resource_name = "attack"
+[sub_resource type="Animation" id="Animation_na5u2"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
 
 [sub_resource type="Animation" id="Animation_cbvxd"]
 resource_name = "attack_direct"
@@ -38,6 +50,20 @@ resource_name = "cast_rain"
 
 [sub_resource type="Animation" id="Animation_it3oq"]
 resource_name = "idle"
+length = 1.5333333
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4, 0.8, 1.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
 
 [sub_resource type="Animation" id="Animation_k2xwf"]
 resource_name = "prep_direct"
@@ -48,18 +74,49 @@ resource_name = "prep_geiser"
 [sub_resource type="Animation" id="Animation_lgje5"]
 resource_name = "prep_rush"
 
+[sub_resource type="Animation" id="Animation_al5qb"]
+resource_name = "prep_throw_projectile"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+
 [sub_resource type="Animation" id="Animation_micyh"]
 resource_name = "rush"
 
 [sub_resource type="Animation" id="Animation_5gi5q"]
 resource_name = "slam"
 
+[sub_resource type="Animation" id="Animation_08gmf"]
+resource_name = "throw_projectile"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [5]
+}
+
 [sub_resource type="Animation" id="Animation_ghbpk"]
 resource_name = "walk"
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_08gmf"]
 _data = {
-&"attack": SubResource("Animation_08gmf"),
+&"RESET": SubResource("Animation_na5u2"),
 &"attack_direct": SubResource("Animation_cbvxd"),
 &"attack_direct_2": SubResource("Animation_2xqk7"),
 &"attack_geiser": SubResource("Animation_jdwoi"),
@@ -68,8 +125,10 @@ _data = {
 &"prep_direct": SubResource("Animation_k2xwf"),
 &"prep_geiser": SubResource("Animation_b8cq5"),
 &"prep_rush": SubResource("Animation_lgje5"),
+&"prep_throw_projectile": SubResource("Animation_al5qb"),
 &"rush": SubResource("Animation_micyh"),
 &"slam": SubResource("Animation_5gi5q"),
+&"throw_projectile": SubResource("Animation_08gmf"),
 &"walk": SubResource("Animation_ghbpk")
 }
 
@@ -98,6 +157,8 @@ material = SubResource("ShaderMaterial_micyh")
 position = Vector2(-3, -19)
 scale = Vector2(4, 4)
 texture = ExtResource("10_micyh")
+hframes = 4
+vframes = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=847276946]
 position = Vector2(2, 3)
@@ -121,14 +182,15 @@ shape = SubResource("CapsuleShape2D_micyh")
 [node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("3_02aa7")]
 
 [node name="PontoDeTiro" type="Marker2D" parent="." unique_id=1048686518]
-position = Vector2(-2, -78)
+position = Vector2(84, -68)
 
 [node name="PunchHitbox" type="Area2D" parent="." unique_id=1147663944]
+position = Vector2(0, -80)
 collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PunchHitbox" unique_id=1670798826]
-position = Vector2(157.375, 0)
+position = Vector2(160, 99)
 shape = SubResource("RectangleShape2D_b8cq5")
 
 [connection signal="timeout" from="DecisionTimer" to="." method="_on_decision_timer_timeout"]

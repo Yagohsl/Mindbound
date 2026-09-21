@@ -337,19 +337,12 @@ func trap_player() -> void:
 	if anim:
 		anim.play("idle")
 		
-	if sprite and sprite.material:
-		if _status_tween and _status_tween.is_valid():
-			_status_tween.kill()
-		_status_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-		_status_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 1.0, 0.1)
-
+	turn_purple()
 
 
 func release_player() -> void:
 	is_trapped = false
-	if sprite and sprite.material:
-		var reset_tween: Tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-		reset_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)
+	turn_white()
 
 func turn_purple():
 	if sprite and sprite.material:

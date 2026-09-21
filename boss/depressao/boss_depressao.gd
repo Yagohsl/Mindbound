@@ -172,8 +172,8 @@ func _on_decision_timer_timeout() -> void:
 	decision_timer.stop()
 	
 	var choices: Array[State] = [
-		State.GEISER_PREP, 
-		#State.PROJECTILE, 
+		#State.GEISER_PREP, 
+		State.PROJECTILE, 
 		#State.RAIN, 
 		#State.DIRECT_ATTACK_PREP
 	]
@@ -189,11 +189,18 @@ func _on_decision_timer_timeout() -> void:
 func execute_attack_sequence() -> void:
 	match current_state:
 		State.PROJECTILE:
+			if player:
+				flip_sprite(player.global_position.x - global_position.x)
+			
 			velocity.x = 0.0
-			anim.play("attack")
+			anim.play("prep_throw_projectile")
+			await get_tree().create_timer(0.5).timeout
+
+			anim.play("throw_projectile")
 			fire_lodo()
-			await anim.animation_finished
+			await get_tree().create_timer(0.7).timeout
 			if current_state == State.DEATH: return
+			anim.play("idle")
 			await walk_then_idle()
 
 		State.GEISER_PREP:
@@ -227,7 +234,6 @@ func execute_attack_sequence() -> void:
 
 		State.RAIN:
 			velocity.x = 0.0
-			anim.play("cast_rain")
 			await start_tear_rain()
 			if current_state == State.DEATH: return
 			await walk_then_idle()
@@ -298,7 +304,6 @@ func fire_lodo() -> void:
 	if proj.has_method("setup"):
 		proj.setup(dir)
 	
-	flip_sprite(dir.x)
 
 
 func spawn_geiser() -> void:
@@ -524,6 +529,8 @@ func flip_sprite(dir: float) -> void:
 	sprite.flip_h = (dir < 0.0)
 	if punch_hitbox:
 		punch_hitbox.scale.x = -1.0 if dir < 0.0 else 1.0
+	if ponto_de_tiro:
+		ponto_de_tiro.position.x = -abs(ponto_de_tiro.position.x) if dir < 0 else abs(ponto_de_tiro.position.x)
 
 
 func die() -> void:
