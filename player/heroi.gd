@@ -336,14 +336,19 @@ func trap_player() -> void:
 	velocity = Vector2.ZERO
 	if anim:
 		anim.play("idle")
-		
 	turn_purple()
 
 
 func release_player() -> void:
 	is_trapped = false
+	is_paralyzed = false
+	slow_multiplier = 1.0 # Garante que a velocidade não fique travada em zero
+	
+	if anim and not is_dead:
+		anim.speed_scale = 1.0
+		anim.play("idle")
+		
 	turn_white()
-
 func turn_purple():
 	if sprite and sprite.material:
 		if _status_tween and _status_tween.is_valid():

@@ -72,7 +72,6 @@ enum State {
 @onready var damage_area: Area2D = $DamageArea
 @onready var ponto_de_tiro: Marker2D = get_node_or_null("PontoDeTiro")
 @onready var punch_hitbox: Area2D = get_node_or_null("PunchHitbox")
-
 # --- VARIÁVEIS DE CONTROLE INTERNO ---
 var current_state: State = State.IDLE
 var is_dead: bool = false
@@ -173,9 +172,9 @@ func _on_decision_timer_timeout() -> void:
 	
 	var choices: Array[State] = [
 		#State.GEISER_PREP, 
-		State.PROJECTILE, 
+		#State.PROJECTILE, 
 		#State.RAIN, 
-		#State.DIRECT_ATTACK_PREP
+		State.DIRECT_ATTACK_PREP
 	]
 	
 	var life_percent: float = float(current_health) / float(max_health)
@@ -288,6 +287,7 @@ func execute_attack_sequence() -> void:
 			await run_direct_attack_combo()
 
 
+
 # --- ROTINAS ESPECÍFICAS DE ATAQUE ---
 
 func fire_lodo() -> void:
@@ -345,36 +345,49 @@ func trigger_thoughts_minigame(target_player: CharacterBody2D) -> void:
 	current_state = State.MINIGAME
 	velocity.x = 0.0
 	
-	if target_player.has_method("trap_player"):
+	# Trava o jogador
+	if is_instance_valid(target_player) and target_player.has_method("trap_player"):
 		target_player.trap_player()
 	
+	# Caso a cena não tenha sido colocada no Inspector
 	if not minigame_scene:
-		if target_player.has_method("release_player"):
+		if is_instance_valid(target_player) and target_player.has_method("release_player"):
 			target_player.release_player()
 		player_caught = false
 		await walk_then_idle()
 		return
-		
+
 	var minigame: Node = minigame_scene.instantiate()
 	get_parent().add_child(minigame)
+	
 	if minigame.has_method("start_minigame"):
 		minigame.start_minigame()
 	
-	var success: bool = await minigame.minigame_resolved
+	# Aguarda resolução do minigame com trava de segurança
+	var success: bool = false
+	if minigame.has_signal("minigame_resolved"):
+		success = await minigame.minigame_resolved
+	else:
+		# Fallback se a cena do minigame estiver sem o sinal configurado
+		await get_tree().create_timer(2.0).timeout
 	
-	if target_player.has_method("release_player"):
+	# LIBERAÇÃO OBRIGATÓRIA DO JOGADOR
+	if is_instance_valid(target_player) and target_player.has_method("release_player"):
 		target_player.release_player()
 		
+	# Consequências de vitória/derrota
 	if not success:
-		if target_player.has_method("take_damage"):
-			target_player.take_damage(smash_heavy_damage)
+		if is_instance_valid(target_player) and target_player.has_method("take_damage"):
+			target_player.take_damage(smash_heavy_damage, global_position)
 	else:
 		velocity.x = -rush_direction * 250.0
-		
+
 	damage_cooldown = 1.2
 	player_caught = false
 	
-	if current_state == State.DEATH: return
+	if current_state == State.DEATH:
+		return
+		
 	await walk_then_idle()
 
 
@@ -384,10 +397,9 @@ func run_direct_attack_combo() -> void:
 	step_forward(punch_forward_impulse, 0.25)
 	apply_direct_hit(direct_attack_damage, 0.25)
 	
-	if anim.is_playing() and anim.current_animation == "attack_direct":
-		await anim.animation_finished
-	else:
-		await get_tree().create_timer(0.35).timeout
+	anim.play("attack_direct")
+	await anim.animation_finished
+	
 	if current_state == State.DEATH: return
 
 	# Golpe 2
@@ -451,7 +463,7 @@ func apply_direct_hit(dano: int, hit_window: float = 0.2) -> void:
 	while timer < hit_window and not acertou and current_state != State.DEATH:
 		for b in area.get_overlapping_bodies():
 			if b.is_in_group("player") and b != self and b.has_method("take_damage"):
-				b.take_damage(dano)
+				b.take_damage(dano, global_position)
 				acertou = true
 				break
 		timer += get_physics_process_delta_time()
@@ -475,11 +487,12 @@ func step_forward(speed_impulse: float, duration: float = 0.35) -> void:
 func walk_then_idle(duration: float = walk_duration) -> void:
 	if current_state == State.DEATH:
 		return
-		
+	
 	walk_direction = [-1, 1].pick_random()
-	flip_sprite(walk_direction)
 	
 	await get_tree().create_timer(0.6).timeout
+	anim.play("idle")
+	flip_sprite(walk_direction)
 	if current_state == State.DEATH: return
 	
 	current_state = State.RUN

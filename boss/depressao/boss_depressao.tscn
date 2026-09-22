@@ -38,9 +38,35 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_cbvxd"]
 resource_name = "attack_direct"
+length = 0.8333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [9]
+}
 
 [sub_resource type="Animation" id="Animation_2xqk7"]
 resource_name = "attack_direct_2"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [10]
+}
 
 [sub_resource type="Animation" id="Animation_jdwoi"]
 resource_name = "attack_geiser"
@@ -67,6 +93,18 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_k2xwf"]
 resource_name = "prep_direct"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
 
 [sub_resource type="Animation" id="Animation_b8cq5"]
 resource_name = "prep_geiser"
@@ -111,9 +149,6 @@ tracks/0/keys = {
 "values": [5]
 }
 
-[sub_resource type="Animation" id="Animation_ghbpk"]
-resource_name = "walk"
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_08gmf"]
 _data = {
 &"RESET": SubResource("Animation_na5u2"),
@@ -128,8 +163,7 @@ _data = {
 &"prep_throw_projectile": SubResource("Animation_al5qb"),
 &"rush": SubResource("Animation_micyh"),
 &"slam": SubResource("Animation_5gi5q"),
-&"throw_projectile": SubResource("Animation_08gmf"),
-&"walk": SubResource("Animation_ghbpk")
+&"throw_projectile": SubResource("Animation_08gmf")
 }
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_micyh"]
@@ -137,7 +171,7 @@ radius = 66.0
 height = 202.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_b8cq5"]
-size = Vector2(183.25, 122)
+size = Vector2(187.75, 122)
 
 [node name="BossDepressao" type="CharacterBody2D" unique_id=1277950948]
 collision_layer = 4
@@ -154,14 +188,14 @@ boss_icon = ExtResource("1_x5avh")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1532918408]
 material = SubResource("ShaderMaterial_micyh")
-position = Vector2(-3, -19)
 scale = Vector2(4, 4)
 texture = ExtResource("10_micyh")
 hframes = 4
-vframes = 2
+vframes = 3
+region_rect = Rect2(0, 192, 105, 64)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=847276946]
-position = Vector2(2, 3)
+position = Vector2(10, 23)
 shape = SubResource("CapsuleShape2D_lgje5")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=768761343]
@@ -176,13 +210,13 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=499128787]
-position = Vector2(0, 1)
+position = Vector2(17, 17)
 shape = SubResource("CapsuleShape2D_micyh")
 
 [node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("3_02aa7")]
 
 [node name="PontoDeTiro" type="Marker2D" parent="." unique_id=1048686518]
-position = Vector2(84, -68)
+position = Vector2(109, -48)
 
 [node name="PunchHitbox" type="Area2D" parent="." unique_id=1147663944]
 position = Vector2(0, -80)
@@ -190,7 +224,7 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PunchHitbox" unique_id=1670798826]
-position = Vector2(160, 99)
+position = Vector2(143.125, 108)
 shape = SubResource("RectangleShape2D_b8cq5")
 
 [connection signal="timeout" from="DecisionTimer" to="." method="_on_decision_timer_timeout"]

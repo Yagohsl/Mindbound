@@ -31,7 +31,7 @@ shader = SubResource("Shader_u8108")
 shader_parameter/flash_modifier = 0.0
 shader_parameter/flash_color = Color(1, 1, 1, 1)
 shader_parameter/slow_modifier = 0.0
-shader_parameter/slow_color = Color(0.4, 0.3, 0.7, 1)
+shader_parameter/slow_color = Color(0.11063597, 0.24441376, 0.5846228, 1)
 
 [sub_resource type="Animation" id="Animation_u8108"]
 length = 0.001
