@@ -8,7 +8,6 @@
 [ext_resource type="PackedScene" uid="uid://cd6itqed0i1i5" path="res://boss/depressao/geiser_lodo.tscn" id="3_ghbpk"]
 [ext_resource type="PackedScene" uid="uid://d28vx5mpaphe8" path="res://boss/depressao/lagrima_projetil.tscn" id="4_jdwoi"]
 [ext_resource type="PackedScene" uid="uid://bn7dugk5jaj85" path="res://utils/minigame_mash.tscn" id="5_b8cq5"]
-[ext_resource type="PackedScene" uid="uid://dkdyy71acm0be" path="res://boss/depressao/cortina_lodo.tscn" id="6_vu1y5"]
 [ext_resource type="Shader" uid="uid://bcf5ncgdk2chi" path="res://boss/depressao/boss_depressao.gdshader" id="9_lgje5"]
 [ext_resource type="Texture2D" uid="uid://bwasw4lcqwcu6" path="res://assets/images/game/fighters/depressao.png" id="10_micyh"]
 
@@ -46,10 +45,10 @@ tracks/0/path = NodePath("Sprite2D:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.033333335),
+"transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [9]
+"values": [9, 11]
 }
 
 [sub_resource type="Animation" id="Animation_2xqk7"]
@@ -65,7 +64,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [10]
+"values": [12]
 }
 
 [sub_resource type="Animation" id="Animation_jdwoi"]
@@ -73,6 +72,9 @@ resource_name = "attack_geiser"
 
 [sub_resource type="Animation" id="Animation_vu1y5"]
 resource_name = "cast_rain"
+
+[sub_resource type="Animation" id="Animation_fqon8"]
+resource_name = "death"
 
 [sub_resource type="Animation" id="Animation_it3oq"]
 resource_name = "idle"
@@ -103,7 +105,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [8]
+"values": [10]
 }
 
 [sub_resource type="Animation" id="Animation_b8cq5"]
@@ -124,7 +126,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [4]
+"values": [5]
 }
 
 [sub_resource type="Animation" id="Animation_micyh"]
@@ -132,6 +134,18 @@ resource_name = "rush"
 
 [sub_resource type="Animation" id="Animation_5gi5q"]
 resource_name = "slam"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.26666668),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [13, 14]
+}
 
 [sub_resource type="Animation" id="Animation_08gmf"]
 resource_name = "throw_projectile"
@@ -146,7 +160,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [5]
+"values": [6]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_08gmf"]
@@ -156,6 +170,7 @@ _data = {
 &"attack_direct_2": SubResource("Animation_2xqk7"),
 &"attack_geiser": SubResource("Animation_jdwoi"),
 &"cast_rain": SubResource("Animation_vu1y5"),
+&"death": SubResource("Animation_fqon8"),
 &"idle": SubResource("Animation_it3oq"),
 &"prep_direct": SubResource("Animation_k2xwf"),
 &"prep_geiser": SubResource("Animation_b8cq5"),
@@ -171,18 +186,17 @@ radius = 66.0
 height = 202.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_b8cq5"]
-size = Vector2(187.75, 122)
+size = Vector2(187.75, 132)
 
 [node name="BossDepressao" type="CharacterBody2D" unique_id=1277950948]
 collision_layer = 4
 script = ExtResource("1_wkc8n")
-max_health = 300
-current_health = 300
 projectile_scene = ExtResource("2_08gmf")
 geiser_scene = ExtResource("3_ghbpk")
 tear_scene = ExtResource("4_jdwoi")
 minigame_scene = ExtResource("5_b8cq5")
-slam_shockwave_scene = ExtResource("6_vu1y5")
+max_health = 300
+speed = 60.0
 player_icon = ExtResource("2_it3oq")
 boss_icon = ExtResource("1_x5avh")
 
@@ -190,7 +204,7 @@ boss_icon = ExtResource("1_x5avh")
 material = SubResource("ShaderMaterial_micyh")
 scale = Vector2(4, 4)
 texture = ExtResource("10_micyh")
-hframes = 4
+hframes = 5
 vframes = 3
 region_rect = Rect2(0, 192, 105, 64)
 
@@ -224,7 +238,7 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PunchHitbox" unique_id=1670798826]
-position = Vector2(143.125, 108)
+position = Vector2(141, 122)
 shape = SubResource("RectangleShape2D_b8cq5")
 
 [connection signal="timeout" from="DecisionTimer" to="." method="_on_decision_timer_timeout"]

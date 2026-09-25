@@ -196,6 +196,7 @@ script = ExtResource("1_3dk8s")
 dash_speed = 800.0
 projectile_scene = ExtResource("2_eu3k4")
 teleport_warning_scene = ExtResource("3_qn562")
+max_health = 300
 player_icon = ExtResource("4_s2rrd")
 boss_icon = ExtResource("5_8q71c")
 
