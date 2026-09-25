@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://btu46khcrufha"]
+
+[ext_resource type="Script" uid="uid://br2lxqup6br68" path="res://boss/tdah/boss_tdah.gd" id="1_0wfnf"]
+[ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="1_n0li8"]
+[ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="3_3k1gq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j4xav"]
+size = Vector2(113, 109)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0wfnf"]
+size = Vector2(114.25, 109)
+
+[node name="BossTDAH" type="CharacterBody2D" unique_id=1682566602]
+script = ExtResource("1_0wfnf")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1446475038]
+texture = ExtResource("1_n0li8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=518750685]
+position = Vector2(-0.5, -0.5)
+shape = SubResource("RectangleShape2D_j4xav")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1808241879]
+
+[node name="Timer" type="Timer" parent="." unique_id=131605819]
+
+[node name="DamageArea" type="Area2D" parent="." unique_id=2040651919]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=1979687062]
+position = Vector2(0.875, 2)
+shape = SubResource("RectangleShape2D_0wfnf")
+
+[node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("3_3k1gq")]
