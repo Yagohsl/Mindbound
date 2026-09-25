@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://dkdyy71acm0be"]
 
 [ext_resource type="Script" uid="uid://b03vi473goekm" path="res://boss/depressao/cortina_lodo.gd" id="1_j6r3t"]
-[ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="2_4qfkf"]
+[ext_resource type="Texture2D" uid="uid://bteevv1ru8xkk" path="res://assets/images/game/fighters/wave_depressao.png" id="2_4qfkf"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wwy16"]
-size = Vector2(113, 200)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wwy16"]
+radius = 89.0
+height = 182.0
 
 [node name="CortinaLodo" type="Area2D" unique_id=1769192299]
 collision_layer = 4
@@ -12,13 +13,12 @@ collision_mask = 2
 script = ExtResource("1_j6r3t")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=2100228076]
-modulate = Color(0.050980393, 0.27058825, 1, 1)
-position = Vector2(0, -45.000008)
-scale = Vector2(1, 1.7031249)
+position = Vector2(-8, 3.999999)
+scale = Vector2(3.4843748, 3.484375)
 texture = ExtResource("2_4qfkf")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=120649720]
-position = Vector2(-1.5, -42)
-shape = SubResource("RectangleShape2D_wwy16")
+position = Vector2(12, 25)
+shape = SubResource("CapsuleShape2D_wwy16")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

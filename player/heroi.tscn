@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://dajt7u4yecx0v" path="res://assets/images/game/fighters/hero-resized.png" id="1_k7ye4"]
 [ext_resource type="Script" uid="uid://vfljxdeqmhv0" path="res://player/heroi.gd" id="1_u8108"]
+[ext_resource type="Texture2D" uid="uid://b15aprtngop8q" path="res://assets/images/game/fighters/hit_slash.png" id="2_sls64"]
 
 [sub_resource type="Shader" id="Shader_u8108"]
 code = "shader_type canvas_item;
@@ -34,7 +35,7 @@ shader_parameter/slow_modifier = 0.0
 shader_parameter/slow_color = Color(0.11063597, 0.24441376, 0.5846228, 1)
 
 [sub_resource type="Animation" id="Animation_u8108"]
-length = 0.001
+length = 0.7
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -46,6 +47,30 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Attack:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Attack:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [29]
 }
 
 [sub_resource type="Animation" id="Animation_7ymrh"]
@@ -76,6 +101,30 @@ tracks/1/keys = {
 "args": [],
 "method": &"enable_attack_hitbox"
 }]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Attack:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.31, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Attack:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.2, 0.23333333, 0.43333334, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
 }
 
 [sub_resource type="Animation" id="Animation_fpdxe"]
@@ -192,6 +241,15 @@ size = Vector2(179, 156.5)
 [node name="Heroi" type="CharacterBody2D" unique_id=1426187125 groups=["player"]]
 collision_layer = 2
 script = ExtResource("1_u8108")
+attack_value = 8
+
+[node name="Attack" type="Sprite2D" parent="." unique_id=1223419561]
+visible = false
+position = Vector2(23.500008, -2)
+scale = Vector2(2.9044118, 3)
+texture = ExtResource("2_sls64")
+hframes = 4
+frame = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=415706927]
 material = SubResource("ShaderMaterial_7ymrh")

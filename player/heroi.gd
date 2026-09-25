@@ -17,7 +17,7 @@ signal health_changed(new_health: int)
 
 @export_group("Combate & Vida")
 @export var max_health: int = 100
-@export var attack_value: int = 8
+@export var attack_value: int = 98
 @export var invincibility_time: float = 1.0
 @export var knockback_duration: float = 0.18
 @export var knockback_force: Vector2 = Vector2(620.0, -320.0)
@@ -27,7 +27,7 @@ signal health_changed(new_health: int)
 @onready var anim: AnimationPlayer = $AnimationPlayer
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var attack_collision: CollisionShape2D = $AttackHitbox/CollisionShape2D
-
+@onready var attack = $Attack # Referência ao nó do impacto
 # --- ESTADOS & VARIÁVEIS INTERNAS ---
 var current_health: int = 100
 var is_dead: bool = false
@@ -148,6 +148,9 @@ func _set_facing_direction(facing_left: bool) -> void:
 	sprite.flip_h = facing_left
 	if attack_hitbox:
 		attack_hitbox.scale.x = -1.0 if facing_left else 1.0
+	if attack:
+		attack.flip_h = facing_left
+		attack.position.x = -abs(attack.position.x) if facing_left else abs(attack.position.x)
 
 
 func _start_dash() -> void:
@@ -241,7 +244,7 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 
 func _on_attack_hitbox_body_entered(body: Node2D) -> void:
 	if body != self and body.has_method("take_damage"):
-		body.take_damage(attack_value)
+		body.take_damage(attack_value, global_position)
 		hitstop(0.05, 0.09)
 
 
