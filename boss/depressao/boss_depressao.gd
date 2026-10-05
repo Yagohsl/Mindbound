@@ -148,9 +148,9 @@ func _on_decision_timer_timeout() -> void:
 	decision_timer.stop()
 	
 	var choices: Array[State] = [
-		State.GEISER_PREP, 
-		State.PROJECTILE, 
-		State.RAIN, 
+		#State.GEISER_PREP, 
+		#State.PROJECTILE, 
+		#State.RAIN, 
 		State.DIRECT_ATTACK_PREP
 	]
 	
@@ -405,7 +405,7 @@ func spawn_cortina_lodo() -> void:
 		
 	for dir in [-1, 1]:
 		var wave: Node2D = slam_shockwave_scene.instantiate()
-		wave.global_position = Vector2(global_position.x + (dir * 40.0), global_position.y)
+		wave.global_position = Vector2(global_position.x + (dir * 40.0), global_position.y + 10.0)
 		if wave.has_method("setup"):
 			wave.setup(dir)
 		get_parent().add_child(wave)

@@ -2,15 +2,16 @@ extends Area2D
 
 @export var speed: float = 350.0
 @export var damage: int = 25
+@onready var anim = $AnimationPlayer
 
 var move_direction: int = 1
+func _ready() -> void:
+	anim.play("idle")
 
 func setup(dir: int) -> void:
 	move_direction = dir
-	if has_node("Sprite2D"):
-		$Sprite2D.flip_h = (dir < 0)
-	elif has_node("AnimatedSprite2D"):
-		$AnimatedSprite2D.flip_h = (dir < 0)
+	scale.x = abs(scale.x) * (-1 if dir < 0 else 1)
+
 
 func _physics_process(delta: float) -> void:
 	global_position.x += move_direction * speed * delta

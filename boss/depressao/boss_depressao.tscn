@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://cd6itqed0i1i5" path="res://boss/depressao/geiser_lodo.tscn" id="3_ghbpk"]
 [ext_resource type="PackedScene" uid="uid://d28vx5mpaphe8" path="res://boss/depressao/lagrima_projetil.tscn" id="4_jdwoi"]
 [ext_resource type="PackedScene" uid="uid://bn7dugk5jaj85" path="res://utils/minigame_mash.tscn" id="5_b8cq5"]
+[ext_resource type="PackedScene" uid="uid://dkdyy71acm0be" path="res://boss/depressao/cortina_lodo.tscn" id="6_micyh"]
 [ext_resource type="Shader" uid="uid://bcf5ncgdk2chi" path="res://boss/depressao/boss_depressao.gdshader" id="9_lgje5"]
 [ext_resource type="Texture2D" uid="uid://bwasw4lcqwcu6" path="res://assets/images/game/fighters/depressao.png" id="10_micyh"]
 
@@ -195,7 +196,8 @@ projectile_scene = ExtResource("2_08gmf")
 geiser_scene = ExtResource("3_ghbpk")
 tear_scene = ExtResource("4_jdwoi")
 minigame_scene = ExtResource("5_b8cq5")
-max_health = 300
+slam_shockwave_scene = ExtResource("6_micyh")
+max_health = 20
 speed = 60.0
 player_icon = ExtResource("2_it3oq")
 boss_icon = ExtResource("1_x5avh")
