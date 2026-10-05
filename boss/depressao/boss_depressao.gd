@@ -29,9 +29,9 @@ enum State {
 @export var walk_duration: float = 2.0
 
 @export_group("Gêiser")
-@export var geiser_spacing: float = 250.0
+@export var geiser_spacing: float = 235.0
 @export var min_geiser_count: int = 1
-@export var max_geiser_count: int = 4
+@export var max_geiser_count: int = 5
 
 @export_group("Chuva de Lágrimas")
 @export var rain_drops_count: int = 14
@@ -70,14 +70,14 @@ func _setup_dialogues() -> void:
 	]
 
 func _apply_dynamic_difficulty(life_percent: float) -> void:
-	current_geiser_count = roundi(lerp(float(max_geiser_count), float(min_geiser_count), life_percent))
-	current_geiser_count = clampi(current_geiser_count, min_geiser_count, max_geiser_count)
-	
 	if life_percent > 0.60:
+		current_geiser_count = 1
 		direct_attack_stage = 1
 	elif life_percent > 0.30:
+		current_geiser_count = 3
 		direct_attack_stage = 2
 	else:
+		current_geiser_count = 5
 		direct_attack_stage = 3
 
 func _can_receive_knockback() -> bool:
@@ -148,10 +148,10 @@ func _on_decision_timer_timeout() -> void:
 	decision_timer.stop()
 	
 	var choices: Array[State] = [
-		#State.GEISER_PREP, 
+		State.GEISER_PREP, 
 		#State.PROJECTILE, 
 		#State.RAIN, 
-		State.DIRECT_ATTACK_PREP
+		#State.DIRECT_ATTACK_PREP
 	]
 	
 	var life_percent: float = float(current_health) / float(max_health)
@@ -283,15 +283,19 @@ func spawn_geiser() -> void:
 		
 	var count: int = current_geiser_count
 	var center_x: float = player.global_position.x
-	var ground_y: float = global_position.y
+	var ground_y: float = global_position.y + 10.0
 	
-	var total_width: float = (count - 1) * geiser_spacing
-	var start_x: float = center_x - (total_width / 2.0)
-	
-	for i in range(count):
+	var offsets: Array[float] = [0.0]
+	var step: int = 1
+	while offsets.size() < count:
+		offsets.append(step * geiser_spacing)
+		if offsets.size() < count:
+			offsets.append(-step * geiser_spacing)
+		step += 1
+		
+	for offset in offsets:
 		var geiser: Node2D = geiser_scene.instantiate()
-		var pos_x: float = start_x + (i * geiser_spacing)
-		geiser.global_position = Vector2(pos_x, ground_y)
+		geiser.global_position = Vector2(center_x + offset, ground_y)
 		get_parent().add_child(geiser)
 
 func start_tear_rain() -> void:

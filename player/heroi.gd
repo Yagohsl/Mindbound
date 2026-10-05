@@ -286,7 +286,7 @@ func die() -> void:
 # --- EFEITOS DE STATUS (SLOW, PARALYSIS, TRAP) ---
 
 func apply_slow(factor: float, duration: float) -> void:
-	if is_dead:
+	if is_dead or is_dashing or is_dash_invincible:
 		return
 
 	slow_multiplier = factor
@@ -316,7 +316,7 @@ func apply_slow(factor: float, duration: float) -> void:
 
 
 func apply_paralysis(duration: float) -> void:
-	if is_dead:
+	if is_dead or is_dashing or is_dash_invincible:
 		return
 
 	is_paralyzed = true

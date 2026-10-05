@@ -111,6 +111,18 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_b8cq5"]
 resource_name = "prep_geiser"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.36666667, 0.73333335),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [15, 16, 17]
+}
 
 [sub_resource type="Animation" id="Animation_lgje5"]
 resource_name = "prep_rush"
@@ -207,7 +219,7 @@ material = SubResource("ShaderMaterial_micyh")
 scale = Vector2(4, 4)
 texture = ExtResource("10_micyh")
 hframes = 5
-vframes = 3
+vframes = 4
 region_rect = Rect2(0, 192, 105, 64)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=847276946]

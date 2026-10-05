@@ -4,7 +4,7 @@ extends Area2D
 @export var paralyze_duration: float = 1.8
 @export var telegraph_time: float = 1.2
 
-@onready var collision = $CollisionShape2D
+@onready var collision = $CollisionPolygon2D
 @onready var sprite = $Sprite2D
 
 func _ready() -> void:
