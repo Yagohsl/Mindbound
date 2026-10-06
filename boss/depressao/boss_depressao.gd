@@ -34,13 +34,14 @@ enum State {
 @export var max_geiser_count: int = 5
 
 @export_group("Chuva de Lágrimas")
-@export var rain_drops_count: int = 14
+@export var rain_drops_count: int = 21
 @export var rain_spawn_y: float = -40.0
 @export var arena_min_x: float = 80.0
 @export var arena_max_x: float = 1200.0
 
 @export_group("Pensamentos Ruins")
 @export var rush_speed: float = 650.0
+@export var catch_offset_x: float = 80.0
 @export var smash_heavy_damage: int = 40
 
 @onready var ponto_de_tiro: Marker2D = get_node_or_null("PontoDeTiro")
@@ -53,7 +54,7 @@ var direct_attack_stage: int = 1
 var current_geiser_count: int = 1
 
 var rush_direction: int = 0
-var rush_duration: float = 0.45
+var rush_duration: float = 0.95
 var player_caught: bool = false
 
 func _setup_dialogues() -> void:
@@ -120,9 +121,16 @@ func _physics_process(delta: float) -> void:
 			pass
 
 	if current_state == State.BAD_THOUGHTS and not player_caught:
-		for body in damage_area.get_overlapping_bodies():
-			if body.is_in_group("player") and body != self:
-				trigger_thoughts_minigame(body)
+		var areas_to_check: Array[Area2D] = [damage_area]
+		if punch_hitbox:
+			areas_to_check.append(punch_hitbox)
+			
+		for area in areas_to_check:
+			for body in area.get_overlapping_bodies():
+				if body.is_in_group("player") and body != self:
+					trigger_thoughts_minigame(body)
+					break
+			if player_caught:
 				break
 
 	_process_contact_damage()
@@ -148,10 +156,11 @@ func _on_decision_timer_timeout() -> void:
 	decision_timer.stop()
 	
 	var choices: Array[State] = [
-		State.GEISER_PREP, 
+		#State.GEISER_PREP, 
 		#State.PROJECTILE, 
 		#State.RAIN, 
-		#State.DIRECT_ATTACK_PREP
+		#State.DIRECT_ATTACK_PREP,
+		State.BAD_THOUGHTS_PREP
 	]
 	
 	var life_percent: float = float(current_health) / float(max_health)
@@ -237,6 +246,18 @@ func execute_attack_sequence() -> void:
 			while elapsed < rush_duration:
 				if player_caught or current_state == State.DEATH or is_on_wall():
 					break
+					
+				var areas_rush: Array[Area2D] = [damage_area]
+				if punch_hitbox:
+					areas_rush.append(punch_hitbox)
+				for a in areas_rush:
+					for b in a.get_overlapping_bodies():
+						if b.is_in_group("player") and b != self:
+							trigger_thoughts_minigame(b)
+							break
+					if player_caught:
+						break
+						
 				elapsed += get_physics_process_delta_time()
 				await get_tree().physics_frame
 			
@@ -299,6 +320,7 @@ func spawn_geiser() -> void:
 		get_parent().add_child(geiser)
 
 func start_tear_rain() -> void:
+	anim.play("cast_rain")
 	if not tear_scene:
 		return
 		
@@ -318,6 +340,9 @@ func trigger_thoughts_minigame(target_player: CharacterBody2D) -> void:
 	current_state = State.MINIGAME
 	velocity.x = 0.0
 	
+	if is_instance_valid(target_player):
+		global_position.x = target_player.global_position.x - (rush_direction * catch_offset_x)
+
 	if is_instance_valid(target_player) and target_player.has_method("trap_player"):
 		target_player.trap_player()
 	
@@ -383,9 +408,7 @@ func run_direct_attack_combo() -> void:
 
 	if direct_attack_stage == 3:
 		if current_state == State.DEATH: return
-		if player:
-			flip_sprite(player.global_position.x - global_position.x)
-			
+		
 		await get_tree().create_timer(0.25).timeout
 		anim.play("slam")
 		
