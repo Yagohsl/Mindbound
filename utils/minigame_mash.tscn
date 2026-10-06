@@ -4,7 +4,6 @@
 [ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_6uyom"]
 
 [node name="MinigameMash" type="CanvasLayer" unique_id=1948112288]
-process_mode = 3
 script = ExtResource("1_2exhl")
 
 [node name="ProgressBar" type="ProgressBar" parent="." unique_id=1570277318]

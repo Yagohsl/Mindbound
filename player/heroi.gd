@@ -36,6 +36,7 @@ var is_dashing: bool = false
 var is_invincible: bool = false
 var is_dash_invincible: bool = false
 var is_in_knockback: bool = false
+var _hit_enemies: Array[Node2D] = []
 
 # Efeitos de status
 var is_slowed: bool = false
@@ -166,6 +167,7 @@ func _start_dash() -> void:
 
 func _start_attack() -> void:
 	is_attacking = true
+	_hit_enemies.clear()
 	anim.play("attack")
 
 
@@ -238,12 +240,14 @@ func enable_attack_hitbox() -> void:
 func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	if anim_name == "attack":
 		is_attacking = false
+		_hit_enemies.clear()
 		if attack_collision:
 			attack_collision.disabled = true
 
 
 func _on_attack_hitbox_body_entered(body: Node2D) -> void:
-	if body != self and body.has_method("take_damage"):
+	if body != self and body.has_method("take_damage") and body not in _hit_enemies:
+		_hit_enemies.append(body)
 		body.take_damage(attack_value, global_position)
 		hitstop(0.05, 0.09)
 
@@ -335,6 +339,8 @@ func apply_paralysis(duration: float) -> void:
 
 
 func trap_player() -> void:
+	if is_dead or is_dashing or is_dash_invincible:
+		return
 	is_trapped = true
 	velocity = Vector2.ZERO
 	if anim:

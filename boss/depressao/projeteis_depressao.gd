@@ -16,6 +16,10 @@ func _physics_process(delta: float) -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
+		# Se estiver no dash, ignora o impacto e passa reto
+		if ("is_dashing" in body and body.is_dashing) or ("is_dash_invincible" in body and body.is_dash_invincible):
+			return
+
 		# Aplica dano padrão
 		if body.has_method("take_damage"):
 			body.take_damage(damage, global_position)

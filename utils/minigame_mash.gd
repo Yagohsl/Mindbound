@@ -15,6 +15,7 @@ var time_left: float = 0.0
 var is_active: bool = false
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_PAUSABLE
 	visible = false
 
 func start_minigame() -> void:

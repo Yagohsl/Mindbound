@@ -12,10 +12,9 @@ func _ready() -> void:
 	collision.disabled = true
 	$AnimationPlayer.play("preparacao")
 
-	# Tempo de aviso antes da erupção
-	await get_tree().create_timer(telegraph_time).timeout
+	# Tempo de aviso antes da erupção (false = pausa quando o jogo estiver pausado)
+	await get_tree().create_timer(telegraph_time, false).timeout
 	
-
 	erupt()
 
 func erupt() -> void:
