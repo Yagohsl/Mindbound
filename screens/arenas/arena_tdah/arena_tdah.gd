@@ -4,7 +4,7 @@ extends Node2D
 @onready var hero = $StaticBody2D/Heroi
 @onready var hero_health_bar = $UI/HeroHealthBar
 
-@onready var boss = $StaticBody2D/BossDepressao
+@onready var boss = $StaticBody2D/BossTDAH
 @onready var boss_health_bar = $UI/BossHealthBar
 
 @onready var dialog_box = $DialogBox

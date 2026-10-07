@@ -1,8 +1,15 @@
 [gd_scene format=3 uid="uid://btu46khcrufha"]
 
-[ext_resource type="Script" uid="uid://br2lxqup6br68" path="res://boss/tdah/boss_tdah.gd" id="1_0wfnf"]
+[ext_resource type="Script" path="res://boss/tdah/boss_tdah.gd" id="1_0wfnf"]
 [ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="1_n0li8"]
-[ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="3_3k1gq"]
+[ext_resource type="PackedScene" path="res://boss/tdah/projetil_distracao.tscn" id="2_proj"]
+[ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss/ansiedade/boss_ansiedade.gdshader" id="3_flash"]
+[ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="4_dialog"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tdah"]
+shader = ExtResource("3_flash")
+shader_parameter/flash_modifier = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j4xav"]
 size = Vector2(113, 109)
@@ -10,24 +17,36 @@ size = Vector2(113, 109)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0wfnf"]
 size = Vector2(114.25, 109)
 
-[node name="BossTDAH" type="CharacterBody2D" unique_id=1682566602]
+[node name="BossTDAH" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 1
 script = ExtResource("1_0wfnf")
+projectile_scene = ExtResource("2_proj")
+max_health = 200
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1446475038]
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_tdah")
 texture = ExtResource("1_n0li8")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=518750685]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-0.5, -0.5)
 shape = SubResource("RectangleShape2D_j4xav")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1808241879]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 
-[node name="Timer" type="Timer" parent="." unique_id=131605819]
+[node name="DecisionTimer" type="Timer" parent="."]
+wait_time = 1.0
+autostart = true
 
-[node name="DamageArea" type="Area2D" parent="." unique_id=2040651919]
+[node name="DamageArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=1979687062]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea"]
 position = Vector2(0.875, 2)
 shape = SubResource("RectangleShape2D_0wfnf")
 
-[node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("3_3k1gq")]
+[node name="PontoDeTiro" type="Marker2D" parent="."]
+position = Vector2(0, -10)
+
+[node name="DialogBox" parent="." instance=ExtResource("4_dialog")]

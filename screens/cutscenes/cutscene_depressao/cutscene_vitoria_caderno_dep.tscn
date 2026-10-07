@@ -1,0 +1,99 @@
+[gd_scene format=3 uid="uid://bvvpcmla0ysyg"]
+
+[ext_resource type="Script" uid="uid://qcx8evoyrbtc" path="res://screens/cutscenes/cutscene_ansiedade/cutscene_vitoria_caderno_ans.gd" id="1_xv6y0"]
+[ext_resource type="Texture2D" uid="uid://b1akf3ocifbsw" path="res://assets/images/game/cutscenes/diario_dep/diario_final_depressao.png" id="2_0ihkd"]
+[ext_resource type="FontFile" uid="uid://cpqcjcygbhvhv" path="res://assets/fonts/Milky Cream.otf" id="3_2riq1"]
+[ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="4_iyg34"]
+
+[sub_resource type="Animation" id="Animation_lb6vb"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Texto:visible_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_k4ki7"]
+resource_name = "revelar_sintomas"
+length = 20.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Texto:visible_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 19.933332),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_lbcey"]
+_data = {
+&"RESET": SubResource("Animation_lb6vb"),
+&"revelar_sintomas": SubResource("Animation_k4ki7")
+}
+
+[node name="CutsceneCaderno" type="Control" unique_id=693366397]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xv6y0")
+
+[node name="Fundo" type="ColorRect" parent="." unique_id=1124478188]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.051970966, 0.05197096, 0.05197095, 1)
+
+[node name="Caderno" type="TextureRect" parent="." unique_id=100738181]
+layout_mode = 0
+offset_left = 384.0
+offset_top = 28.299988
+offset_right = 924.0
+offset_bottom = 622.3
+texture = ExtResource("2_0ihkd")
+
+[node name="Texto" type="RichTextLabel" parent="." unique_id=1978515232]
+layout_mode = 0
+offset_left = 578.0
+offset_top = 89.0
+offset_right = 868.0
+offset_bottom = 538.0
+theme_override_colors/default_color = Color(0.16862746, 0.16862746, 0.16862746, 1)
+theme_override_constants/line_separation = 4
+theme_override_fonts/normal_font = ExtResource("3_2riq1")
+theme_override_font_sizes/normal_font_size = 17
+bbcode_enabled = true
+text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus."
+visible_characters = 0
+visible_ratio = 0.0
+
+[node name="BtnPular" type="Label" parent="." unique_id=1060397267]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.446
+anchor_bottom = 0.33800003
+offset_left = 795.0
+offset_top = 674.0
+offset_right = 688.12
+offset_bottom = 453.63998
+theme_override_fonts/font = ExtResource("4_iyg34")
+text = "Pressione [Espaço] para pular"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=531536387]
+libraries/ = SubResource("AnimationLibrary_lbcey")

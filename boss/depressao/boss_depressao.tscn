@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://bcpg4xfmyi2ps"]
 
 [ext_resource type="Script" uid="uid://bqu7jdyp0537d" path="res://boss/depressao/boss_depressao.gd" id="1_wkc8n"]
-[ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="1_x5avh"]
 [ext_resource type="PackedScene" uid="uid://chg0j21ifirlk" path="res://boss/depressao/projeteis_depressao.tscn" id="2_08gmf"]
 [ext_resource type="Texture2D" uid="uid://dktb474q60r88" path="res://assets/images/game/fighters/icons/hero_icon.png" id="2_it3oq"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="3_02aa7"]
@@ -9,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://d28vx5mpaphe8" path="res://boss/depressao/lagrima_projetil.tscn" id="4_jdwoi"]
 [ext_resource type="PackedScene" uid="uid://bn7dugk5jaj85" path="res://utils/minigame_mash.tscn" id="5_b8cq5"]
 [ext_resource type="PackedScene" uid="uid://dkdyy71acm0be" path="res://boss/depressao/cortina_lodo.tscn" id="6_micyh"]
+[ext_resource type="Texture2D" uid="uid://qfnfste7lw4o" path="res://assets/images/game/fighters/icons/depressao_icon.png" id="8_micyh"]
 [ext_resource type="Shader" uid="uid://bcf5ncgdk2chi" path="res://boss/depressao/boss_depressao.gdshader" id="9_lgje5"]
 [ext_resource type="Texture2D" uid="uid://bwasw4lcqwcu6" path="res://assets/images/game/fighters/depressao.png" id="10_micyh"]
 
@@ -296,13 +296,12 @@ geiser_scene = ExtResource("3_ghbpk")
 tear_scene = ExtResource("4_jdwoi")
 minigame_scene = ExtResource("5_b8cq5")
 slam_shockwave_scene = ExtResource("6_micyh")
-catch_offset_x = 140.0
+catch_offset_x = 200.0
 slow_aura_radius = 320.0
-slow_aura_multiplier = 0.3
-max_health = 300
+max_health = 400
 speed = 60.0
 player_icon = ExtResource("2_it3oq")
-boss_icon = ExtResource("1_x5avh")
+boss_icon = ExtResource("8_micyh")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1532918408]
 material = SubResource("ShaderMaterial_micyh")
