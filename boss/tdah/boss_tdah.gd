@@ -46,6 +46,11 @@ enum State {
 @export var burst_dash_duration: float = 0.32           # Duração do avanço corporal
 @export var burst_dash_damage: int = 28                 # Dano de atropelamento
 
+@export_group("Levitação")
+@export var hover_height: float = 40.0                  # Altura que o sprite levita acima do chão
+@export var hover_bob_amplitude: float = 9.0            # Amplitude da onda de flutuação
+@export var hover_bob_speed: float = 4.0                # Velocidade do ciclo da onda de levitação
+
 @export_group("Cores dos Estímulos")
 @export var dangerous_color: Color = Color(1.0, 0.15, 0.15, 1.0) # Vermelho vivo (dano real)
 @export var fake_colors: Array[Color] = [
@@ -57,6 +62,8 @@ enum State {
 ]
 
 @onready var ponto_de_tiro: Marker2D = get_node_or_null("PontoDeTiro")
+@onready var body_collision: CollisionShape2D = get_node_or_null("CollisionShape2D")
+@onready var damage_collision: CollisionShape2D = get_node_or_null("DamageArea/CollisionShape2D")
 
 var current_state: State = State.IDLE
 var contact_damage_cooldown: float = 0.0
@@ -65,6 +72,10 @@ var contact_damage_cooldown: float = 0.0
 var pinball_velocity: Vector2 = Vector2.ZERO
 var pinball_bounces_done: int = 0
 var original_sprite_scale: Vector2 = Vector2.ONE
+var base_sprite_pos: Vector2 = Vector2.ZERO
+var base_body_col_pos: Vector2 = Vector2.ZERO
+var base_damage_col_pos: Vector2 = Vector2.ZERO
+var hover_time: float = 0.0
 
 # Variáveis de investida rápida
 var burst_direction: float = 1.0
@@ -88,6 +99,12 @@ func _setup_dialogues() -> void:
 func _custom_ready() -> void:
 	if sprite:
 		original_sprite_scale = sprite.scale
+		base_sprite_pos = sprite.position
+	
+	if body_collision:
+		base_body_col_pos = body_collision.position
+	if damage_collision:
+		base_damage_col_pos = damage_collision.position
 		
 	if not player:
 		var players = get_tree().get_nodes_in_group("player")
@@ -155,8 +172,33 @@ func _physics_process(delta: float) -> void:
 		State.INHIBITORY_BREAK_BURST:
 			velocity.x = burst_direction * burst_dash_speed
 
+	# Efeito de levitação ondulatória (hover / bobbing)
+	_process_hover_bobbing(delta)
+
 	if current_state in [State.IDLE, State.RUN, State.INHIBITORY_BREAK_BURST]:
 		move_and_slide()
+
+func _process_hover_bobbing(delta: float) -> void:
+	# Nos estados de pinball ou morte, a física de quique ou queda assume o controle
+	if current_state in [State.PINBALL, State.DEATH]:
+		return
+	
+	hover_time += delta
+	# Onda senoidal: oscila ±amplitude em torno de hover_height acima do chão
+	var wave_offset = sin(hover_time * hover_bob_speed) * hover_bob_amplitude
+	var target_y = base_sprite_pos.y - hover_height + wave_offset
+	
+	# Apenas o sprite e o ponto de tiro se movem visualmente
+	if sprite:
+		sprite.position.y = target_y
+	if ponto_de_tiro:
+		ponto_de_tiro.position.y = target_y
+
+	# A damage_collision acompanha o sprite para o contato de dano ser preciso.
+	# A body_collision permanece no lugar (base) para que is_on_floor() e
+	# detecção de parede funcionem corretamente sem conflitar com a gravidade.
+	if damage_collision:
+		damage_collision.position.y = base_damage_col_pos.y - hover_height + wave_offset
 
 func _process_contact_damage(dmg: int = -1) -> void:
 	if not damage_area:
@@ -253,9 +295,18 @@ func attack_sobrecarga_estimulos() -> void:
 
 # --- GOLPE 2: INQUIETAÇÃO MOTORA (O EFEITO PINBALL) ---
 func start_pinball_sequence() -> void:
+	# 1. Telegraph: Encolhe (squash) e treme intensamente de inquietação
 	if sprite:
 		var shrink_tween = create_tween()
+		shrink_tween.set_parallel(true)
 		shrink_tween.tween_property(sprite, "scale", original_sprite_scale * Vector2(0.65, 0.65), 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+		shrink_tween.tween_property(sprite, "position", base_sprite_pos, 0.35)
+		if body_collision:
+			shrink_tween.tween_property(body_collision, "scale", Vector2(0.65, 0.65), 0.35)
+			shrink_tween.tween_property(body_collision, "position", base_body_col_pos, 0.35)
+		if damage_collision:
+			shrink_tween.tween_property(damage_collision, "scale", Vector2(0.65, 0.65), 0.35)
+			shrink_tween.tween_property(damage_collision, "position", base_damage_col_pos, 0.35)
 	
 	var prep_time: float = 0.55
 	var timer: float = 0.0
@@ -329,7 +380,7 @@ func _process_pinball_movement(delta: float) -> void:
 			_end_pinball()
 
 func _end_pinball() -> void:
-	current_state = State.IDLE
+	current_state = State.RUN
 	velocity = Vector2.ZERO
 	pinball_velocity = Vector2.ZERO
 	
@@ -338,7 +389,18 @@ func _end_pinball() -> void:
 		restore_tween.set_parallel(true)
 		restore_tween.tween_property(sprite, "scale", original_sprite_scale, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		restore_tween.tween_property(sprite, "rotation", 0.0, 0.2)
-	
+		restore_tween.tween_property(sprite, "position", base_sprite_pos, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		# Restore collision shapes scale and position
+		if body_collision:
+			restore_tween.tween_property(body_collision, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			restore_tween.tween_property(body_collision, "position", base_body_col_pos, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		if damage_collision:
+			restore_tween.tween_property(damage_collision, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			restore_tween.tween_property(damage_collision, "position", base_damage_col_pos, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)	
+	hover_time = 0.0
+	# Ensure immediate levitation offset after pinball
+	if sprite:
+		sprite.position.y = base_sprite_pos.y - hover_height
 	decision_timer.start(attack_cooldown)
 
 # --- GOLPE 3: A FALHA DE IGNIÇÃO COM CHANCE DE DISPARO REAL EM LEQUE ---
@@ -583,5 +645,5 @@ func _on_death() -> void:
 	if sprite:
 		sprite.rotation = 0.0
 		sprite.scale = original_sprite_scale
-		sprite.position = Vector2.ZERO
+		sprite.position = base_sprite_pos
 	_apply_arena_screen_shake(0.0)
