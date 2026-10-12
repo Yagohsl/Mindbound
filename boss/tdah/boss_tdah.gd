@@ -47,9 +47,10 @@ enum State {
 @export var burst_dash_damage: int = 28                 # Dano de atropelamento
 
 @export_group("Levitação")
-@export var hover_height: float = 40.0                  # Altura que o sprite levita acima do chão
-@export var hover_bob_amplitude: float = 9.0            # Amplitude da onda de flutuação
-@export var hover_bob_speed: float = 4.0                # Velocidade do ciclo da onda de levitação
+@export var hover_height: float = 40.0                  # Altura central que o sprite levita acima do chão
+@export var hover_bob_amplitude: float = 9.0            # Amplitude vertical do 8 (eixo Y)
+@export var hover_bob_speed: float = 1.8                # Velocidade do ciclo do 8
+@export var fidget_amplitude: float = 14.0              # Amplitude horizontal do 8 (eixo X)
 
 @export_group("Cores dos Estímulos")
 @export var dangerous_color: Color = Color(1.0, 0.15, 0.15, 1.0) # Vermelho vivo (dano real)
@@ -139,8 +140,12 @@ func _physics_process(delta: float) -> void:
 		_process_pinball_movement(delta)
 		return
 
-	if not is_on_floor():
-		velocity.y += gravity * delta
+	# Gravidade só age no pinball e na morte; nos demais estados o boss levita
+	if current_state in [State.PINBALL, State.DEATH]:
+		if not is_on_floor():
+			velocity.y += gravity * delta
+	else:
+		velocity.y = 0.0
 
 	if is_in_knockback:
 		move_and_slide()
@@ -179,26 +184,39 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 
 func _process_hover_bobbing(delta: float) -> void:
-	# Nos estados de pinball ou morte, a física de quique ou queda assume o controle
-	if current_state in [State.PINBALL, State.DEATH]:
+	# Durante pinball (prep e ativo) e morte, a física assume o controle
+	if current_state in [State.PINBALL_PREP, State.PINBALL, State.DEATH]:
 		return
-	
-	hover_time += delta
-	# Onda senoidal: oscila ±amplitude em torno de hover_height acima do chão
-	var wave_offset = sin(hover_time * hover_bob_speed) * hover_bob_amplitude
-	var target_y = base_sprite_pos.y - hover_height + wave_offset
-	
-	# Apenas o sprite e o ponto de tiro se movem visualmente
-	if sprite:
-		sprite.position.y = target_y
-	if ponto_de_tiro:
-		ponto_de_tiro.position.y = target_y
 
-	# A damage_collision acompanha o sprite para o contato de dano ser preciso.
-	# A body_collision permanece no lugar (base) para que is_on_floor() e
-	# detecção de parede funcionem corretamente sem conflitar com a gravidade.
+	hover_time += delta
+	var t: float = hover_time * hover_bob_speed
+
+	# Curva de Lissajous 1:2 = figura em 8 / ∞
+	# X: sin(t)   → oscilação lateral simples
+	# Y: sin(2t)  → oscilação vertical em frequência dupla, cria o cruzamento do 8
+	var offset_x: float = sin(t) * fidget_amplitude
+	var offset_y: float = sin(2.0 * t) * hover_bob_amplitude
+
+	# Clamp em espaço global: impede o sprite de entrar nas paredes da arena
+	# Reutiliza os arena_bounds do ataque pinball (já exportados no Inspector)
+	var global_sprite_x: float = global_position.x + base_sprite_pos.x + offset_x
+	global_sprite_x = clampf(global_sprite_x, arena_bounds_min.x + 20.0, arena_bounds_max.x - 20.0)
+	offset_x = global_sprite_x - global_position.x - base_sprite_pos.x
+
+	if sprite:
+		sprite.position.x = base_sprite_pos.x + offset_x
+		sprite.position.y = base_sprite_pos.y - hover_height + offset_y
+	if ponto_de_tiro:
+		ponto_de_tiro.position.y = base_sprite_pos.y - hover_height + offset_y
+
+	# Hitboxes acompanham o sprite em X e Y para o player acertar o visual.
+	if body_collision:
+		body_collision.position.x = base_body_col_pos.x + offset_x
+		body_collision.position.y = base_body_col_pos.y - hover_height + offset_y
 	if damage_collision:
-		damage_collision.position.y = base_damage_col_pos.y - hover_height + wave_offset
+		damage_collision.position.x = base_damage_col_pos.x + offset_x
+		damage_collision.position.y = base_damage_col_pos.y - hover_height + offset_y
+	
 
 func _process_contact_damage(dmg: int = -1) -> void:
 	if not damage_area:
@@ -332,6 +350,14 @@ func start_pinball_sequence() -> void:
 	pinball_velocity = launch_dir * pinball_speed
 	current_state = State.PINBALL
 
+	# Reseta colisões para a posição base — hover bobbing não roda durante PINBALL
+	if sprite:
+		sprite.position = base_sprite_pos
+	if body_collision:
+		body_collision.position = base_body_col_pos
+	if damage_collision:
+		damage_collision.position = base_damage_col_pos
+
 func _process_pinball_movement(delta: float) -> void:
 	velocity = pinball_velocity
 	
@@ -389,18 +415,12 @@ func _end_pinball() -> void:
 		restore_tween.set_parallel(true)
 		restore_tween.tween_property(sprite, "scale", original_sprite_scale, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		restore_tween.tween_property(sprite, "rotation", 0.0, 0.2)
-		restore_tween.tween_property(sprite, "position", base_sprite_pos, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		# Restore collision shapes scale and position
+		# Posição: hover bobbing assume automaticamente agora que o state é RUN
 		if body_collision:
 			restore_tween.tween_property(body_collision, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-			restore_tween.tween_property(body_collision, "position", base_body_col_pos, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		if damage_collision:
 			restore_tween.tween_property(damage_collision, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-			restore_tween.tween_property(damage_collision, "position", base_damage_col_pos, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)	
 	hover_time = 0.0
-	# Ensure immediate levitation offset after pinball
-	if sprite:
-		sprite.position.y = base_sprite_pos.y - hover_height
 	decision_timer.start(attack_cooldown)
 
 # --- GOLPE 3: A FALHA DE IGNIÇÃO COM CHANCE DE DISPARO REAL EM LEQUE ---

@@ -21,6 +21,8 @@ radius = 67.06713
 collision_layer = 4
 script = ExtResource("1_0wfnf")
 projectile_scene = ExtResource("2_proj")
+fidget_amplitude = 170.0
+fidget_speed = 10.0
 max_health = 200
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1416856511]
