@@ -23,7 +23,7 @@ enum State {
 @export var total_distractions: int = 24            
 @export var telegraph_duration: float = 1.1         
 @export var active_duration: float = 0.7            
-@export var dangerous_projectile_chance: float = 0.25 
+@export var dangerous_projectile_chance: float = 0.20
 @export var field_width: float = 850.0              
 @export var field_height: float = 380.0             
 
@@ -221,7 +221,7 @@ func _physics_process(delta: float) -> void:
 				
 				# Nova matemática: corta a amplitude em 35% a cada virada (garante fim do loop sem travar)
 				whirlwind_amplitude *= 0.85
-				whirlwind_current_speed += 60.0 
+				whirlwind_current_speed += 80.0 
 				
 				dir_x *= -1.0 
 				
@@ -351,15 +351,18 @@ func execute_attack_sequence() -> void:
 
 		State.WHIRLWIND_PREP:
 			velocity.x = 0.0
-			_flash_custom(Color(1.0, 0.5, 0.0, 1.0), 1.0)
 			_apply_arena_screen_shake(2.0)
 			
 			if anim.has_animation("prep_explosion"):
 				anim.play("prep_explosion")
 				
-			await get_tree().create_timer(0.8).timeout
-			if is_dead: return
+			# O Boss pisca 3 vezes rapidamente antes de iniciar o movimento
+			for i in range(3):
+				_flash_custom(Color(1.0, 0.5, 0.0, 1.0), 1.0)
+				await get_tree().create_timer(0.25).timeout
+				if is_dead: return
 			
+			# Prepara as variáveis matemáticas do pêndulo
 			whirlwind_center_x = (arena_bounds_min.x + arena_bounds_max.x) / 2.0
 			whirlwind_amplitude = whirlwind_amplitude_start
 			whirlwind_current_speed = whirlwind_start_speed
@@ -376,10 +379,11 @@ func execute_attack_sequence() -> void:
 		State.WHIRLWIND_EXPLOSION:
 			velocity = Vector2.ZERO
 			
-			# Fase de carregamento (Tremor progressivo)
+			# Fase de carregamento (Levitação e Tremor progressivo)
 			var pre_explosion_time = 1.0
 			var elapsed = 0.0
 			var initial_pos = global_position
+			var target_y = initial_pos.y - 150.0 # Altura que ele vai levitar no centro
 			
 			if anim.has_animation("prep_explosion"):
 				anim.play("prep_explosion")
@@ -391,9 +395,14 @@ func execute_attack_sequence() -> void:
 				
 				var progress = clampf(elapsed / pre_explosion_time, 0.0, 1.0)
 				
+				# Sobe o boss suavemente usando uma curva de atenuação (Ease Out)
+				var ease_progress = 1.0 - pow(1.0 - progress, 3.0) 
+				var current_base_pos = initial_pos
+				current_base_pos.y = lerpf(initial_pos.y, target_y, ease_progress)
+				
 				# Aumenta o chacoalhão fisicamente e na câmera gradualmente
 				var shake_intensity = lerpf(1.0, 14.0, progress * progress)
-				global_position = initial_pos + Vector2(randf_range(-shake_intensity, shake_intensity), randf_range(-shake_intensity, shake_intensity))
+				global_position = current_base_pos + Vector2(randf_range(-shake_intensity, shake_intensity), randf_range(-shake_intensity, shake_intensity))
 				_apply_arena_screen_shake(shake_intensity * 0.6)
 				
 				# Pisca em laranja/vermelho freneticamente perto do fim
@@ -402,8 +411,8 @@ func execute_attack_sequence() -> void:
 					
 				await get_tree().process_frame
 				
-			# Restaura a posição para disparar a explosão
-			global_position = initial_pos
+			# Fixa a posição levitada para disparar a explosão (sem chacoalhar fora de centro)
+			global_position = Vector2(initial_pos.x, target_y)
 			_apply_arena_screen_shake(10.0)
 			_flash_custom(Color(1.0, 0.1, 0.1, 1.0), 1.0)
 			
@@ -416,6 +425,7 @@ func execute_attack_sequence() -> void:
 			await get_tree().create_timer(0.6).timeout
 			if is_dead: return
 			
+			# Quando volta para o IDLE, o _physics_process retoma a gravidade e ele cai naturalmente
 			current_state = State.IDLE
 			decision_timer.start(attack_cooldown)
 
