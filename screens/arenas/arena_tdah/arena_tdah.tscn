@@ -7,29 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://btu46khcrufha" path="res://boss/tdah/boss_tdah.tscn" id="5_uvifq"]
 [ext_resource type="PackedScene" uid="uid://bvgualol7nu5v" path="res://screens/menu/menu_pausa/menu_pausa.tscn" id="6_pgj6i"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="7_plskf"]
-
-[sub_resource type="CanvasTexture" id="CanvasTexture_lgpin"]
-
-[sub_resource type="Gradient" id="Gradient_xojux"]
-interpolation_mode = 1
-offsets = PackedFloat32Array(0)
-colors = PackedColorArray(0, 0.4862745, 0, 1)
-metadata/_snap_count = 2
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_2uib8"]
-gradient = SubResource("Gradient_xojux")
-fill_from = Vector2(1, 0)
-fill_to = Vector2(0, 0)
-
-[sub_resource type="CanvasTexture" id="CanvasTexture_28jst"]
-
-[sub_resource type="Gradient" id="Gradient_iywkd"]
-interpolation_mode = 1
-offsets = PackedFloat32Array(0)
-colors = PackedColorArray(0.70427847, 0.0112805, 2.8878452e-07, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_8eo88"]
-gradient = SubResource("Gradient_iywkd")
+[ext_resource type="PackedScene" path="res://screens/arenas/hero_health_bar.tscn" id="8_health"]
+[ext_resource type="PackedScene" path="res://screens/arenas/boss_health_bar.tscn" id="9_boss_health"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_28jst"]
 
@@ -41,37 +20,21 @@ size = Vector2(1397, 90)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xojux"]
 size = Vector2(20, 709)
 
-[node name="Arena" type="Node2D" unique_id=50696584]
+[node name="ArenaTDAH" type="Node2D" unique_id=50696584]
 script = ExtResource("1_dw6il")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1739122279]
 
-[node name="HeroHealthBar" type="TextureProgressBar" parent="UI" unique_id=1692155627]
-offset_left = 45.0
-offset_top = 36.0
-offset_right = 608.0
-offset_bottom = 70.0
-value = 100.0
-nine_patch_stretch = true
-texture_under = SubResource("CanvasTexture_lgpin")
-texture_progress = SubResource("GradientTexture2D_2uib8")
+[node name="HeroHealthBar" parent="UI" unique_id=985129554 instance=ExtResource("8_health")]
 
-[node name="BossHealthBar" type="TextureProgressBar" parent="UI" unique_id=1009476480]
-offset_left = 258.0
-offset_top = 653.0
-offset_right = 1108.0
-offset_bottom = 693.0
-max_value = 200.0
-value = 200.0
-nine_patch_stretch = true
-texture_under = SubResource("CanvasTexture_28jst")
-texture_progress = SubResource("GradientTexture2D_8eo88")
+[node name="BossHealthBar" parent="UI" unique_id=572423197 instance=ExtResource("9_boss_health")]
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI" unique_id=1300938618]
 offset_left = 264.0
 offset_top = 660.0
 offset_right = 1103.0
-offset_bottom = 905.0
+offset_bottom = 749.0
+alignment = 1
 
 [node name="NomeBoss" type="Label" parent="UI/VBoxContainer" unique_id=340627429]
 layout_mode = 2

@@ -1,6 +1,85 @@
 [gd_scene format=3 uid="uid://bvgualol7nu5v"]
 
-[ext_resource type="Script" uid="uid://w2e7mvd1aioj" path="res://menu_pausa.gd" id="1_noo57"]
+[ext_resource type="Script" uid="uid://w2e7mvd1aioj" path="res://screens/menu/menu_pausa/menu_pausa.gd" id="1_noo57"]
+[ext_resource type="Texture2D" uid="uid://c7o7faotmir7g" path="res://assets/images/game/cutscenes/RADL_Book.png" id="2_itlsy"]
+
+[sub_resource type="Animation" id="Animation_ikivr"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../VBoxContainer:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_fa7xc"]
+resource_name = "abrir_caderno"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.06666667, 0.16666667, 0.26666668, 0.36666667),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../VBoxContainer:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_t65g6"]
+resource_name = "mostrar_texto"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../VBoxContainer:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.06666667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vvkk2"]
+_data = {
+&"RESET": SubResource("Animation_ikivr"),
+&"abrir_caderno": SubResource("Animation_fa7xc"),
+&"mostrar_texto": SubResource("Animation_t65g6")
+}
 
 [node name="MenuPausa" type="CanvasLayer" unique_id=1291649425]
 process_mode = 3
@@ -12,17 +91,33 @@ offset_right = 1308.0
 offset_bottom = 737.0
 color = Color(0, 0, 0, 0.34117648)
 
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1823857253]
+position = Vector2(692, 355)
+scale = Vector2(4, 4)
+texture = ExtResource("2_itlsy")
+hframes = 7
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1148231265]
+process_mode = 3
+root_node = NodePath("../Sprite2D")
+libraries/ = SubResource("AnimationLibrary_vvkk2")
+
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=701531619]
 offset_left = 406.0
-offset_top = 110.0
-offset_right = 923.0
-offset_bottom = 586.0
-alignment = 1
+offset_top = 167.0
+offset_right = 652.0
+offset_bottom = 533.0
+theme_override_constants/separation = 20
 
 [node name="Pausa" type="Label" parent="VBoxContainer" unique_id=634856652]
+modulate = Color(0, 0, 0.043137256, 1)
 layout_mode = 2
 text = "Jogo Pausado"
 horizontal_alignment = 1
+
+[node name="Control" type="Control" parent="VBoxContainer" unique_id=1704916219]
+custom_minimum_size = Vector2(0, 90)
+layout_mode = 2
 
 [node name="BotaoContinuar" type="Button" parent="VBoxContainer" unique_id=1753112947]
 layout_mode = 2

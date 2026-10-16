@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://bj278534l74me" path="res://screens/arenas/hero_health_bar.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://basm6773sb7to" path="res://assets/images/menu/health_under.png" id="2_under"]
+[ext_resource type="Texture2D" uid="uid://dqg5d3c75e65i" path="res://assets/images/menu/health_border..png" id="3_border"]
+[ext_resource type="Texture2D" uid="uid://kjnlpirr2lgt" path="res://assets/images/menu/health_progress.png" id="4_prog"]
+
+[node name="HeroHealthBar" type="TextureProgressBar"]
+offset_left = 45.0
+offset_top = 36.0
+offset_right = 522.0
+offset_bottom = 94.0
+value = 100.0
+nine_patch_stretch = true
+texture_over = ExtResource("3_border")
+texture_progress = ExtResource("4_prog")
+script = ExtResource("1_script")
+
+[node name="DamageBar" type="TextureProgressBar" parent="."]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+value = 100.0
+nine_patch_stretch = true
+texture_under = ExtResource("2_under")
+texture_progress = ExtResource("4_prog")
+tint_progress = Color(0.95, 0.45, 0.15, 1)

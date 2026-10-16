@@ -1,12 +1,14 @@
 [gd_scene format=3 uid="uid://jm6nugomth8y"]
 
-[ext_resource type="Script" uid="uid://xudrqxkj8r6s" path="res://screens/arenas/arena_tdah/arena_tdah.gd" id="1_p05gu"]
+[ext_resource type="Script" path="res://screens/arenas/arena_burnout/arena_burnout.gd" id="1_p05gu"]
 [ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_uo860"]
 [ext_resource type="Texture2D" uid="uid://cd6e8gkdc2pbo" path="res://assets/images/game/maps/arena_tdah.png" id="3_7i1cq"]
 [ext_resource type="PackedScene" uid="uid://dduii0awr17r4" path="res://player/heroi.tscn" id="4_0b4e4"]
 [ext_resource type="PackedScene" uid="uid://bk0goa0px1r8j" path="res://boss/burnout/boss_burnout.tscn" id="5_hgrdo"]
 [ext_resource type="PackedScene" uid="uid://bvgualol7nu5v" path="res://screens/menu/menu_pausa/menu_pausa.tscn" id="6_3atmg"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="7_l1whs"]
+[ext_resource type="PackedScene" path="res://screens/arenas/hero_health_bar.tscn" id="8_health"]
+[ext_resource type="PackedScene" path="res://screens/arenas/boss_health_bar.tscn" id="9_boss_health"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_lgpin"]
 
@@ -46,26 +48,10 @@ script = ExtResource("1_p05gu")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1739122279]
 
-[node name="HeroHealthBar" type="TextureProgressBar" parent="UI" unique_id=1692155627]
-offset_left = 45.0
-offset_top = 36.0
-offset_right = 608.0
-offset_bottom = 70.0
-value = 100.0
-nine_patch_stretch = true
-texture_under = SubResource("CanvasTexture_lgpin")
-texture_progress = SubResource("GradientTexture2D_2uib8")
+[node name="HeroHealthBar" parent="UI" instance=ExtResource("8_health")]
 
-[node name="BossHealthBar" type="TextureProgressBar" parent="UI" unique_id=1009476480]
-offset_left = 258.0
-offset_top = 653.0
-offset_right = 1108.0
-offset_bottom = 693.0
-max_value = 200.0
-value = 200.0
-nine_patch_stretch = true
-texture_under = SubResource("CanvasTexture_28jst")
-texture_progress = SubResource("GradientTexture2D_8eo88")
+[node name="BossHealthBar" parent="UI" instance=ExtResource("9_boss_health")]
+
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI" unique_id=1300938618]
 offset_left = 264.0
@@ -77,7 +63,7 @@ offset_bottom = 905.0
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_uo860")
 theme_override_font_sizes/font_size = 33
-text = "TDAH
+text = "BURNOUT
 "
 horizontal_alignment = 1
 

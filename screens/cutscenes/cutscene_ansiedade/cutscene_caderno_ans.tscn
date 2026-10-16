@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://cicsv7dbbsfrp"]
 
 [ext_resource type="Script" uid="uid://bs8tndy00clqw" path="res://screens/cutscenes/cutscene_ansiedade/cutscene_caderno_ans.gd" id="1_h2ty7"]
+[ext_resource type="Texture2D" uid="uid://c7o7faotmir7g" path="res://assets/images/game/cutscenes/RADL_Book.png" id="2_2ihvb"]
 [ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_buthi"]
-[ext_resource type="Texture2D" uid="uid://dni004dc47lnm" path="res://assets/images/game/cutscenes/diario_ans/diario_inicio_ansiedade.png" id="2_lb6vb"]
 [ext_resource type="FontFile" uid="uid://cpqcjcygbhvhv" path="res://assets/fonts/Milky Cream.otf" id="3_lb6vb"]
 
 [sub_resource type="Animation" id="Animation_lb6vb"]
-length = 0.001
+length = 2.4
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -14,10 +14,38 @@ tracks/0/path = NodePath("Texto:visible_ratio")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0),
+"times": PackedFloat32Array(0.8333333),
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.16666667, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_2ihvb"]
+resource_name = "abrir_caderno"
+length = 0.73333335
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
 }
 
 [sub_resource type="Animation" id="Animation_k4ki7"]
@@ -39,6 +67,7 @@ tracks/0/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_lbcey"]
 _data = {
 &"RESET": SubResource("Animation_lb6vb"),
+&"abrir_caderno": SubResource("Animation_2ihvb"),
 &"revelar_sintomas": SubResource("Animation_k4ki7")
 }
 
@@ -61,25 +90,33 @@ grow_vertical = 2
 color = Color(0.051970966, 0.05197096, 0.05197095, 1)
 
 [node name="Caderno" type="TextureRect" parent="." unique_id=100738181]
+visible = false
 layout_mode = 0
-offset_left = 384.0
-offset_top = 28.299988
-offset_right = 924.0
-offset_bottom = 622.3
-texture = ExtResource("2_lb6vb")
+offset_left = 297.0
+offset_top = -36.0
+offset_right = 5639.444
+offset_bottom = 606.7
+texture = ExtResource("2_2ihvb")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1772484268]
+position = Vector2(668, 315)
+scale = Vector2(4, 4)
+texture = ExtResource("2_2ihvb")
+hframes = 7
 
 [node name="Texto" type="RichTextLabel" parent="." unique_id=1978515232]
-layout_mode = 0
-offset_left = 453.0
-offset_top = 82.0
-offset_right = 743.0
-offset_bottom = 531.0
+layout_mode = 1
+anchors_preset = -1
+offset_left = 395.0
+offset_top = 116.0
+offset_right = 625.0
+offset_bottom = 484.0
 theme_override_colors/default_color = Color(0.16862746, 0.16862746, 0.16862746, 1)
 theme_override_constants/line_separation = 4
 theme_override_fonts/normal_font = ExtResource("3_lb6vb")
 theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
-text = "[shake rate=10.0 level=2 connected=1]Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. [/shake]"
+text = "[shake rate=10.0 level=2 connected=1]Lorem ipsum dolor sit amet, consectetur   [/shake]"
 visible_characters = 0
 visible_ratio = 0.0
 
@@ -97,3 +134,4 @@ text = "Pressione [Espaço] para pular"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=531536387]
 libraries/ = SubResource("AnimationLibrary_lbcey")
+autoplay = &"RESET"

@@ -42,6 +42,7 @@ var _hit_enemies: Array[Node2D] = []
 var is_slowed: bool = false
 var is_paralyzed: bool = false
 var is_trapped: bool = false
+var is_energy_blocked: bool = false
 var slow_multiplier: float = 1.0
 
 # Controles de tempo
@@ -54,6 +55,7 @@ var _status_tween: Tween
 
 
 func _ready() -> void:
+	add_to_group("player")
 	current_health = max_health
 	if attack_collision:
 		attack_collision.disabled = true
@@ -89,7 +91,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	# 5. Entrada do Dash
-	if Input.is_action_just_pressed("dash") and not is_attacking and dash_cooldown <= 0.0:
+	if Input.is_action_just_pressed("dash") and not is_attacking and dash_cooldown <= 0.0 and not is_energy_blocked:
 		_start_dash()
 		move_and_slide()
 		return
@@ -369,3 +371,31 @@ func turn_white():
 	if sprite and sprite.material:
 		var reset_tween: Tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 		reset_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)
+
+
+# --- BLOQUEIO DE ENERGIA (FADIGA EXTREMA / TRAVA DE DASH) ---
+
+func apply_energy_block(duration: float = 2.5) -> void:
+	if is_dead:
+		return
+
+	# Cancela dash em andamento imediatamente caso seja atingido
+	if is_dashing:
+		is_dashing = false
+		trigger_dash_recovery()
+
+	is_energy_blocked = true
+	dash_cooldown = maxf(dash_cooldown, duration)
+
+	# Efeito visual de esgotamento físico (tom acinzentado opaco)
+	if sprite:
+		var tween = create_tween()
+		tween.tween_property(sprite, "modulate", Color(0.6, 0.6, 0.65), 0.15)
+
+	await get_tree().create_timer(duration, false).timeout
+
+	is_energy_blocked = false
+	if not is_dead and not is_slowed and not is_paralyzed and not is_trapped:
+		if sprite:
+			var reset_tween = create_tween()
+			reset_tween.tween_property(sprite, "modulate", Color.WHITE, 0.25)

@@ -33,6 +33,7 @@ var dialogos_derrota: Array[Dictionary] = []
 @onready var dialog_box = $DialogBox
 
 func _ready() -> void:
+	add_to_group("boss")
 	current_health = max_health
 	_setup_dialogues()
 	_custom_ready()

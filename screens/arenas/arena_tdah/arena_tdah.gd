@@ -4,7 +4,7 @@ extends Node2D
 @onready var hero = $StaticBody2D/Heroi
 @onready var hero_health_bar = $UI/HeroHealthBar
 
-@onready var boss = $StaticBody2D/BossBurnout
+@onready var boss = $StaticBody2D/BossTDAH
 @onready var boss_health_bar = $UI/BossHealthBar
 
 @onready var dialog_box = $DialogBox
@@ -28,8 +28,7 @@ func _ready():
 	if boss and boss.dialogos_inicio.size() > 0:
 		dialog_box.call_deferred("iniciar_dialogo", boss.dialogos_inicio)		
 	# inicializa barras com a vida máxima
-	hero_health_bar.max_value = hero.max_health
-	hero_health_bar.value = hero.current_health
+	hero_health_bar.init_health(hero.current_health, hero.max_health)
 	
 	boss_health_bar.max_value = boss.max_health
 	boss_health_bar.value = boss.current_health
@@ -75,8 +74,7 @@ func _on_dialogo_finalizado() -> void:
 
 # Função que será chamada quando o Herói tomar dano
 func update_hero_health(new_health):
-	var tween = create_tween()
-	tween.tween_property(hero_health_bar, "value", new_health, 0.2)
+	hero_health_bar.set_health(new_health)
 
 # Função que será chamada quando o Boss tomar dano
 func update_boss_health(new_health):
