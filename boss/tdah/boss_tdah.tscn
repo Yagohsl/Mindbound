@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://btu46khcrufha"]
 
 [ext_resource type="Script" uid="uid://br2lxqup6br68" path="res://boss/tdah/boss_tdah.gd" id="1_0wfnf"]
-[ext_resource type="PackedScene" path="res://boss/tdah/projetil_distracao.tscn" id="2_proj"]
+[ext_resource type="PackedScene" uid="uid://c1seh62la1lms" path="res://boss/tdah/projetil_distracao.tscn" id="2_proj"]
 [ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss/ansiedade/boss_ansiedade.gdshader" id="3_flash"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="4_dialog"]
 [ext_resource type="Texture2D" uid="uid://h7d6q0l2path" path="res://assets/images/game/fighters/TDAH.png" id="4_jdi2m"]
@@ -42,6 +42,70 @@ tracks/1/keys = {
 "update": 1,
 "values": [0]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("AuraFaiscas:amount")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [20]
+}
+
+[sub_resource type="Animation" id="Animation_nvo7j"]
+resource_name = "death"
+length = 2.6333334
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.36666667, 0.7, 1.0333333, 1.2, 1.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [6, 7, 8, 9, 10, 11]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AuraFaiscas:amount")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 1.1333333),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [20, 50, 1]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AuraFaiscas:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 2.4333334),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
 
 [sub_resource type="Animation" id="Animation_wrhnc"]
 resource_name = "explosion"
@@ -74,6 +138,7 @@ tracks/1/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_enwma"]
 _data = {
 &"RESET": SubResource("Animation_ijmrp"),
+&"death": SubResource("Animation_nvo7j"),
 &"explosion": SubResource("Animation_wrhnc")
 }
 
@@ -92,13 +157,15 @@ collision_layer = 4
 script = ExtResource("1_0wfnf")
 projectile_scene = ExtResource("2_proj")
 pinball_damage = 15
-max_health = 200
+max_health = 20
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1416856511]
 material = SubResource("ShaderMaterial_tdah")
 position = Vector2(4, -22)
 scale = Vector2(4, 4)
 texture = ExtResource("4_jdi2m")
+hframes = 6
+vframes = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=45265416]
 position = Vector2(8, -8)

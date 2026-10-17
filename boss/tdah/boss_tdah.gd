@@ -149,10 +149,6 @@ func _can_receive_knockback() -> bool:
 
 func _physics_process(delta: float) -> void:
 	if is_dead or current_state == State.DEATH:
-		if not is_on_floor():
-			velocity.y += gravity * delta
-		else:
-			velocity.y = 0.0
 		velocity.x = 0.0
 		move_and_slide()
 		return
@@ -246,7 +242,7 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 
 func _process_hover_bobbing(delta: float) -> void:
-	if current_state in [State.PINBALL_PREP, State.PINBALL, State.DEATH]:
+	if current_state in [State.PINBALL_PREP, State.PINBALL]:
 		return
 
 	hover_time += delta
@@ -802,6 +798,7 @@ func _apply_arena_screen_shake(intensity: float) -> void:
 
 func _on_death() -> void:
 	current_state = State.DEATH
+	anim.play("death")
 	if decision_timer: decision_timer.stop()
 	if sprite:
 		sprite.rotation = 0.0
