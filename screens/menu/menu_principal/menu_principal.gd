@@ -9,6 +9,10 @@ func _on_btn_jogar_pressed():
 func _on_btn_sobre_pressed():
 	get_tree().change_scene_to_file("res://screens/menu/menu_principal/menu_sobre.tscn")
 
+# Botao codex
+func _on_btn_codex_pressed():
+	get_tree().change_scene_to_file("res://screens/menu/menu_principal/menu_codex.tscn")
+
 # Botao sair
 func _on_btn_sair_pressed():
 	get_tree().quit()

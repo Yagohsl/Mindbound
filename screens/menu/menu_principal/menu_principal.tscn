@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dplw5tha46yxl"]
 
-[ext_resource type="Script" uid="uid://c18k0ktremkmf" path="res://screens/menu_principal.gd" id="1_20lp2"]
+[ext_resource type="Script" uid="uid://c18k0ktremkmf" path="res://screens/menu/menu_principal/menu_principal.gd" id="1_20lp2"]
 [ext_resource type="Texture2D" uid="uid://7vm3aiy0nr2d" path="res://assets/images/menu/FUNDO MENU.png" id="1_m05j1"]
 [ext_resource type="Texture2D" uid="uid://ld2sswuwrlau" path="res://assets/images/menu/TITULO MENU.png" id="2_20lp2"]
 [ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="3_mara4"]
@@ -58,6 +58,16 @@ text = "SOBRE
 "
 flat = true
 
+[node name="BtnCodex" type="Button" parent="MenuBotoes" unique_id=1972878624]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_fonts/font = ExtResource("3_mara4")
+theme_override_font_sizes/font_size = 30
+text = "CODEX
+
+"
+flat = true
+
 [node name="BtnSair" type="Button" parent="MenuBotoes" unique_id=502892873]
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -68,4 +78,5 @@ flat = true
 
 [connection signal="pressed" from="MenuBotoes/BtnJogar" to="." method="_on_btn_jogar_pressed"]
 [connection signal="pressed" from="MenuBotoes/BtnSobre" to="." method="_on_btn_sobre_pressed"]
+[connection signal="pressed" from="MenuBotoes/BtnCodex" to="." method="_on_btn_codex_pressed"]
 [connection signal="pressed" from="MenuBotoes/BtnSair" to="." method="_on_btn_sair_pressed"]

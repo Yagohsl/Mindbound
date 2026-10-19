@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://w2e7mvd1aioj" path="res://screens/menu/menu_pausa/menu_pausa.gd" id="1_noo57"]
 [ext_resource type="Texture2D" uid="uid://c7o7faotmir7g" path="res://assets/images/game/cutscenes/RADL_Book.png" id="2_itlsy"]
+[ext_resource type="FontFile" uid="uid://cpqcjcygbhvhv" path="res://assets/fonts/Milky Cream.otf" id="3_fa7xc"]
+[ext_resource type="FontFile" uid="uid://dfnr5a6gc3yj4" path="res://assets/fonts/Papernotes Sketch.otf" id="4_t65g6"]
 
 [sub_resource type="Animation" id="Animation_ikivr"]
 length = 0.001
@@ -112,24 +114,44 @@ theme_override_constants/separation = 20
 [node name="Pausa" type="Label" parent="VBoxContainer" unique_id=634856652]
 modulate = Color(0, 0, 0.043137256, 1)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_fa7xc")
+theme_override_font_sizes/font_size = 35
 text = "Jogo Pausado"
 horizontal_alignment = 1
 
 [node name="Control" type="Control" parent="VBoxContainer" unique_id=1704916219]
-custom_minimum_size = Vector2(0, 90)
+custom_minimum_size = Vector2(0, 85)
 layout_mode = 2
 
 [node name="BotaoContinuar" type="Button" parent="VBoxContainer" unique_id=1753112947]
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.27387246, 0.27387276, 0.27387336, 1)
+theme_override_fonts/font = ExtResource("4_t65g6")
+theme_override_font_sizes/font_size = 26
 text = "Continuar"
+flat = true
 
 [node name="BotaoReiniciar" type="Button" parent="VBoxContainer" unique_id=646390613]
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.18359026, 0.18359041, 0.18359092, 1)
+theme_override_fonts/font = ExtResource("4_t65g6")
+theme_override_font_sizes/font_size = 26
 text = "Reiniciar"
+flat = true
 
 [node name="BotaoMenu" type="Button" parent="VBoxContainer" unique_id=130434132]
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.26657492, 0.26657525, 0.2665758, 1)
+theme_override_fonts/font = ExtResource("4_t65g6")
+theme_override_font_sizes/font_size = 26
 text = "Sair"
+flat = true
 
 [connection signal="pressed" from="VBoxContainer/BotaoContinuar" to="." method="_on_botao_continuar_pressed"]
 [connection signal="pressed" from="VBoxContainer/BotaoReiniciar" to="." method="_on_botao_reiniciar_pressed"]
