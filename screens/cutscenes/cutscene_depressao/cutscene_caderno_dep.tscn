@@ -1,28 +1,56 @@
 [gd_scene format=3 uid="uid://bmcnq66xg02i0"]
 
 [ext_resource type="Script" uid="uid://v8lcvvfunukx" path="res://screens/cutscenes/cutscene_depressao/cutscene_caderno_dep.gd" id="1_ulpgm"]
-[ext_resource type="Texture2D" uid="uid://c0t0vv20kf601" path="res://assets/images/game/cutscenes/diario_dep/diario_inicio_depressao.png" id="2_ulpgm"]
 [ext_resource type="FontFile" uid="uid://cpqcjcygbhvhv" path="res://assets/fonts/Milky Cream.otf" id="3_g7tms"]
 [ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="4_gsh8c"]
+[ext_resource type="Texture2D" uid="uid://c7o7faotmir7g" path="res://assets/images/game/cutscenes/RADL_Book.png" id="4_ulpgm"]
 
 [sub_resource type="Animation" id="Animation_lb6vb"]
-length = 0.001
+length = 2.4
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Texto:visible_ratio")
+tracks/0/path = NodePath("Sprite2D:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.16666667, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Texto:visible_ratio")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [0.0]
 }
 
+[sub_resource type="Animation" id="Animation_2ihvb"]
+resource_name = "abrir_caderno"
+length = 0.73333335
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
 [sub_resource type="Animation" id="Animation_k4ki7"]
 resource_name = "revelar_sintomas"
-length = 20.0
+length = 30.066668
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -30,15 +58,16 @@ tracks/0/path = NodePath("Texto:visible_ratio")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 19.933332),
+"times": PackedFloat32Array(0.16666698, 15.2),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [0.0, 1.0]
 }
 
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_lbcey"]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ary8o"]
 _data = {
 &"RESET": SubResource("Animation_lb6vb"),
+&"abrir_caderno": SubResource("Animation_2ihvb"),
 &"revelar_sintomas": SubResource("Animation_k4ki7")
 }
 
@@ -60,26 +89,25 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.051970966, 0.05197096, 0.05197095, 1)
 
-[node name="Caderno" type="TextureRect" parent="." unique_id=100738181]
-layout_mode = 0
-offset_left = 384.0
-offset_top = 28.299988
-offset_right = 924.0
-offset_bottom = 622.3
-texture = ExtResource("2_ulpgm")
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1805491877]
+position = Vector2(668, 315)
+scale = Vector2(4, 4)
+texture = ExtResource("4_ulpgm")
+hframes = 7
 
-[node name="Texto" type="RichTextLabel" parent="." unique_id=1978515232]
-layout_mode = 0
-offset_left = 453.0
-offset_top = 82.0
-offset_right = 743.0
-offset_bottom = 531.0
+[node name="Texto" type="RichTextLabel" parent="." unique_id=1012044819]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 395.0
+offset_top = 116.0
+offset_right = 625.0
+offset_bottom = 484.0
 theme_override_colors/default_color = Color(0.16862746, 0.16862746, 0.16862746, 1)
 theme_override_constants/line_separation = 4
 theme_override_fonts/normal_font = ExtResource("3_g7tms")
 theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
-text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec leo semper, sagittis ligula ac, semper neque. Nam tempor ultrices mollis. Curabitur aliquet iaculis commodo. Phasellus mollis ut orci ut luctus. Vestibulum in fermentum augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. "
+text = "Hoje foi mais um dia difícil de levantar. Não é cansaço, é uma espécie de peso que fica no peito, que faz tudo parecer sem graça, sem cor, sem sentido. As coisas que eu gostava de fazer parecem distantes agora, como se fossem memórias de outra pessoa. Não estou triste do jeito que as pessoas pensam que tristeza é. É mais vazio do que dor. E o pior é ter que explicar isso pra alguém sem parecer que estou inventando."
 visible_characters = 0
 visible_ratio = 0.0
 
@@ -95,5 +123,6 @@ offset_bottom = 453.63998
 theme_override_fonts/font = ExtResource("4_gsh8c")
 text = "Pressione [Espaço] para pular"
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=531536387]
-libraries/ = SubResource("AnimationLibrary_lbcey")
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1318407252]
+libraries/ = SubResource("AnimationLibrary_ary8o")
+autoplay = &"RESET"

@@ -1,0 +1,128 @@
+[gd_scene format=3 uid="uid://bwfhyfjclrq38"]
+
+[ext_resource type="Script" uid="uid://d342j6r2441bj" path="res://screens/cutscenes/cutscene_tdah/cutscene_vitoria_caderno_tdah.gd" id="1_fldpo"]
+[ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_4bjgj"]
+[ext_resource type="Texture2D" uid="uid://c7o7faotmir7g" path="res://assets/images/game/cutscenes/RADL_Book.png" id="3_8lrl2"]
+[ext_resource type="FontFile" uid="uid://cpqcjcygbhvhv" path="res://assets/fonts/Milky Cream.otf" id="4_vdk57"]
+
+[sub_resource type="Animation" id="Animation_lb6vb"]
+length = 2.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.16666667, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Texto:visible_ratio")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_2ihvb"]
+resource_name = "abrir_caderno"
+length = 0.73333335
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_k4ki7"]
+resource_name = "revelar_sintomas"
+length = 30.066668
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Texto:visible_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.16666698, 15.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_0ihkd"]
+_data = {
+&"RESET": SubResource("Animation_lb6vb"),
+&"abrir_caderno": SubResource("Animation_2ihvb"),
+&"revelar_sintomas": SubResource("Animation_k4ki7")
+}
+
+[node name="CutsceneCaderno" type="Control" unique_id=693366397]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_fldpo")
+
+[node name="Fundo" type="ColorRect" parent="." unique_id=1124478188]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.051970966, 0.05197096, 0.05197095, 1)
+
+[node name="BtnPular" type="Label" parent="." unique_id=1060397267]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.446
+anchor_bottom = 0.33800003
+offset_left = 795.0
+offset_top = 674.0
+offset_right = 688.12
+offset_bottom = 453.63998
+theme_override_fonts/font = ExtResource("2_4bjgj")
+text = "Pressione [Espaço] para pular"
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=25268007]
+position = Vector2(668, 315)
+scale = Vector2(4, 4)
+texture = ExtResource("3_8lrl2")
+hframes = 7
+
+[node name="Texto" type="RichTextLabel" parent="." unique_id=1222585503]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 395.0
+offset_top = 116.0
+offset_right = 625.0
+offset_bottom = 484.0
+theme_override_colors/default_color = Color(0.16862746, 0.16862746, 0.16862746, 1)
+theme_override_constants/line_separation = 4
+theme_override_fonts/normal_font = ExtResource("4_vdk57")
+theme_override_font_sizes/normal_font_size = 17
+bbcode_enabled = true
+text = "Foi caótico, como quase tudo na minha vida. Mas no caos eu encontrei um ritmo que era meu, do meu jeito, no meu tempo. Não foi o caminho mais direto, mas chegou lá. Talvez seja isso: parar de tentar funcionar do jeito que os outros esperam e começar a entender como eu mesmo funciono. Não é defeito, é diferença. Demorou pra eu começar a enxergar assim."
+visible_characters = 0
+visible_ratio = 0.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=959621849]
+libraries/ = SubResource("AnimationLibrary_0ihkd")
+autoplay = &"RESET"

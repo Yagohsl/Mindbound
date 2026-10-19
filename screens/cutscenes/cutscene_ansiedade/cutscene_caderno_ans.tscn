@@ -31,6 +31,18 @@ tracks/1/keys = {
 "update": 1,
 "values": [0, 1, 2, 3]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Texto2:visible_ratio")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
 
 [sub_resource type="Animation" id="Animation_2ihvb"]
 resource_name = "abrir_caderno"
@@ -50,7 +62,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_k4ki7"]
 resource_name = "revelar_sintomas"
-length = 20.0
+length = 30.066668
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -58,7 +70,19 @@ tracks/0/path = NodePath("Texto:visible_ratio")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 19.933332),
+"times": PackedFloat32Array(0, 15.066667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Texto2:visible_ratio")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(15.366667, 29.966667),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [0.0, 1.0]
@@ -89,15 +113,6 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.051970966, 0.05197096, 0.05197095, 1)
 
-[node name="Caderno" type="TextureRect" parent="." unique_id=100738181]
-visible = false
-layout_mode = 0
-offset_left = 297.0
-offset_top = -36.0
-offset_right = 5639.444
-offset_bottom = 606.7
-texture = ExtResource("2_2ihvb")
-
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1772484268]
 position = Vector2(668, 315)
 scale = Vector2(4, 4)
@@ -116,7 +131,23 @@ theme_override_constants/line_separation = 4
 theme_override_fonts/normal_font = ExtResource("3_lb6vb")
 theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
-text = "[shake rate=10.0 level=2 connected=1]Lorem ipsum dolor sit amet, consectetur   [/shake]"
+text = "[shake rate=10.0 level=2 connected=1]Não consigo parar de pensar. É uma coisa atrás da outra, um pensamento puxando o outro, e quando percebo já estou imaginando o pior cenário possível de uma situação que nem aconteceu. O coração acelera do nada. As mãos suam. Às vezes fico paralisado no meio de uma tarefa simples sem entender direito o porquê.  [/shake]"
+visible_characters = 0
+visible_ratio = 0.0
+
+[node name="Texto2" type="RichTextLabel" parent="." unique_id=620210779]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 686.0
+offset_top = 117.0
+offset_right = 916.0
+offset_bottom = 485.0
+theme_override_colors/default_color = Color(0.16862746, 0.16862746, 0.16862746, 1)
+theme_override_constants/line_separation = 4
+theme_override_fonts/normal_font = ExtResource("3_lb6vb")
+theme_override_font_sizes/normal_font_size = 17
+bbcode_enabled = true
+text = "[shake rate=10.0 level=2 connected=1]As pessoas ao redor parecem não notar nada, e eu fico me perguntando se é frescura minha, se estou exagerando. Mas não parece exagero quando está acontecendo. [/shake]"
 visible_characters = 0
 visible_ratio = 0.0
 

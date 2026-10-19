@@ -11,8 +11,10 @@ func _ready() -> void:
 	# Conecta o sinal para sabermos quando o texto terminou de ser escrito
 	anim_player.animation_finished.connect(_on_animation_finished)
 
-	# Inicia a animação de revelação da página e do texto
+	anim_player.play("abrir_caderno")
+	await anim_player.animation_finished
 	anim_player.play("revelar_sintomas")
+
 
 func _input(event: InputEvent) -> void:
 	# Permite pular a cutscene pressionando Espaço, Enter ou o botão de Ataque
