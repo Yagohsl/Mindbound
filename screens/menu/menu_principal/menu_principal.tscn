@@ -34,10 +34,10 @@ texture = ExtResource("2_20lp2")
 [node name="MenuBotoes" type="VBoxContainer" parent="." unique_id=861500816]
 layout_mode = 0
 offset_left = 518.0
-offset_top = 281.0
+offset_top = 260.0
 offset_right = 766.0
-offset_bottom = 545.0
-theme_override_constants/separation = 60
+offset_bottom = 570.0
+theme_override_constants/separation = 28
 alignment = 1
 
 [node name="BtnJogar" type="Button" parent="MenuBotoes" unique_id=1934787764]
@@ -48,24 +48,20 @@ theme_override_font_sizes/font_size = 30
 text = "JOGAR"
 flat = true
 
-[node name="BtnSobre" type="Button" parent="MenuBotoes" unique_id=690681662]
-layout_mode = 2
-mouse_default_cursor_shape = 2
-theme_override_fonts/font = ExtResource("3_mara4")
-theme_override_font_sizes/font_size = 30
-text = "SOBRE
-
-"
-flat = true
-
 [node name="BtnCodex" type="Button" parent="MenuBotoes" unique_id=1972878624]
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_fonts/font = ExtResource("3_mara4")
 theme_override_font_sizes/font_size = 30
-text = "CODEX
+text = "CODEX"
+flat = true
 
-"
+[node name="BtnSobre" type="Button" parent="MenuBotoes" unique_id=690681662]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_fonts/font = ExtResource("3_mara4")
+theme_override_font_sizes/font_size = 30
+text = "SOBRE"
 flat = true
 
 [node name="BtnSair" type="Button" parent="MenuBotoes" unique_id=502892873]
@@ -77,6 +73,6 @@ text = "SAIR"
 flat = true
 
 [connection signal="pressed" from="MenuBotoes/BtnJogar" to="." method="_on_btn_jogar_pressed"]
-[connection signal="pressed" from="MenuBotoes/BtnSobre" to="." method="_on_btn_sobre_pressed"]
 [connection signal="pressed" from="MenuBotoes/BtnCodex" to="." method="_on_btn_codex_pressed"]
+[connection signal="pressed" from="MenuBotoes/BtnSobre" to="." method="_on_btn_sobre_pressed"]
 [connection signal="pressed" from="MenuBotoes/BtnSair" to="." method="_on_btn_sair_pressed"]
