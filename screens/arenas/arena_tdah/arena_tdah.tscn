@@ -7,7 +7,9 @@
 [ext_resource type="PackedScene" uid="uid://btu46khcrufha" path="res://boss/tdah/boss_tdah.tscn" id="5_uvifq"]
 [ext_resource type="PackedScene" uid="uid://bvgualol7nu5v" path="res://screens/menu/menu_pausa/menu_pausa.tscn" id="6_pgj6i"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="7_plskf"]
+[ext_resource type="Texture2D" uid="uid://dktb474q60r88" path="res://assets/images/game/fighters/icons/hero_icon.png" id="8_63fap"]
 [ext_resource type="PackedScene" path="res://screens/arenas/hero_health_bar.tscn" id="8_health"]
+[ext_resource type="Texture2D" uid="uid://but7fg4u8g23g" path="res://assets/images/game/fighters/icons/tdah_icon.png" id="9_2tocm"]
 [ext_resource type="PackedScene" path="res://screens/arenas/boss_health_bar.tscn" id="9_boss_health"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_28jst"]
@@ -68,6 +70,8 @@ position = Vector2(140, 548)
 
 [node name="BossTDAH" parent="StaticBody2D" unique_id=1682566602 instance=ExtResource("5_uvifq")]
 position = Vector2(1189, 564)
+player_icon = ExtResource("8_63fap")
+boss_icon = ExtResource("9_2tocm")
 
 [node name="Paredes" type="StaticBody2D" parent="." unique_id=1112115908]
 collision_mask = 6

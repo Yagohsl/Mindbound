@@ -157,7 +157,7 @@ collision_layer = 4
 script = ExtResource("1_0wfnf")
 projectile_scene = ExtResource("2_proj")
 pinball_damage = 15
-max_health = 20
+max_health = 200
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1416856511]
 material = SubResource("ShaderMaterial_tdah")
