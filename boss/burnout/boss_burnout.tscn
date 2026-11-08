@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bk0goa0px1r8j"]
 
 [ext_resource type="Script" uid="uid://d1lk7s7npr6f3" path="res://boss/burnout/boss_burnout.gd" id="1_ic6it"]
+[ext_resource type="PackedScene" uid="uid://bvb77t81sqeq2" path="res://boss/burnout/nevoa.tscn" id="2_ic6it"]
 [ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss/ansiedade/boss_ansiedade.gdshader" id="3_cgnif"]
 [ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="3_ic6it"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="5_kw6kj"]
@@ -32,14 +33,7 @@ size = Vector2(117, 109)
 [node name="BossBurnout" type="CharacterBody2D" unique_id=1331790386]
 collision_layer = 4
 script = ExtResource("1_ic6it")
-arena_min_x = null
-arena_max_x = null
-max_health = null
-attack_value = null
-speed = null
-attack_cooldown = null
-boss_knockback_force = null
-boss_knockback_duration = null
+soot_cloud_scene = ExtResource("2_ic6it")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1416856511]
 material = SubResource("ShaderMaterial_tdah")
@@ -73,3 +67,5 @@ shape = SubResource("RectangleShape2D_ykjxb")
 position = Vector2(0, -10)
 
 [node name="DialogBox" parent="." unique_id=621698430 instance=ExtResource("5_kw6kj")]
+
+[connection signal="timeout" from="DecisionTimer" to="." method="_on_decision_timer_timeout"]

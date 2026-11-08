@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://jm6nugomth8y"]
 
-[ext_resource type="Script" path="res://screens/arenas/arena_burnout/arena_burnout.gd" id="1_p05gu"]
+[ext_resource type="Script" uid="uid://df4salq4xso6d" path="res://screens/arenas/arena_burnout/arena_burnout.gd" id="1_p05gu"]
 [ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_uo860"]
 [ext_resource type="Texture2D" uid="uid://cd6e8gkdc2pbo" path="res://assets/images/game/maps/arena_tdah.png" id="3_7i1cq"]
 [ext_resource type="PackedScene" uid="uid://dduii0awr17r4" path="res://player/heroi.tscn" id="4_0b4e4"]
@@ -9,29 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="7_l1whs"]
 [ext_resource type="PackedScene" path="res://screens/arenas/hero_health_bar.tscn" id="8_health"]
 [ext_resource type="PackedScene" path="res://screens/arenas/boss_health_bar.tscn" id="9_boss_health"]
-
-[sub_resource type="CanvasTexture" id="CanvasTexture_lgpin"]
-
-[sub_resource type="Gradient" id="Gradient_xojux"]
-interpolation_mode = 1
-offsets = PackedFloat32Array(0)
-colors = PackedColorArray(0, 0.4862745, 0, 1)
-metadata/_snap_count = 2
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_2uib8"]
-gradient = SubResource("Gradient_xojux")
-fill_from = Vector2(1, 0)
-fill_to = Vector2(0, 0)
-
-[sub_resource type="CanvasTexture" id="CanvasTexture_28jst"]
-
-[sub_resource type="Gradient" id="Gradient_iywkd"]
-interpolation_mode = 1
-offsets = PackedFloat32Array(0)
-colors = PackedColorArray(0.70427847, 0.0112805, 2.8878452e-07, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_8eo88"]
-gradient = SubResource("Gradient_iywkd")
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_28jst"]
 
@@ -48,16 +25,15 @@ script = ExtResource("1_p05gu")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1739122279]
 
-[node name="HeroHealthBar" parent="UI" instance=ExtResource("8_health")]
+[node name="HeroHealthBar" parent="UI" unique_id=1123627018 instance=ExtResource("8_health")]
 
-[node name="BossHealthBar" parent="UI" instance=ExtResource("9_boss_health")]
-
+[node name="BossHealthBar" parent="UI" unique_id=828816442 instance=ExtResource("9_boss_health")]
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI" unique_id=1300938618]
 offset_left = 264.0
-offset_top = 660.0
+offset_top = 667.0
 offset_right = 1103.0
-offset_bottom = 905.0
+offset_bottom = 767.0
 
 [node name="NomeBoss" type="Label" parent="UI/VBoxContainer" unique_id=340627429]
 layout_mode = 2
