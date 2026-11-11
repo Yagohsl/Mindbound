@@ -9,6 +9,10 @@
 [ext_resource type="Texture2D" uid="uid://c2jux8ygbo3p8" path="res://assets/images/game/fighters/icons/ansiedade_icon.png" id="5_8q71c"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="8_8q71c"]
 
+[sub_resource type="Curve" id="Curve_30mfv"]
+_data = [Vector2(0.074712634, 0.056179762), 0.0, 0.0, 0, 0, Vector2(0.91954017, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qn562"]
 shader = ExtResource("3_d2ree")
 shader_parameter/flash_modifier = 0.0
@@ -199,6 +203,24 @@ teleport_warning_scene = ExtResource("3_qn562")
 max_health = 300
 player_icon = ExtResource("4_s2rrd")
 boss_icon = ExtResource("5_8q71c")
+
+[node name="FireSparks" type="CPUParticles2D" parent="." unique_id=2143695878]
+position = Vector2(-2, -53)
+scale = Vector2(2, 2)
+amount = 28
+lifetime = 0.5
+explosiveness = 0.25
+emission_shape = 1
+emission_sphere_radius = 15.0
+direction = Vector2(0, -1)
+spread = 63.19
+gravity = Vector2(0, -100)
+initial_velocity_min = 40.0
+initial_velocity_max = 101.27
+scale_amount_min = 6.0
+scale_amount_max = 15.0
+scale_amount_curve = SubResource("Curve_30mfv")
+color = Color(1, 0.44705883, 0.050980393, 0.9882353)
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1486758928]
 material = SubResource("ShaderMaterial_qn562")

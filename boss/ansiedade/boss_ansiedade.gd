@@ -24,6 +24,7 @@ enum State { IDLE, RUN, THOUGHTS, TELEPORT, EXPLOSION_PREP, EXPLOSION, DASH_PREP
 @export var teleport_warning_scene: PackedScene
 
 @onready var ponto_de_tiro: Marker2D = $PontoDeTiro
+@onready var particulas : CPUParticles2D = $FireSparks
 
 var current_state: State = State.IDLE
 var current_dash_prep: float = 0.7
@@ -55,6 +56,7 @@ func _apply_dynamic_difficulty(life_percent: float) -> void:
 
 func _on_death() -> void:
 	current_state = State.DEATH
+	particulas.emitting = false
 	decision_timer.stop()
 
 func _physics_process(delta: float) -> void:
@@ -241,3 +243,4 @@ func teleport_routine() -> void:
 		if teleports_done < 3:
 			await get_tree().create_timer(0.3, false, false, true).timeout
 			if current_state == State.DEATH: return
+		
