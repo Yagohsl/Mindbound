@@ -4,6 +4,10 @@ enum State {
 	IDLE,
 	RUN,
 	SOOT_CLOUD,
+	EMBER_RAIN_PREP,
+	EMBER_RAIN,
+	CORE_COLLAPSE_PREP,
+	EXHAUSTED,
 	DEATH
 }
 
@@ -14,6 +18,44 @@ enum State {
 @export_group("Ataques")
 @export var soot_cloud_scene: PackedScene
 
+@export_group("Ataque: Colapso do Núcleo")
+@export var collapse_prep_duration: float = 2.0
+@export var exhausted_min_duration: float = 3.0
+@export var exhausted_max_duration: float = 4.0
+@export var collapse_shake_intensity: float = 4.5
+@export var exhausted_damage_multiplier: float = 1.5 # Use 1.0 se não quiser bônus de dano na punição
+@export_range(0.0, 1.0, 0.05) var core_collapse_hp_threshold: float = 0.5 # Coloque 1.0 para testar antes dos 50% HP
+@export_range(0.0, 1.0, 0.05) var collapse_occasional_chance: float = 0.20 # 20% de chance abaixo de 50% HP
+@export var min_attacks_between_collapses: int = 2 # Exige ao menos 2 outros golpes entre colapsos
+
+var phase_two_collapse_triggered: bool = false
+var pending_guaranteed_collapse: bool = false
+var attacks_since_collapse: int = 0
+
+@onready var collapse_sparks: CPUParticles2D = get_node_or_null("SparksParticles")
+@onready var collapse_smoke: CPUParticles2D = get_node_or_null("SmokeParticles")
+
+var base_sprite_pos: Vector2 = Vector2.ZERO
+var base_sprite_scale: Vector2 = Vector2.ONE
+var _collapse_tween: Tween = null
+
+@export_group("Ataque: Chuva de Brasas")
+@export var ember_scene: PackedScene
+@export var fire_puddle_scene: PackedScene
+@export var ember_prep_time: float = 0.8
+@export var ember_count: int = 6
+@export var ember_min_spacing: float = 130.0
+@export var ember_flight_time: float = 1.15
+@export var ember_arc_height: float = 280.0
+@export var ember_spawn_interval: float = 0.14
+@export var ground_collision_mask: int = 1
+@export var ground_offset_y: float = 0.0
+@export_range(0.0, 1.0, 0.05) var ember_rain_hp_threshold: float = 1.0 # Deixe 1.0 para testar logo ou 0.5 para Fase 2
+
+var current_life_percent: float = 1.0
+var last_attack: State = State.IDLE
+
+@onready var core_particles: CPUParticles2D = get_node_or_null("SparksParticles")
 
 var current_state: State = State.IDLE
 var walk_direction: int = -1
@@ -39,14 +81,20 @@ func _setup_dialogues() -> void:
 	]
 
 func _custom_ready() -> void:
+	if sprite:
+		base_sprite_pos = sprite.position
+		base_sprite_scale = sprite.scale
+
 	if not is_instance_valid(player):
 		var heroes = get_tree().get_nodes_in_group("player")
 		if heroes.size() > 0:
 			player = heroes[0]
 		elif get_parent():
 			player = get_parent().get_node_or_null("Heroi")
-	
+
 	if decision_timer:
+		if not decision_timer.timeout.is_connected(_on_decision_timer_timeout):
+			decision_timer.timeout.connect(_on_decision_timer_timeout)
 		decision_timer.start(randf_range(1.5, 3.0))
 
 
@@ -70,6 +118,64 @@ func _physics_process(delta: float) -> void:
 			if anim and anim.has_animation("idle"):
 				anim.play("idle")
 				
+		State.SOOT_CLOUD, State.EMBER_RAIN_PREP, State.EMBER_RAIN:
+			velocity.x = move_toward(velocity.x, 0.0, speed)
+			
+		State.CORE_COLLAPSE_PREP:
+			velocity.x = 0.0
+			if is_instance_valid(player):
+				flip_sprite(player.global_position.x - global_position.x)
+				
+			if anim and anim.has_animation("core_collapse_prep"):
+				anim.play("core_collapse_prep")
+			elif anim and anim.has_animation("idle"):
+				anim.play("idle")
+				
+			# Inicia faíscas violentas e núcleo piscando em alerta
+			_start_overheat_fakeout_fx()
+			
+			await get_tree().create_timer(collapse_prep_duration, false).timeout
+			if current_state == State.DEATH or is_dead:
+				return
+				
+			# O núcleo falha repentinamente e entra em colapso
+			current_state = State.EXHAUSTED
+			execute_attack_sequence()
+			
+		State.EXHAUSTED:
+			velocity.x = 0.0
+			_stop_collapse_effects()
+			
+			# Explosão de fumaça ao engasgar
+			if collapse_smoke:
+				collapse_smoke.restart()
+				collapse_smoke.emitting = true
+				
+			# Desativa dano de contato para o player punir o chefe com segurança
+			if damage_collision:
+				damage_collision.set_deferred("disabled", true)
+				
+			if anim and anim.has_animation("exhausted"):
+				anim.play("exhausted")
+			elif anim:
+				anim.stop()
+				
+			# Desaba no chão e apaga o brilho
+			_play_exhausted_visual()
+				
+			var stun_duration: float = randf_range(exhausted_min_duration, exhausted_max_duration)
+			await get_tree().create_timer(stun_duration, false).timeout
+			if current_state == State.DEATH or is_dead:
+				return
+				
+			# Reinicia o sistema após a janela de vulnerabilidade
+			_restore_from_exhausted()
+			last_attack = State.CORE_COLLAPSE_PREP
+			current_state = State.IDLE
+			
+			if decision_timer:
+				decision_timer.start(maxf(attack_cooldown, 0.5))
+				
 		State.RUN:
 			if is_on_wall():
 				walk_direction *= -1
@@ -84,9 +190,7 @@ func _physics_process(delta: float) -> void:
 			if anim and anim.has_animation("run"):
 				anim.play("run")
 				
-		State.SOOT_CLOUD:
-			velocity.x = move_toward(velocity.x, 0.0, speed)
-	
+
 	move_and_slide()
 
 func execute_attack_sequence() -> void:
@@ -97,16 +201,279 @@ func execute_attack_sequence() -> void:
 				anim.play("soot_cloud")
 			elif anim and anim.has_animation("attack"):
 				anim.play("attack")
-			
+				
 			spawn_soot_cloud()
 			
-			await get_tree().create_timer(1.2).timeout
-			if current_state == State.DEATH: return
+			await get_tree().create_timer(1.2, false).timeout
+			if current_state == State.DEATH:
+				return
+			_finish_attack_sequence(State.SOOT_CLOUD)
+				
+		State.EMBER_RAIN_PREP:
+			velocity.x = 0.0
+			if is_instance_valid(player):
+				flip_sprite(player.global_position.x - global_position.x)
+				
+			_set_core_overheat(true)
+			if anim and anim.has_animation("ember_rain_prep"):
+				anim.play("ember_rain_prep")
+			elif anim and anim.has_animation("prep_attack"):
+				anim.play("prep_attack")
+				
+			await get_tree().create_timer(ember_prep_time, false).timeout
+			if current_state == State.DEATH:
+				return
+				
+			current_state = State.EMBER_RAIN
+			execute_attack_sequence()
 			
+		State.EMBER_RAIN:
+			velocity.x = 0.0
+			if anim and anim.has_animation("ember_rain"):
+				anim.play("ember_rain")
+			elif anim and anim.has_animation("attack"):
+				anim.play("attack")
+				
+			await _spawn_ember_rain()
+			if current_state == State.DEATH:
+				return
+				
+			_set_core_overheat(false)
+			await get_tree().create_timer(0.4, false).timeout
+			if current_state == State.DEATH or is_dead:
+				return
+				
+			_finish_attack_sequence(State.EMBER_RAIN_PREP)
+			
+		State.CORE_COLLAPSE_PREP:
+			is_in_knockback = false
+			velocity.x = 0.0
+			last_attack = State.CORE_COLLAPSE_PREP
+			attacks_since_collapse = 0
+			
+			if is_instance_valid(player):
+				flip_sprite(player.global_position.x - global_position.x)
+				
+			if anim and anim.has_animation("core_collapse_prep"):
+				anim.play("core_collapse_prep")
+			elif anim and anim.has_animation("idle"):
+				anim.play("idle")
+				
+			_start_overheat_fakeout_fx()
+			
+			await get_tree().create_timer(collapse_prep_duration, false).timeout
+			if current_state == State.DEATH or is_dead:
+				return
+				
+			current_state = State.EXHAUSTED
+			execute_attack_sequence()
+			
+		State.EXHAUSTED:
+			velocity.x = 0.0
+			_stop_collapse_effects()
+			
+			if collapse_smoke:
+				collapse_smoke.restart()
+				collapse_smoke.emitting = true
+				
+			if damage_collision:
+				damage_collision.set_deferred("disabled", true)
+				
+			if anim and anim.has_animation("exhausted"):
+				anim.play("exhausted")
+			elif anim:
+				anim.stop()
+				
+			_play_exhausted_visual()
+			
+			var stun_duration: float = randf_range(exhausted_min_duration, exhausted_max_duration)
+			await get_tree().create_timer(stun_duration, false).timeout
+			if current_state == State.DEATH or is_dead:
+				return
+				
+			_restore_from_exhausted()
+			last_attack = State.CORE_COLLAPSE_PREP
+			attacks_since_collapse = 0
 			current_state = State.IDLE
-			var cooldown_time : float = maxf(attack_cooldown, 0.5)
+			
 			if decision_timer:
-				decision_timer.start(cooldown_time)
+				decision_timer.start(maxf(attack_cooldown, 0.5))
+
+func _finish_attack_sequence(finished_attack: State) -> void:
+	if current_state == State.DEATH or is_dead:
+		return
+		
+	# Se o Boss bateu 50% de HP durante o ataque que acabou de terminar, colapsa agora
+	if pending_guaranteed_collapse:
+		pending_guaranteed_collapse = false
+		current_state = State.CORE_COLLAPSE_PREP
+		execute_attack_sequence()
+		return
+		
+	attacks_since_collapse += 1
+	last_attack = finished_attack
+	current_state = State.IDLE
+
+	if decision_timer:
+		decision_timer.start(maxf(attack_cooldown, 0.5))
+
+func _start_overheat_fakeout_fx() -> void:
+	if core_particles:
+		core_particles.emitting = true
+	if collapse_sparks:
+		collapse_sparks.emitting = true
+		
+	if _collapse_tween and _collapse_tween.is_valid():
+		_collapse_tween.kill()
+		
+	if sprite:
+		_collapse_tween = create_tween().set_loops()
+		_collapse_tween.tween_property(sprite, "modulate", Color(1.0, 0.35, 0.15, 1.0), 0.08)
+		_collapse_tween.tween_property(sprite, "modulate", Color(1.0, 0.92, 0.45, 1.0), 0.08)
+
+func _play_exhausted_visual() -> void:
+	if not sprite:
+		return
+	_collapse_tween = create_tween().set_parallel(true)
+	_collapse_tween.tween_property(sprite, "modulate", Color(0.42, 0.42, 0.48, 1.0), 0.25)
+	_collapse_tween.tween_property(
+		sprite,
+		"scale",
+		Vector2(base_sprite_scale.x * 1.12, base_sprite_scale.y * 0.82),
+		0.25
+	)
+	_collapse_tween.tween_property(sprite, "position", base_sprite_pos + Vector2(0.0, 6.0), 0.25)
+
+func _stop_collapse_effects() -> void:
+	if _collapse_tween and _collapse_tween.is_valid():
+		_collapse_tween.kill()
+	if core_particles:
+		core_particles.emitting = false
+	if collapse_sparks:
+		collapse_sparks.emitting = false
+	if sprite:
+		sprite.position = base_sprite_pos
+		sprite.scale = base_sprite_scale
+		sprite.modulate = Color.WHITE
+
+func _restore_from_exhausted() -> void:
+	_stop_collapse_effects()
+	if damage_collision and current_state != State.DEATH and not is_dead:
+		damage_collision.set_deferred("disabled", false)
+
+func _on_decision_timer_timeout() -> void:
+	if current_state not in [State.IDLE, State.RUN]:
+		return
+	decision_timer.stop()
+	
+	if current_state == State.IDLE and randf() < 0.35:
+		current_state = State.RUN
+		decision_timer.start(randf_range(1.8, 3.0))
+		return
+		
+	# Abaixo de 50% HP: chance ocasional após cumprir o intervalo mínimo de outros ataques
+	if (
+		phase_two_collapse_triggered
+		and current_life_percent < core_collapse_hp_threshold
+		and last_attack != State.CORE_COLLAPSE_PREP
+		and attacks_since_collapse >= min_attacks_between_collapses
+		and randf() < collapse_occasional_chance
+	):
+		current_state = State.CORE_COLLAPSE_PREP
+		execute_attack_sequence()
+		return
+		
+	# Sorteio normal dos ataques ofensivos (sem incluir o Colapso para não inflar a chance)
+	var available_attacks: Array[State] = [State.SOOT_CLOUD]
+	if current_life_percent <= ember_rain_hp_threshold:
+		available_attacks.append(State.EMBER_RAIN_PREP)
+		
+	var filtered: Array[State] = available_attacks.filter(func(s): return s != last_attack)
+	if not filtered.is_empty():
+		available_attacks = filtered
+		
+	var chosen: State = available_attacks.pick_random()
+	last_attack = chosen
+	current_state = chosen
+	execute_attack_sequence()
+
+func _spawn_ember_rain() -> void:
+	if not ember_scene or not fire_puddle_scene:
+		push_warning("BossBurnout: Atribua ember_scene e fire_puddle_scene no Inspector!")
+		return
+		
+	var base_spawn_pos: Vector2 = shoot_point.global_position if shoot_point else global_position + Vector2(0.0, -30.0)
+	var fallback_ground_y: float = _get_ground_y(global_position.x)
+	var targets: Array[Vector2] = _generate_ember_targets(ember_count, fallback_ground_y)
+	
+	for target_pos in targets:
+		if current_state == State.DEATH:
+			return
+			
+		target_pos.y = _get_ground_y(target_pos.x)
+		
+		# Sempre adiciona na árvore antes de chamar setup() por causa do offset da Arena
+		var puddle := fire_puddle_scene.instantiate()
+		get_parent().add_child(puddle)
+		if puddle.has_method("setup_telegraph"):
+			puddle.setup_telegraph(target_pos, ember_flight_time)
+			
+		var ember := ember_scene.instantiate()
+		get_parent().add_child(ember)
+		var launch_origin: Vector2 = base_spawn_pos + Vector2(randf_range(-12.0, 12.0), randf_range(-8.0, 8.0))
+		if ember.has_method("setup"):
+			ember.setup(launch_origin, target_pos, ember_flight_time, ember_arc_height, puddle)
+			
+		await get_tree().create_timer(ember_spawn_interval, false).timeout
+
+func _generate_ember_targets(count: int, ground_y: float) -> Array[Vector2]:
+	var targets: Array[Vector2] = []
+	var margin: float = 40.0
+	var min_x: float = arena_min_x + margin
+	var max_x: float = arena_max_x - margin
+	
+	# Mira uma brasa próxima ao jogador para forçá-lo a manobrar
+	if is_instance_valid(player):
+		var player_x: float = clampf(player.global_position.x + randf_range(-25.0, 25.0), min_x, max_x)
+		targets.append(Vector2(player_x, ground_y))
+		
+	var attempts: int = 0
+	while targets.size() < count and attempts < count * 15:
+		attempts += 1
+		var candidate_x: float = randf_range(min_x, max_x)
+		var too_close: bool = false
+		for pos in targets:
+			if absf(pos.x - candidate_x) < ember_min_spacing:
+				too_close = true
+				break
+		if not too_close:
+			targets.append(Vector2(candidate_x, ground_y))
+			
+	targets.shuffle()
+	return targets
+
+func _get_ground_y(target_x: float) -> float:
+	var space_state := get_world_2d().direct_space_state
+	var from := Vector2(target_x, global_position.y - 50.0)
+	var to := Vector2(target_x, global_position.y + 500.0)
+	var query := PhysicsRayQueryParameters2D.create(from, to, ground_collision_mask)
+	var exclusions: Array[RID] = [get_rid()]
+	if is_instance_valid(player) and player is CollisionObject2D:
+		exclusions.append(player.get_rid())
+	query.exclude = exclusions
+	
+	var result := space_state.intersect_ray(query)
+	if result:
+		return result.position.y
+	return global_position.y + ground_offset_y
+
+func _set_core_overheat(active: bool) -> void:
+	if core_particles:
+		core_particles.emitting = active
+	if sprite:
+		var target_color: Color = Color(1.5, 0.45, 0.25, 1.0) if active else Color.WHITE
+		var tween := create_tween()
+		tween.tween_property(sprite, "modulate", target_color, 0.25)
 
 func spawn_soot_cloud():
 	if not soot_cloud_scene:
@@ -124,25 +491,6 @@ func spawn_soot_cloud():
 	
 	get_parent().add_child(cloud)
 
-func _on_decision_timer_timeout() -> void:
-	if current_state not in [State.IDLE, State.RUN]:
-		return
-	decision_timer.stop()
-	
-	if current_state == State.RUN:
-		current_state = State.SOOT_CLOUD
-		execute_attack_sequence()
-		return
-	
-	var choices = [State.RUN, State.SOOT_CLOUD]
-	current_state = choices.pick_random()
-	
-	if current_state == State.RUN:
-		decision_timer.start(randf_range(2.0, 4.0))
-	else:
-		execute_attack_sequence()
-		
-	
 
 func flip_sprite(dir: float) -> void:
 	if dir == 0.0:
@@ -159,8 +507,29 @@ func _apply_dynamic_difficulty(life_percent: float) -> void:
 		speed = 185.0
 	elif life_percent < 0.7:
 		speed = 165.0
+	if current_health <= 0 or is_dead or current_state == State.DEATH:
+		return
+		
+	# Garante 100% de ativação quando atingir <= 50% de HP pela primeira vez
+	if not phase_two_collapse_triggered and life_percent <= core_collapse_hp_threshold:
+		phase_two_collapse_triggered = true
+		
+		if current_state in [State.IDLE, State.RUN]:
+			if decision_timer:
+				decision_timer.stop()
+			is_in_knockback = false
+			current_state = State.CORE_COLLAPSE_PREP
+			execute_attack_sequence()
+		else:
+			# Se estiver no meio de outro ataque, engata o colapso logo ao terminar
+			pending_guaranteed_collapse = true
 
 func _on_death() -> void:
 	current_state = State.DEATH
+	pending_guaranteed_collapse = false
 	if decision_timer:
 		decision_timer.stop()
+	_stop_collapse_effects()
+	if damage_collision:
+		damage_collision.set_deferred("disabled", true)
+	get_tree().call_group("burnout_hazards", "force_cleanup")

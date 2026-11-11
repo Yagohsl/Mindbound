@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cetlyy2vlfede"]
+
+[ext_resource type="Script" uid="uid://dlink21vb1hu5" path="res://boss/burnout/ataques/brasa_projetil.gd" id="1_jr4bc"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_jr4bc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ywsud"]
+
+[node name="Brasa Projetil" type="Area2D" unique_id=492746045]
+script = ExtResource("1_jr4bc")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=94593892]
+position = Vector2(-4.7683716e-07, -6.2584877e-07)
+scale = Vector2(16.000002, 16)
+texture = SubResource("PlaceholderTexture2D_jr4bc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=659761208]
+shape = SubResource("CircleShape2D_ywsud")

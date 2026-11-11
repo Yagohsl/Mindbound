@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bvb77t81sqeq2"]
 
-[ext_resource type="Script" uid="uid://cnh4aq12xb0av" path="res://boss/burnout/nevoa.gd" id="1_0p8tn"]
-[ext_resource type="Shader" uid="uid://dij7hbf5nkyum" path="res://boss/burnout/desaturacao.gdshader" id="2_lj0ai"]
+[ext_resource type="Script" uid="uid://cnh4aq12xb0av" path="res://boss/burnout/ataques/nevoa.gd" id="1_0p8tn"]
+[ext_resource type="Shader" uid="uid://dij7hbf5nkyum" path="res://boss/burnout/ataques/desaturacao.gdshader" id="2_lj0ai"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0p8tn"]
 radius = 180.0

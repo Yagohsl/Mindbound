@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://3y4njvhvf1ab"]
+
+[ext_resource type="Script" uid="uid://dlqhkokhxttcu" path="res://boss/burnout/ataques/poca_fogo.gd" id="1_stw31"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ghpxv"]
+size = Vector2(76, 18)
+
+[node name="Poca Fogo" type="Area2D" unique_id=1655462918]
+collision_mask = 2
+script = ExtResource("1_stw31")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1474822171]
+position = Vector2(0, -9)
+shape = SubResource("RectangleShape2D_ghpxv")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1688413933]

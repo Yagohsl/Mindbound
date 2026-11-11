@@ -1,9 +1,11 @@
 [gd_scene format=3 uid="uid://bk0goa0px1r8j"]
 
 [ext_resource type="Script" uid="uid://d1lk7s7npr6f3" path="res://boss/burnout/boss_burnout.gd" id="1_ic6it"]
-[ext_resource type="PackedScene" uid="uid://bvb77t81sqeq2" path="res://boss/burnout/nevoa.tscn" id="2_ic6it"]
+[ext_resource type="PackedScene" uid="uid://bvb77t81sqeq2" path="res://boss/burnout/ataques/nevoa.tscn" id="2_ic6it"]
 [ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss/ansiedade/boss_ansiedade.gdshader" id="3_cgnif"]
+[ext_resource type="PackedScene" uid="uid://cetlyy2vlfede" path="res://boss/burnout/ataques/brasa_projetil.tscn" id="3_i3k5b"]
 [ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="3_ic6it"]
+[ext_resource type="PackedScene" uid="uid://3y4njvhvf1ab" path="res://boss/burnout/ataques/poca_fogo.tscn" id="4_ittvu"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="5_kw6kj"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tdah"]
@@ -34,6 +36,8 @@ size = Vector2(117, 109)
 collision_layer = 4
 script = ExtResource("1_ic6it")
 soot_cloud_scene = ExtResource("2_ic6it")
+ember_scene = ExtResource("3_i3k5b")
+fire_puddle_scene = ExtResource("4_ittvu")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1416856511]
 material = SubResource("ShaderMaterial_tdah")
@@ -67,5 +71,32 @@ shape = SubResource("RectangleShape2D_ykjxb")
 position = Vector2(0, -10)
 
 [node name="DialogBox" parent="." unique_id=621698430 instance=ExtResource("5_kw6kj")]
+
+[node name="SparksParticles" type="CPUParticles2D" parent="." unique_id=1974102960]
+emitting = false
+amount = 28
+lifetime = 0.45
+explosiveness = 0.25
+spread = 180.0
+gravity = Vector2(0, 320)
+initial_velocity_min = 120.0
+initial_velocity_max = 240.0
+scale_amount_min = 7.0
+scale_amount_max = 7.0
+color = Color(1, 0.33333334, 0.101960786, 1)
+
+[node name="SmokeParticles" type="CPUParticles2D" parent="." unique_id=706835397]
+emitting = false
+amount = 60
+lifetime = 0.9
+one_shot = true
+explosiveness = 0.92
+spread = 180.0
+gravity = Vector2(0, -45)
+initial_velocity_min = 90.0
+initial_velocity_max = 190.0
+scale_amount_min = 20.0
+scale_amount_max = 30.0
+color = Color(0.16862746, 0.16862746, 0.16862746, 1)
 
 [connection signal="timeout" from="DecisionTimer" to="." method="_on_decision_timer_timeout"]
