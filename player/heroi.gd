@@ -18,6 +18,7 @@ signal health_changed(new_health: int)
 @export_group("Combate & Vida")
 @export var max_health: int = 100
 @export var attack_value: int = 98
+@export var attack_cooldown_time: float = 0.4
 @export var invincibility_time: float = 1.0
 @export var knockback_duration: float = 0.18
 @export var knockback_force: Vector2 = Vector2(620.0, -320.0)
@@ -28,6 +29,7 @@ signal health_changed(new_health: int)
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var attack_collision: CollisionShape2D = $AttackHitbox/CollisionShape2D
 @onready var attack = $Attack # Referência ao nó do impacto
+
 # --- ESTADOS & VARIÁVEIS INTERNAS ---
 var current_health: int = 100
 var is_dead: bool = false
@@ -43,15 +45,20 @@ var is_slowed: bool = false
 var is_paralyzed: bool = false
 var is_trapped: bool = false
 var is_energy_blocked: bool = false
+var is_exhaustion_drained: bool = false
 var slow_multiplier: float = 1.0
+var cooldown_multiplier: float = 1.0
 
 # Controles de tempo
 var dash_time_left: float = 0.0
 var dash_cooldown: float = 0.0
+var attack_cooldown_timer: float = 0.0
+var _slow_token: int = 0
 
 # Referências de Tweens para evitar conflitos visuais
 var _flash_tween: Tween
 var _status_tween: Tween
+var _energy_tween: Tween
 
 
 func _ready() -> void:
@@ -70,15 +77,17 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
-	# 2. Knockback ativo (preserva vetor de impacto)
+	# 2. Contadores de recarga (afetados pelo Feixe de Exaustão)
+	if dash_cooldown > 0.0:
+		dash_cooldown = maxf(0.0, dash_cooldown - (delta / cooldown_multiplier))
+	if attack_cooldown_timer > 0.0:
+		attack_cooldown_timer = maxf(0.0, attack_cooldown_timer - (delta / cooldown_multiplier))
+
+	# 3. Knockback ativo (preserva vetor de impacto)
 	if is_in_knockback:
 		_apply_gravity(delta)
 		move_and_slide()
 		return
-
-	# 3. Temporizadores
-	if dash_cooldown > 0.0:
-		dash_cooldown -= delta
 
 	# 4. Execução do Dash
 	if is_dashing:
@@ -100,7 +109,7 @@ func _physics_process(delta: float) -> void:
 	_apply_gravity(delta)
 
 	# 7. Ações de Combate e Pulo
-	if Input.is_action_just_pressed("attack") and not is_attacking:
+	if Input.is_action_just_pressed("attack") and not is_attacking and attack_cooldown_timer <= 0.0:
 		_start_attack()
 
 	if Input.is_action_just_pressed("jump") and is_on_floor():
@@ -169,6 +178,7 @@ func _start_dash() -> void:
 
 func _start_attack() -> void:
 	is_attacking = true
+	attack_cooldown_timer = attack_cooldown_time
 	_hit_enemies.clear()
 	anim.play("attack")
 
@@ -195,6 +205,15 @@ func take_damage(amount: int, attacker_pos: Vector2 = Vector2.ZERO) -> void:
 		trigger_invincibility()
 
 
+func apply_drain_damage(amount: int) -> void:
+	if is_dead:
+		return
+	current_health = maxi(0, current_health - amount)
+	health_changed.emit(current_health)
+	if current_health <= 0:
+		die()
+
+
 func apply_knockback(attacker_pos: Vector2) -> void:
 	is_in_knockback = true
 	var dir_x: float = signf(global_position.x - attacker_pos.x)
@@ -210,7 +229,6 @@ func apply_knockback(attacker_pos: Vector2) -> void:
 
 func trigger_invincibility() -> void:
 	is_invincible = true
-	flash()
 	await get_tree().create_timer(invincibility_time, false).timeout
 	is_invincible = false
 
@@ -235,7 +253,7 @@ func flash() -> void:
 
 
 func enable_attack_hitbox() -> void:
-	if attack_collision:
+	if attack_collision and not is_dead and not is_trapped:
 		attack_collision.disabled = false
 
 
@@ -264,22 +282,31 @@ func die() -> void:
 	Engine.time_scale = 1.0
 	is_dead = true
 	is_invincible = true
+	is_attacking = false
+	is_dashing = false
+	is_exhaustion_drained = false
+	cooldown_multiplier = 1.0
+	_hit_enemies.clear()
 
 	if attack_collision:
-		attack_collision.disabled = true
-	
+		attack_collision.set_deferred("disabled", true)
+
 	# Interrompe qualquer animação de transição visual ativa
 	if _flash_tween and _flash_tween.is_valid():
 		_flash_tween.kill()
 	if _status_tween and _status_tween.is_valid():
 		_status_tween.kill()
+	if _energy_tween and _energy_tween.is_valid():
+		_energy_tween.kill()
 
 	if anim:
 		anim.speed_scale = 1.0
 
-	if sprite and sprite.material:
-		sprite.material.set_shader_parameter("flash_modifier", 0.0)
-		sprite.material.set_shader_parameter("slow_modifier", 0.0)
+	if sprite:
+		sprite.modulate = Color.WHITE
+		if sprite.material:
+			sprite.material.set_shader_parameter("flash_modifier", 0.0)
+			sprite.material.set_shader_parameter("slow_modifier", 0.0)
 
 	modulate = Color.WHITE
 	anim.play("death")
@@ -289,11 +316,19 @@ func die() -> void:
 		get_tree().reload_current_scene()
 
 
-# --- EFEITOS DE STATUS (SLOW, PARALYSIS, TRAP) ---
+# --- EFEITOS DE STATUS (SLOW, PARALYSIS, TRAP, EXHAUSTION) ---
+
+func set_cooldown_multiplier(mult: float) -> void:
+	cooldown_multiplier = maxf(mult, 1.0)
+	is_exhaustion_drained = (cooldown_multiplier > 1.0)
+
 
 func apply_slow(factor: float, duration: float) -> void:
 	if is_dead or is_dashing or is_dash_invincible:
 		return
+
+	_slow_token += 1
+	var my_token: int = _slow_token
 
 	slow_multiplier = factor
 	is_slowed = true
@@ -308,6 +343,8 @@ func apply_slow(factor: float, duration: float) -> void:
 		_status_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 1.0, 0.1)
 
 	await get_tree().create_timer(duration, false).timeout
+	if is_dead or my_token != _slow_token:
+		return
 
 	slow_multiplier = 1.0
 	is_slowed = false
@@ -317,8 +354,10 @@ func apply_slow(factor: float, duration: float) -> void:
 		anim.speed_scale = 1.0
 
 	if sprite and sprite.material:
-		var reset_tween: Tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-		reset_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)
+		if _status_tween and _status_tween.is_valid():
+			_status_tween.kill()
+		_status_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		_status_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)
 
 
 func apply_paralysis(duration: float) -> void:
@@ -330,12 +369,14 @@ func apply_paralysis(duration: float) -> void:
 
 	if anim:
 		anim.pause()
-		
+
 	turn_purple()
 	await get_tree().create_timer(duration, false).timeout
+	if is_dead:
+		return
 
 	is_paralyzed = false
-	if anim and not is_dead:
+	if anim:
 		anim.play()
 	turn_white()
 
@@ -344,6 +385,10 @@ func trap_player() -> void:
 	if is_dead or is_dashing or is_dash_invincible:
 		return
 	is_trapped = true
+	is_attacking = false
+	_hit_enemies.clear()
+	if attack_collision:
+		attack_collision.set_deferred("disabled", true)
 	velocity = Vector2.ZERO
 	if anim:
 		anim.play("idle")
@@ -353,24 +398,33 @@ func trap_player() -> void:
 func release_player() -> void:
 	is_trapped = false
 	is_paralyzed = false
+	is_attacking = false
+	_hit_enemies.clear()
 	slow_multiplier = 1.0 # Garante que a velocidade não fique travada em zero
-	
+	if attack_collision:
+		attack_collision.set_deferred("disabled", true)
+
 	if anim and not is_dead:
 		anim.speed_scale = 1.0
 		anim.play("idle")
-		
+
 	turn_white()
-func turn_purple():
+
+
+func turn_purple() -> void:
 	if sprite and sprite.material:
 		if _status_tween and _status_tween.is_valid():
 			_status_tween.kill()
 		_status_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 		_status_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 1.0, 0.1)
 
-func turn_white():
+
+func turn_white() -> void:
 	if sprite and sprite.material:
-		var reset_tween: Tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-		reset_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)
+		if _status_tween and _status_tween.is_valid():
+			_status_tween.kill()
+		_status_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		_status_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)
 
 
 # --- BLOQUEIO DE ENERGIA (FADIGA EXTREMA / TRAVA DE DASH) ---
@@ -389,13 +443,18 @@ func apply_energy_block(duration: float = 2.5) -> void:
 
 	# Efeito visual de esgotamento físico (tom acinzentado opaco)
 	if sprite:
-		var tween = create_tween()
-		tween.tween_property(sprite, "modulate", Color(0.6, 0.6, 0.65), 0.15)
+		if _energy_tween and _energy_tween.is_valid():
+			_energy_tween.kill()
+		_energy_tween = create_tween()
+		_energy_tween.tween_property(sprite, "modulate", Color(0.6, 0.6, 0.65), 0.15)
 
 	await get_tree().create_timer(duration, false).timeout
+	if is_dead:
+		return
 
 	is_energy_blocked = false
-	if not is_dead and not is_slowed and not is_paralyzed and not is_trapped:
-		if sprite:
-			var reset_tween = create_tween()
-			reset_tween.tween_property(sprite, "modulate", Color.WHITE, 0.25)
+	if sprite:
+		if _energy_tween and _energy_tween.is_valid():
+			_energy_tween.kill()
+		_energy_tween = create_tween()
+		_energy_tween.tween_property(sprite, "modulate", Color.WHITE, 0.25)

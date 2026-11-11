@@ -5,6 +5,7 @@
 [ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss/ansiedade/boss_ansiedade.gdshader" id="3_cgnif"]
 [ext_resource type="PackedScene" uid="uid://cetlyy2vlfede" path="res://boss/burnout/ataques/brasa_projetil.tscn" id="3_i3k5b"]
 [ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="3_ic6it"]
+[ext_resource type="PackedScene" uid="uid://pjhwck1eae13" path="res://boss/burnout/ataques/brasa_tiro.tscn" id="3_ittvu"]
 [ext_resource type="PackedScene" uid="uid://3y4njvhvf1ab" path="res://boss/burnout/ataques/poca_fogo.tscn" id="4_ittvu"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="5_kw6kj"]
 
@@ -36,8 +37,10 @@ size = Vector2(117, 109)
 collision_layer = 4
 script = ExtResource("1_ic6it")
 soot_cloud_scene = ExtResource("2_ic6it")
+burst_projectile_scene = ExtResource("3_ittvu")
 ember_scene = ExtResource("3_i3k5b")
 fire_puddle_scene = ExtResource("4_ittvu")
+max_health = 300
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1416856511]
 material = SubResource("ShaderMaterial_tdah")
@@ -98,5 +101,14 @@ initial_velocity_max = 190.0
 scale_amount_min = 20.0
 scale_amount_max = 30.0
 color = Color(0.16862746, 0.16862746, 0.16862746, 1)
+
+[node name="ExhaustionBeam" type="Line2D" parent="." unique_id=1710825037]
+visible = false
+z_index = 5
+width = 12.0
+default_color = Color(0.4509804, 0.4509804, 0.5019608, 0.9137255)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
 
 [connection signal="timeout" from="DecisionTimer" to="." method="_on_decision_timer_timeout"]
