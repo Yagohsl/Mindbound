@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d28vx5mpaphe8"]
 
-[ext_resource type="Script" uid="uid://cr2qxs52jwlap" path="res://boss/depressao/lagrima_projetil.gd" id="1_npy3b"]
+[ext_resource type="Script" uid="uid://cr2qxs52jwlap" path="res://boss/depressao/ataques/lagrima_projetil.gd" id="1_npy3b"]
 [ext_resource type="Texture2D" uid="uid://c06ew3thttcrj" path="res://assets/images/game/fighters/lagrima.png" id="2_npy3b"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_utpxi"]

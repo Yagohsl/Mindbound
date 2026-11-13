@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cd6itqed0i1i5"]
 
-[ext_resource type="Script" uid="uid://2idxtisyqis0" path="res://boss/depressao/geiser_lodo.gd" id="1_pmjg4"]
+[ext_resource type="Script" uid="uid://2idxtisyqis0" path="res://boss/depressao/ataques/geiser_lodo.gd" id="1_pmjg4"]
 [ext_resource type="Texture2D" uid="uid://deuodhmnq8us1" path="res://assets/images/game/fighters/geiser.png" id="2_1c807"]
 
 [sub_resource type="Animation" id="Animation_05vcb"]

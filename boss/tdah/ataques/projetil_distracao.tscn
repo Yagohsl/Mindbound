@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c1seh62la1lms"]
 
-[ext_resource type="Script" uid="uid://ch7jb4d5hypp" path="res://boss/tdah/projetil_distracao.gd" id="1_dist"]
+[ext_resource type="Script" uid="uid://ch7jb4d5hypp" path="res://boss/tdah/ataques/projetil_distracao.gd" id="1_dist"]
 [ext_resource type="Texture2D" uid="uid://bvx4pavaju0rl" path="res://assets/images/game/fighters/projetil_faisca.png" id="2_vmbib"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_p1"]

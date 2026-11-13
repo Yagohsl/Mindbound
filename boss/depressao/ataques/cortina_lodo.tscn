@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dkdyy71acm0be"]
 
-[ext_resource type="Script" uid="uid://b03vi473goekm" path="res://boss/depressao/cortina_lodo.gd" id="1_j6r3t"]
+[ext_resource type="Script" uid="uid://b03vi473goekm" path="res://boss/depressao/ataques/cortina_lodo.gd" id="1_j6r3t"]
 [ext_resource type="Texture2D" uid="uid://bteevv1ru8xkk" path="res://assets/images/game/fighters/wave_depressao.png" id="2_4qfkf"]
 
 [sub_resource type="Animation" id="Animation_4qfkf"]

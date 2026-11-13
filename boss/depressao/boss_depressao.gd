@@ -44,11 +44,6 @@ enum State {
 @export var catch_offset_x: float = 80.0
 @export var smash_heavy_damage: int = 40
 
-@export_group("Aura de Lentidão")
-@export var slow_aura_radius: float = 220.0
-@export var max_slow_multiplier: float = 0.8  # Lentidão quando a vida está cheia (20% mais lento)
-@export var min_slow_multiplier: float = 0.3  # Lentidão máxima quando a vida está no fim (70% mais lento)
-
 @onready var ponto_de_tiro: Marker2D = get_node_or_null("PontoDeTiro")
 @onready var punch_hitbox: Area2D = get_node_or_null("PunchHitbox")
 
@@ -78,16 +73,15 @@ func _setup_dialogues() -> void:
 	]
 
 func _apply_dynamic_difficulty(life_percent: float) -> void:
-	current_aura_slow = clampf(lerpf(min_slow_multiplier, max_slow_multiplier, life_percent), min_slow_multiplier, max_slow_multiplier)
 
 	if life_percent > 0.60:
-		current_geiser_count = 1
+		current_geiser_count = 3
 		direct_attack_stage = 1
 	elif life_percent > 0.30:
-		current_geiser_count = 3
+		current_geiser_count = 5
 		direct_attack_stage = 2
 	else:
-		current_geiser_count = 5
+		current_geiser_count = 9
 		direct_attack_stage = 3
 
 func _can_receive_knockback() -> bool:
@@ -96,7 +90,6 @@ func _can_receive_knockback() -> bool:
 func _on_death() -> void:
 	current_state = State.DEATH
 	decision_timer.stop()
-	_remove_proximity_slow()
 
 func _physics_process(delta: float) -> void:
 	if current_state == State.DEATH:
@@ -105,8 +98,6 @@ func _physics_process(delta: float) -> void:
 	if is_in_knockback:
 		move_and_slide()
 		return
-
-	_process_proximity_slow()
 
 	if not is_on_floor():
 		velocity.y += gravity * delta
@@ -512,27 +503,3 @@ func _is_player_catchable(p: Node2D) -> bool:
 	if "is_dead" in p and p.is_dead:
 		return false
 	return true
-
-func _process_proximity_slow() -> void:
-	if not is_instance_valid(player) or current_state in [State.DEATH, State.MINIGAME]:
-		_remove_proximity_slow()
-		return
-		
-	var dist: float = global_position.distance_to(player.global_position)
-	if dist <= slow_aura_radius:
-		# Só aplica se o player não estiver sob outro efeito de lentidão
-		if not player.is_slowed:
-			player.slow_multiplier = current_aura_slow
-			if "anim" in player and player.anim:
-				player.anim.speed_scale = current_aura_slow
-			is_applying_aura = true
-	else:
-		_remove_proximity_slow()
-
-func _remove_proximity_slow() -> void:
-	if is_applying_aura and is_instance_valid(player):
-		if not player.is_slowed:
-			player.slow_multiplier = 1.0
-			if "anim" in player and player.anim:
-				player.anim.speed_scale = 1.0
-		is_applying_aura = false

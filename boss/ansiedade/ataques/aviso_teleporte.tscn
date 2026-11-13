@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cqwaii2nxdwkr"]
 
 [ext_resource type="Texture2D" uid="uid://ciwyyj4qv0qq8" path="res://assets/images/game/fighters/projectile.png" id="1_gtc4g"]
-[ext_resource type="Script" uid="uid://ci5aa110k7l11" path="res://aviso_teleporte.gd" id="2_w8hap"]
+[ext_resource type="Script" uid="uid://ci5aa110k7l11" path="res://boss/ansiedade/ataques/aviso_teleporte.gd" id="2_w8hap"]
 
 [node name="CPUParticles2D" type="CPUParticles2D" unique_id=1977332173]
 emitting = false

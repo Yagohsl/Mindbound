@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://btu46khcrufha"]
 
 [ext_resource type="Script" uid="uid://br2lxqup6br68" path="res://boss/tdah/boss_tdah.gd" id="1_0wfnf"]
-[ext_resource type="PackedScene" uid="uid://c1seh62la1lms" path="res://boss/tdah/projetil_distracao.tscn" id="2_proj"]
+[ext_resource type="PackedScene" uid="uid://c1seh62la1lms" path="res://boss/tdah/ataques/projetil_distracao.tscn" id="2_proj"]
 [ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss/ansiedade/boss_ansiedade.gdshader" id="3_flash"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="4_dialog"]
 [ext_resource type="Texture2D" uid="uid://h7d6q0l2path" path="res://assets/images/game/fighters/TDAH.png" id="4_jdi2m"]

@@ -390,6 +390,8 @@ func trap_player() -> void:
 	if attack_collision:
 		attack_collision.set_deferred("disabled", true)
 	velocity = Vector2.ZERO
+	if has_node("Attack"):
+		$Attack.visible = false
 	if anim:
 		anim.play("idle")
 	turn_purple()
@@ -398,9 +400,9 @@ func trap_player() -> void:
 func release_player() -> void:
 	is_trapped = false
 	is_paralyzed = false
-	is_attacking = false
 	_hit_enemies.clear()
 	slow_multiplier = 1.0 # Garante que a velocidade não fique travada em zero
+	velocity = Vector2.ZERO
 	if attack_collision:
 		attack_collision.set_deferred("disabled", true)
 

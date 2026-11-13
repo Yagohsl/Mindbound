@@ -4,34 +4,61 @@
 [ext_resource type="PackedScene" uid="uid://bvb77t81sqeq2" path="res://boss/burnout/ataques/nevoa.tscn" id="2_ic6it"]
 [ext_resource type="Shader" uid="uid://chpsd1q3clp68" path="res://boss/ansiedade/boss_ansiedade.gdshader" id="3_cgnif"]
 [ext_resource type="PackedScene" uid="uid://cetlyy2vlfede" path="res://boss/burnout/ataques/brasa_projetil.tscn" id="3_i3k5b"]
-[ext_resource type="Texture2D" uid="uid://c18kslux1plvo" path="res://icon.svg" id="3_ic6it"]
 [ext_resource type="PackedScene" uid="uid://pjhwck1eae13" path="res://boss/burnout/ataques/brasa_tiro.tscn" id="3_ittvu"]
 [ext_resource type="PackedScene" uid="uid://3y4njvhvf1ab" path="res://boss/burnout/ataques/poca_fogo.tscn" id="4_ittvu"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="5_kw6kj"]
+[ext_resource type="Texture2D" uid="uid://dg3hqoej7dhqo" path="res://assets/images/game/fighters/burnout.png" id="7_ittvu"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tdah"]
 shader = ExtResource("3_cgnif")
 shader_parameter/flash_modifier = 0.0
 shader_parameter/flash_color = Color(1, 1, 1, 1)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ic6it"]
-size = Vector2(118, 123)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lc4wu"]
+radius = 69.0
+height = 202.0
 
 [sub_resource type="Animation" id="Animation_ijmrp"]
 length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
 
 [sub_resource type="Animation" id="Animation_wrhnc"]
 resource_name = "explosion"
 length = 1.3
 
+[sub_resource type="Animation" id="Animation_xftl5"]
+resource_name = "idle"
+length = 0.76666665
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.36666667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 3]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_enwma"]
 _data = {
 &"RESET": SubResource("Animation_ijmrp"),
-&"explosion": SubResource("Animation_wrhnc")
+&"explosion": SubResource("Animation_wrhnc"),
+&"idle": SubResource("Animation_xftl5")
 }
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ykjxb"]
-size = Vector2(117, 109)
 
 [node name="BossBurnout" type="CharacterBody2D" unique_id=1331790386]
 collision_layer = 4
@@ -44,12 +71,13 @@ max_health = 300
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1416856511]
 material = SubResource("ShaderMaterial_tdah")
-position = Vector2(4, -22)
-texture = ExtResource("3_ic6it")
+scale = Vector2(4, 4)
+texture = ExtResource("7_ittvu")
+hframes = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=45265416]
-position = Vector2(5, -22.5)
-shape = SubResource("RectangleShape2D_ic6it")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1929569406]
+position = Vector2(25, 10)
+shape = SubResource("CapsuleShape2D_lc4wu")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=177491708]
 libraries/ = SubResource("AnimationLibrary_enwma")
@@ -61,17 +89,12 @@ autostart = true
 collision_layer = 0
 collision_mask = 2
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="DamageArea" unique_id=568240959]
-visible = false
-position = Vector2(7, -7)
-polygon = PackedVector2Array(12, -15, 38, -66, 42, -74, 43, -85, 35, -114, 42, -110, 57, -87, 60, -55, 67, -30, 70, 23, 44, 62, 4, 67, -47, 60, -74, 6, -81, -36, -71, -48, -77, -79, -56, -119, -54, -95, -56, -77, -41, -57, -25, -82, -11, -62, 18, -82, 37, -69, 38, -66)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=62842163]
-position = Vector2(2.5, -24.5)
-shape = SubResource("RectangleShape2D_ykjxb")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=1295372793]
+position = Vector2(24, 11)
+shape = SubResource("CapsuleShape2D_lc4wu")
 
 [node name="PontoDeTiro" type="Marker2D" parent="." unique_id=203015437]
-position = Vector2(0, -10)
+position = Vector2(42, -9)
 
 [node name="DialogBox" parent="." unique_id=621698430 instance=ExtResource("5_kw6kj")]
 

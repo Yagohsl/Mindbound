@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://br7tf3apryfor"]
 
-[ext_resource type="Script" uid="uid://c8ujet4ig3vlh" path="res://projeteis_ansiedade.gd" id="1_yn7i1"]
+[ext_resource type="Script" uid="uid://c8ujet4ig3vlh" path="res://boss/ansiedade/ataques/projeteis_ansiedade.gd" id="1_yn7i1"]
 [ext_resource type="Texture2D" uid="uid://ciwyyj4qv0qq8" path="res://assets/images/game/fighters/projectile.png" id="2_sf0kb"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ecnqf"]

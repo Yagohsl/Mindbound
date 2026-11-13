@@ -24,7 +24,7 @@ enum State {
 @export_group("Ataque: Rajada de Brasas")
 @export var burst_projectile_scene: PackedScene
 @export var burst_count_min: int = 4
-@export var burst_count_max: int = 6
+@export var burst_count_max: int = 5
 @export var burst_fire_interval: float = 0.3 # Tempo entre cada tiro
 @export var burst_spread_degrees: float = 6.0 # Leve imprecisão/recuo por tiro
 @export var burst_projectile_speed: float = 480.0
@@ -208,8 +208,8 @@ func _physics_process(delta: float) -> void:
 					flip_sprite(walk_direction)
 
 			velocity.x = walk_direction * speed
-			if anim and anim.has_animation("run"):
-				anim.play("run")
+			anim.play("idle")
+
 
 	move_and_slide()
 

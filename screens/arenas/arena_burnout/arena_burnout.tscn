@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://df4salq4xso6d" path="res://screens/arenas/arena_burnout/arena_burnout.gd" id="1_p05gu"]
 [ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_uo860"]
-[ext_resource type="Texture2D" uid="uid://cd6e8gkdc2pbo" path="res://assets/images/game/maps/arena_tdah.png" id="3_7i1cq"]
 [ext_resource type="PackedScene" uid="uid://dduii0awr17r4" path="res://player/heroi.tscn" id="4_0b4e4"]
+[ext_resource type="Texture2D" uid="uid://bcbqsyi4qmer" path="res://assets/images/game/maps/arena_burnout.png" id="5_7i1cq"]
 [ext_resource type="PackedScene" uid="uid://bk0goa0px1r8j" path="res://boss/burnout/boss_burnout.tscn" id="5_hgrdo"]
 [ext_resource type="PackedScene" uid="uid://bvgualol7nu5v" path="res://screens/menu/menu_pausa/menu_pausa.tscn" id="6_3atmg"]
 [ext_resource type="PackedScene" uid="uid://0udsb2kb4a5k" path="res://utils/dialog_box.tscn" id="7_l1whs"]
@@ -48,7 +48,7 @@ horizontal_alignment = 1
 [node name="Sprite2D" type="Sprite2D" parent="StaticBody2D" unique_id=2143365313]
 position = Vector2(-5, -11)
 scale = Vector2(2.1566668, 1.8575002)
-texture = ExtResource("3_7i1cq")
+texture = ExtResource("5_7i1cq")
 centered = false
 
 [node name="ShadeFilter" type="Sprite2D" parent="StaticBody2D" unique_id=332507022]
