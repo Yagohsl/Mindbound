@@ -33,6 +33,51 @@ tracks/0/keys = {
 "values": [0]
 }
 
+[sub_resource type="Animation" id="Animation_lc4wu"]
+resource_name = "collapse"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
+
+[sub_resource type="Animation" id="Animation_vfjfa"]
+resource_name = "death"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
+
+[sub_resource type="Animation" id="Animation_ittvu"]
+resource_name = "ember_rain_prep"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.56666666),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [4, 5]
+}
+
 [sub_resource type="Animation" id="Animation_wrhnc"]
 resource_name = "explosion"
 length = 1.3
@@ -56,6 +101,9 @@ tracks/0/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_enwma"]
 _data = {
 &"RESET": SubResource("Animation_ijmrp"),
+&"collapse": SubResource("Animation_lc4wu"),
+&"death": SubResource("Animation_vfjfa"),
+&"ember_rain_prep": SubResource("Animation_ittvu"),
 &"explosion": SubResource("Animation_wrhnc"),
 &"idle": SubResource("Animation_xftl5")
 }
@@ -67,13 +115,15 @@ soot_cloud_scene = ExtResource("2_ic6it")
 burst_projectile_scene = ExtResource("3_ittvu")
 ember_scene = ExtResource("3_i3k5b")
 fire_puddle_scene = ExtResource("4_ittvu")
-max_health = 300
+max_health = 200
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1416856511]
 material = SubResource("ShaderMaterial_tdah")
+position = Vector2(-8, 0)
 scale = Vector2(4, 4)
 texture = ExtResource("7_ittvu")
 hframes = 4
+vframes = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1929569406]
 position = Vector2(25, 10)
@@ -99,6 +149,7 @@ position = Vector2(42, -9)
 [node name="DialogBox" parent="." unique_id=621698430 instance=ExtResource("5_kw6kj")]
 
 [node name="SparksParticles" type="CPUParticles2D" parent="." unique_id=1974102960]
+position = Vector2(23, -5)
 emitting = false
 amount = 28
 lifetime = 0.45
@@ -112,6 +163,7 @@ scale_amount_max = 7.0
 color = Color(1, 0.33333334, 0.101960786, 1)
 
 [node name="SmokeParticles" type="CPUParticles2D" parent="." unique_id=706835397]
+position = Vector2(16, -2)
 emitting = false
 amount = 60
 lifetime = 0.9
@@ -128,6 +180,7 @@ color = Color(0.16862746, 0.16862746, 0.16862746, 1)
 [node name="ExhaustionBeam" type="Line2D" parent="." unique_id=1710825037]
 visible = false
 z_index = 5
+points = PackedVector2Array(38, -16)
 width = 12.0
 default_color = Color(0.4509804, 0.4509804, 0.5019608, 0.9137255)
 joint_mode = 2

@@ -1,23 +1,22 @@
 [gd_scene format=3 uid="uid://pjhwck1eae13"]
 
 [ext_resource type="Script" uid="uid://bssvjc04xeanb" path="res://boss/burnout/ataques/brasa_tiro.gd" id="1_ee8im"]
+[ext_resource type="Texture2D" uid="uid://r4o352xx3u40" path="res://assets/images/game/fighters/projetil_chama.png" id="2_ilet3"]
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ilet3"]
-size = Vector2(10, 10)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_spgr5"]
-size = Vector2(9, 10)
+[sub_resource type="CircleShape2D" id="CircleShape2D_ilet3"]
 
 [node name="Brasa Tiro" type="Area2D" unique_id=1597378066]
 collision_mask = 2
 script = ExtResource("1_ee8im")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1208707958]
-texture = SubResource("PlaceholderTexture2D_ilet3")
+position = Vector2(1, -1)
+scale = Vector2(1.25, 1.25)
+texture = ExtResource("2_ilet3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1323446916]
 position = Vector2(0.5, 0)
-shape = SubResource("RectangleShape2D_spgr5")
+shape = SubResource("CircleShape2D_ilet3")
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=1347109100]
 rect = Rect2(-5, -5, 10, 10)

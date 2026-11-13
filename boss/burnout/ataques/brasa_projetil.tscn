@@ -1,8 +1,7 @@
 [gd_scene format=3 uid="uid://cetlyy2vlfede"]
 
 [ext_resource type="Script" uid="uid://dlink21vb1hu5" path="res://boss/burnout/ataques/brasa_projetil.gd" id="1_jr4bc"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_jr4bc"]
+[ext_resource type="Texture2D" uid="uid://r4o352xx3u40" path="res://assets/images/game/fighters/projetil_chama.png" id="2_ywsud"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ywsud"]
 
@@ -10,9 +9,9 @@
 script = ExtResource("1_jr4bc")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=94593892]
-position = Vector2(-4.7683716e-07, -6.2584877e-07)
-scale = Vector2(16.000002, 16)
-texture = SubResource("PlaceholderTexture2D_jr4bc")
+position = Vector2(0.99999976, -1.0000007)
+scale = Vector2(1.25, 1.25)
+texture = ExtResource("2_ywsud")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=659761208]
 shape = SubResource("CircleShape2D_ywsud")

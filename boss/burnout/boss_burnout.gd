@@ -152,8 +152,7 @@ func _physics_process(delta: float) -> void:
 	match current_state:
 		State.IDLE:
 			velocity.x = move_toward(velocity.x, 0.0, speed)
-			if anim and anim.has_animation("idle"):
-				anim.play("idle")
+			anim.play("idle")
 		State.SOOT_CLOUD, State.EMBER_RAIN_PREP, State.EMBER_RAIN, State.BURST_SHOT:
 			velocity.x = move_toward(velocity.x, 0.0, speed)
 			
@@ -221,11 +220,6 @@ func execute_attack_sequence() -> void:
 				decision_timer.start(randf_range(1.8, 3.0))
 		State.SOOT_CLOUD:
 			velocity.x = 0.0
-			if anim and anim.has_animation("soot_cloud"):
-				anim.play("soot_cloud")
-			elif anim and anim.has_animation("attack"):
-				anim.play("attack")
-
 			spawn_soot_cloud()
 
 			await get_tree().create_timer(1.2, false).timeout
@@ -239,10 +233,8 @@ func execute_attack_sequence() -> void:
 				flip_sprite(player.global_position.x - global_position.x)
 
 			_set_core_overheat(true)
-			if anim and anim.has_animation("ember_rain_prep"):
-				anim.play("ember_rain_prep")
-			elif anim and anim.has_animation("prep_attack"):
-				anim.play("prep_attack")
+			anim.play("ember_rain_prep")
+
 
 			await get_tree().create_timer(ember_prep_time, false).timeout
 			if current_state == State.DEATH or is_dead:
@@ -253,10 +245,7 @@ func execute_attack_sequence() -> void:
 
 		State.EMBER_RAIN:
 			velocity.x = 0.0
-			if anim and anim.has_animation("ember_rain"):
-				anim.play("ember_rain")
-			elif anim and anim.has_animation("attack"):
-				anim.play("attack")
+
 
 			await _spawn_ember_rain()
 			if current_state == State.DEATH or is_dead:
@@ -277,14 +266,12 @@ func execute_attack_sequence() -> void:
 
 			if is_instance_valid(player):
 				flip_sprite(player.global_position.x - global_position.x)
-
-			if anim and anim.has_animation("core_collapse_prep"):
-				anim.play("core_collapse_prep")
-			elif anim and anim.has_animation("idle"):
+				
+			if anim and anim.has_animation("idle"):
 				anim.play("idle")
-
+				
 			_start_overheat_fakeout_fx()
-
+			
 			await get_tree().create_timer(collapse_prep_duration, false).timeout
 			if current_state == State.DEATH or is_dead:
 				return
@@ -302,14 +289,11 @@ func execute_attack_sequence() -> void:
 
 			if damage_collision:
 				damage_collision.set_deferred("disabled", true)
-
-			if anim and anim.has_animation("exhausted"):
-				anim.play("exhausted")
-			elif anim:
-				anim.stop()
-
+				
+			anim.play("collapse")
+			
 			_play_exhausted_visual()
-
+			
 			var stun_duration: float = randf_range(exhausted_min_duration, exhausted_max_duration)
 			await get_tree().create_timer(stun_duration, false).timeout
 			if current_state == State.DEATH or is_dead:
@@ -354,10 +338,7 @@ func execute_attack_sequence() -> void:
 			if is_instance_valid(player):
 				flip_sprite(player.global_position.x - global_position.x)
 			
-			if anim and anim.has_animation("burst_shot"):
-				anim.play("burst_shot")
-			elif anim and anim.has_animation("attack"):
-				anim.play("attack")
+			anim.play("ember_rain_prep")
 			
 			await get_tree().create_timer(burst_prep_time, false).timeout
 			if current_state == State.DEATH:
@@ -446,13 +427,6 @@ func _play_exhausted_visual() -> void:
 		_collapse_tween.kill()
 	_collapse_tween = create_tween().set_parallel(true)
 	_collapse_tween.tween_property(sprite, "modulate", Color(0.42, 0.42, 0.48, 1.0), 0.25)
-	_collapse_tween.tween_property(
-		sprite,
-		"scale",
-		Vector2(base_sprite_scale.x * 1.12, base_sprite_scale.y * 0.82),
-		0.25
-	)
-	_collapse_tween.tween_property(sprite, "position", base_sprite_pos + Vector2(0.0, 6.0), 0.25)
 
 
 func _stop_collapse_effects() -> void:
@@ -498,7 +472,6 @@ func _on_decision_timer_timeout() -> void:
 		choices.erase(State.EXHAUSTION_BEAM_PREP)
 
 	# Aplica as travas de vida/intervalo quando houver outros ataques ativos
-	# (se você deixar apenas 1 ataque descomentado para testar, ele roda direto)
 	if choices.size() > 1:
 		if current_life_percent > ember_rain_hp_threshold:
 			choices.erase(State.EMBER_RAIN_PREP)
