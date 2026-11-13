@@ -45,7 +45,8 @@ func _on_hero_health_changed(_new_health: int) -> void:
 func _on_dialogo_finalizado() -> void:
 	if boss and boss.is_dead:
 		# Transição pós-vitória do Burnout
-		pass
+		get_tree().change_scene_to_file("res://screens/cutscenes/cutscene_burnout/cutscene_vitoria_caderno_burn.tscn")
+
 	elif hero and hero.current_health <= 0:
 		get_tree().paused = false 
 		get_tree().reload_current_scene()

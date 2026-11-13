@@ -2,7 +2,7 @@ extends Control
 
 @onready var anim_player = $AnimationPlayer
 
-const PROXIMA_CENA = "res://screens/cutscenes/cutscene_tdah/cutscene_caderno_tdah.tscn"
+const PROXIMA_CENA = "res://screens/cutscenes/cutscene_ansiedade/cutscene_caderno_ans.tscn"
 
 var pode_avancar: bool = false
 var pulou_animacao: bool = false

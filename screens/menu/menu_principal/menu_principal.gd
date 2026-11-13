@@ -3,7 +3,7 @@ extends Control
 
 # Botao jogar
 func _on_btn_jogar_pressed():
-	get_tree().change_scene_to_file("res://screens/cutscenes/cutscene_ansiedade/cutscene_caderno_ans.tscn")
+	get_tree().change_scene_to_file("res://screens/cutscenes/cutscene_tdah/cutscene_caderno_tdah.tscn")
 
 # Botao sobre
 func _on_btn_sobre_pressed():
