@@ -3,7 +3,7 @@ extends CharacterBody2D
 # --- SINAIS ---
 signal health_changed(new_health: int)
 
-# --- CONFIGURAÇÕES DE MOVIMENTAÇÃO ---
+# --- CONFIGURAÇÕES EXPORTADAS ---
 @export_group("Movimento")
 @export var speed: float = 300.0
 @export var jump_velocity: float = -900.0
@@ -23,12 +23,12 @@ signal health_changed(new_health: int)
 @export var knockback_duration: float = 0.18
 @export var knockback_force: Vector2 = Vector2(620.0, -320.0)
 
-# --- NÓS ---
+# --- REFERÊNCIAS DE NÓS (@onready) ---
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var anim: AnimationPlayer = $AnimationPlayer
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var attack_collision: CollisionShape2D = $AttackHitbox/CollisionShape2D
-@onready var attack = $Attack # Referência ao nó do impacto
+@onready var attack: Sprite2D = $Attack
 
 # --- ESTADOS & VARIÁVEIS INTERNAS ---
 var current_health: int = 100
@@ -56,16 +56,21 @@ var attack_cooldown_timer: float = 0.0
 var _slow_token: int = 0
 
 # Referências de Tweens para evitar conflitos visuais
-var _flash_tween: Tween
-var _status_tween: Tween
-var _energy_tween: Tween
+var _flash_tween: Tween = null
+var _status_tween: Tween = null
+var _energy_tween: Tween = null
 
 
+# --- MÉTODOS NATIVOS ---
 func _ready() -> void:
 	add_to_group("player")
 	current_health = max_health
 	if attack_collision:
 		attack_collision.disabled = true
+
+
+func _exit_tree() -> void:
+	Engine.time_scale = 1.0
 
 
 func _physics_process(delta: float) -> void:
@@ -77,25 +82,18 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
-	# 2. Contadores de recarga (afetados pelo Feixe de Exaustão)
-	if dash_cooldown > 0.0:
-		dash_cooldown = maxf(0.0, dash_cooldown - (delta / cooldown_multiplier))
-	if attack_cooldown_timer > 0.0:
-		attack_cooldown_timer = maxf(0.0, attack_cooldown_timer - (delta / cooldown_multiplier))
+	# 2. Contadores de recarga
+	_process_cooldowns(delta)
 
-	# 3. Knockback ativo (preserva vetor de impacto)
+	# 3. Knockback ativo
 	if is_in_knockback:
 		_apply_gravity(delta)
 		move_and_slide()
 		return
 
-	# 4. Execução do Dash
+	# 4. Execução do Dash ativo
 	if is_dashing:
-		dash_time_left -= delta
-		if dash_time_left <= 0.0:
-			velocity.x = 0.0
-			is_dashing = false
-			trigger_dash_recovery()
+		_process_active_dash(delta)
 		move_and_slide()
 		return
 
@@ -109,14 +107,7 @@ func _physics_process(delta: float) -> void:
 	_apply_gravity(delta)
 
 	# 7. Ações de Combate e Pulo
-	if Input.is_action_just_pressed("attack") and not is_attacking and attack_cooldown_timer <= 0.0:
-		_start_attack()
-
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = jump_velocity
-
-	if Input.is_action_just_released("jump") and velocity.y < 0.0:
-		velocity.y *= 0.5
+	_handle_combat_and_jump_inputs()
 
 	# 8. Movimentação Horizontal e Animações
 	_handle_movement()
@@ -126,6 +117,31 @@ func _physics_process(delta: float) -> void:
 
 
 # --- FÍSICA & CONTROLE AUXILIAR ---
+func _process_cooldowns(delta: float) -> void:
+	if dash_cooldown > 0.0:
+		dash_cooldown = maxf(0.0, dash_cooldown - (delta / cooldown_multiplier))
+	if attack_cooldown_timer > 0.0:
+		attack_cooldown_timer = maxf(0.0, attack_cooldown_timer - (delta / cooldown_multiplier))
+
+
+func _process_active_dash(delta: float) -> void:
+	dash_time_left -= delta
+	if dash_time_left <= 0.0:
+		velocity.x = 0.0
+		is_dashing = false
+		trigger_dash_recovery()
+
+
+func _handle_combat_and_jump_inputs() -> void:
+	if Input.is_action_just_pressed("attack") and not is_attacking and attack_cooldown_timer <= 0.0:
+		_start_attack()
+
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = jump_velocity
+
+	if Input.is_action_just_released("jump") and velocity.y < 0.0:
+		velocity.y *= 0.5
+
 
 func _apply_gravity(delta: float) -> void:
 	if not is_on_floor():
@@ -140,29 +156,32 @@ func _handle_movement() -> void:
 		velocity.x = direction * target_speed
 		if not is_attacking:
 			_set_facing_direction(direction < 0.0)
-			if is_on_floor():
+			if is_on_floor() and anim and anim.has_animation("run"):
 				anim.play("run")
 	else:
 		velocity.x = move_toward(velocity.x, 0.0, target_speed)
-		if is_on_floor() and not is_attacking:
+		if is_on_floor() and not is_attacking and anim and anim.has_animation("idle"):
 			anim.play("idle")
 
 
 func _update_air_animations() -> void:
-	if not is_on_floor() and not is_attacking:
+	if not is_on_floor() and not is_attacking and anim:
 		if velocity.y < 0.0:
-			anim.play("jump_up")
+			if anim.has_animation("jump_up"):
+				anim.play("jump_up")
 		else:
-			anim.play("jump_down")
+			if anim.has_animation("jump_down"):
+				anim.play("jump_down")
 
 
 func _set_facing_direction(facing_left: bool) -> void:
-	sprite.flip_h = facing_left
+	if sprite:
+		sprite.flip_h = facing_left
 	if attack_hitbox:
 		attack_hitbox.scale.x = -1.0 if facing_left else 1.0
 	if attack:
 		attack.flip_h = facing_left
-		attack.position.x = -abs(attack.position.x) if facing_left else abs(attack.position.x)
+		attack.position.x = -absf(attack.position.x) if facing_left else absf(attack.position.x)
 
 
 func _start_dash() -> void:
@@ -170,21 +189,22 @@ func _start_dash() -> void:
 	dash_time_left = dash_duration
 	dash_cooldown = dash_cooldown_time
 
-	var dash_dir: float = -1.0 if sprite.flip_h else 1.0
+	var dash_dir: float = -1.0 if (sprite and sprite.flip_h) else 1.0
 	velocity.x = dash_dir * dash_speed
 	velocity.y = 0.0
-	anim.play("dash")
+	if anim and anim.has_animation("dash"):
+		anim.play("dash")
 
 
 func _start_attack() -> void:
 	is_attacking = true
 	attack_cooldown_timer = attack_cooldown_time
 	_hit_enemies.clear()
-	anim.play("attack")
+	if anim and anim.has_animation("attack"):
+		anim.play("attack")
 
 
 # --- COMBATE & DANO ---
-
 func take_damage(amount: int, attacker_pos: Vector2 = Vector2.ZERO) -> void:
 	if is_invincible or is_dashing or is_dash_invincible or is_dead:
 		return
@@ -218,7 +238,7 @@ func apply_knockback(attacker_pos: Vector2) -> void:
 	is_in_knockback = true
 	var dir_x: float = signf(global_position.x - attacker_pos.x)
 	if dir_x == 0.0:
-		dir_x = -1.0 if sprite.flip_h else 1.0
+		dir_x = -1.0 if (sprite and sprite.flip_h) else 1.0
 
 	velocity.x = dir_x * knockback_force.x
 	velocity.y = knockback_force.y
@@ -243,7 +263,6 @@ func flash() -> void:
 	if not sprite or not sprite.material:
 		return
 
-	# Mata tween ativo para não travar o shader no branco
 	if _flash_tween and _flash_tween.is_valid():
 		_flash_tween.kill()
 
@@ -258,7 +277,7 @@ func enable_attack_hitbox() -> void:
 
 
 func _on_animation_player_animation_finished(anim_name: StringName) -> void:
-	if anim_name == "attack":
+	if anim_name == &"attack":
 		is_attacking = false
 		_hit_enemies.clear()
 		if attack_collision:
@@ -291,7 +310,6 @@ func die() -> void:
 	if attack_collision:
 		attack_collision.set_deferred("disabled", true)
 
-	# Interrompe qualquer animação de transição visual ativa
 	if _flash_tween and _flash_tween.is_valid():
 		_flash_tween.kill()
 	if _status_tween and _status_tween.is_valid():
@@ -309,7 +327,8 @@ func die() -> void:
 			sprite.material.set_shader_parameter("slow_modifier", 0.0)
 
 	modulate = Color.WHITE
-	anim.play("death")
+	if anim and anim.has_animation("death"):
+		anim.play("death")
 
 	await get_tree().create_timer(3.0, false, false, true).timeout
 	if get_tree():
@@ -317,7 +336,6 @@ func die() -> void:
 
 
 # --- EFEITOS DE STATUS (SLOW, PARALYSIS, TRAP, EXHAUSTION) ---
-
 func set_cooldown_multiplier(mult: float) -> void:
 	cooldown_multiplier = maxf(mult, 1.0)
 	is_exhaustion_drained = (cooldown_multiplier > 1.0)
@@ -390,9 +408,9 @@ func trap_player() -> void:
 	if attack_collision:
 		attack_collision.set_deferred("disabled", true)
 	velocity = Vector2.ZERO
-	if has_node("Attack"):
-		$Attack.visible = false
-	if anim:
+	if attack:
+		attack.visible = false
+	if anim and anim.has_animation("idle"):
 		anim.play("idle")
 	turn_purple()
 
@@ -401,12 +419,12 @@ func release_player() -> void:
 	is_trapped = false
 	is_paralyzed = false
 	_hit_enemies.clear()
-	slow_multiplier = 1.0 # Garante que a velocidade não fique travada em zero
+	slow_multiplier = 1.0
 	velocity = Vector2.ZERO
 	if attack_collision:
 		attack_collision.set_deferred("disabled", true)
 
-	if anim and not is_dead:
+	if anim and not is_dead and anim.has_animation("idle"):
 		anim.speed_scale = 1.0
 		anim.play("idle")
 
@@ -429,13 +447,10 @@ func turn_white() -> void:
 		_status_tween.tween_property(sprite.material, "shader_parameter/slow_modifier", 0.0, 0.2)
 
 
-# --- BLOQUEIO DE ENERGIA (FADIGA EXTREMA / TRAVA DE DASH) ---
-
 func apply_energy_block(duration: float = 2.5) -> void:
 	if is_dead:
 		return
 
-	# Cancela dash em andamento imediatamente caso seja atingido
 	if is_dashing:
 		is_dashing = false
 		trigger_dash_recovery()
@@ -443,7 +458,6 @@ func apply_energy_block(duration: float = 2.5) -> void:
 	is_energy_blocked = true
 	dash_cooldown = maxf(dash_cooldown, duration)
 
-	# Efeito visual de esgotamento físico (tom acinzentado opaco)
 	if sprite:
 		if _energy_tween and _energy_tween.is_valid():
 			_energy_tween.kill()

@@ -250,7 +250,7 @@ position = Vector2(-3, 22)
 shape = SubResource("RectangleShape2D_2cmim")
 
 [node name="PontoDeTiro" type="Marker2D" parent="." unique_id=880776632]
-position = Vector2(68, 16)
+position = Vector2(14, -44)
 
 [node name="DialogBox" parent="." unique_id=186077402 instance=ExtResource("8_8q71c")]
 

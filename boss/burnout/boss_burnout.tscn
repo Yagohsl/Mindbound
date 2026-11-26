@@ -115,7 +115,8 @@ soot_cloud_scene = ExtResource("2_ic6it")
 burst_projectile_scene = ExtResource("3_ittvu")
 ember_scene = ExtResource("3_i3k5b")
 fire_puddle_scene = ExtResource("4_ittvu")
-max_health = 200
+max_health = 250
+attack_value = 8
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1416856511]
 material = SubResource("ShaderMaterial_tdah")
@@ -179,10 +180,11 @@ color = Color(0.16862746, 0.16862746, 0.16862746, 1)
 
 [node name="ExhaustionBeam" type="Line2D" parent="." unique_id=1710825037]
 visible = false
+modulate = Color(0.88847923, 0.29802352, 7.70092e-07, 1)
 z_index = 5
-points = PackedVector2Array(38, -16)
+points = PackedVector2Array(36, -12)
 width = 12.0
-default_color = Color(0.4509804, 0.4509804, 0.5019608, 0.9137255)
+default_color = Color(0.7921569, 0.23137255, 0.08235294, 0.99607843)
 joint_mode = 2
 begin_cap_mode = 2
 end_cap_mode = 2

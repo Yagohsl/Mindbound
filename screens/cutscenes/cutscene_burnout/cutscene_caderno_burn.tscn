@@ -143,7 +143,7 @@ theme_override_constants/line_separation = 4
 theme_override_fonts/normal_font = ExtResource("4_2lu4p")
 theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
-text = "Já perdi a conta de quantas vezes tentei me concentrar hoje. Começo uma coisa, lembro de outra, abro uma terceira e de repente não terminei nenhuma. As pessoas falam que é falta de esforço, mas juro que não é. Minha cabeça simplesmente não funciona desse jeito. "
+text = "Eu já acordo sentindo que não vou dar conta do dia. Não é só sono, é um peso no corpo inteiro que noite nenhuma consegue tirar. Coisas simples que eu resolvia rápido agora parecem montanhas; fico encarando a tela e a minha cabeça simplesmente trava. É assustador sentir que estou ficando incapaz de fazer o que sempre fiz bem."
 visible_characters = 0
 visible_ratio = 0.0
 
@@ -159,7 +159,7 @@ theme_override_constants/line_separation = 4
 theme_override_fonts/normal_font = ExtResource("4_2lu4p")
 theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
-text = "É frustrante parecer desorganizado pra todo mundo quando por dentro você está tentando dar conta de dez coisas ao mesmo tempo e não conseguindo segurar nenhuma."
+text = "Qualquer mensagem no celular me irrita, qualquer pedido me desgasta. E o pior é quando tento deitar: em vez de descansar, vem aquela culpa sufocante dizendo que estou ficando pra trás. Não sobra nada de mim pra mim mesmo no fim do dia."
 visible_characters = 0
 visible_ratio = 0.0
 

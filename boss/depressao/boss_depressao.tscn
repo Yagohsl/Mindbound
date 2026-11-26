@@ -297,7 +297,6 @@ tear_scene = ExtResource("4_jdwoi")
 minigame_scene = ExtResource("5_b8cq5")
 slam_shockwave_scene = ExtResource("6_micyh")
 catch_offset_x = 200.0
-slow_aura_radius = 320.0
 max_health = 400
 speed = 60.0
 player_icon = ExtResource("2_it3oq")

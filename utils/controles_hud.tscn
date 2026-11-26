@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://clv64bngcjvlr"]
+
+[ext_resource type="Script" uid="uid://bwdetl2cxf4je" path="res://utils/controles_hud.gd" id="1_hud"]
+[ext_resource type="FontFile" uid="uid://ctf0ms8f42jd0" path="res://assets/fonts/pixel.ttf" id="2_font"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.06, 0.06, 0.09, 0.88)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.48, 0.62, 0.8)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="ControlesHud" type="CanvasLayer" unique_id=254414020]
+layer = 15
+script = ExtResource("1_hud")
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=1531136318]
+custom_minimum_size = Vector2(620, 64)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -310.0
+offset_top = 115.0
+offset_right = 310.0
+offset_bottom = 180.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="Label" type="RichTextLabel" parent="Panel" unique_id=1198188377]
+layout_mode = 2
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("2_font")
+theme_override_font_sizes/normal_font_size = 14
+bbcode_enabled = true
+text = "[center]
+Mover: [color=#de9e41][←  →] [/color]     Pular: [color=#de9e41][ Espaço / ↑ ][/color]
+
+Atacar: [color=#de9e41][ X ] [/color]           Esquiva: [color=#de9e41][ C ][/color] 
+[/center]
+"
+fit_content = true
+scroll_active = false
